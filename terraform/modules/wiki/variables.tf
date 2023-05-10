@@ -29,3 +29,14 @@ variable "nixos_flake_attr" {
   type = string
   description = "NixOS configuration flake attribute"
 }
+
+variable "domain" {
+  type = string
+  description = "Domain name"
+}
+
+variable "tags" {
+  type = map(string)
+  default = {}
+  description = "Tags to add to the server"
+}

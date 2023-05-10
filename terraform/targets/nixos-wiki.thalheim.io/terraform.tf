@@ -15,6 +15,11 @@ module "wiki" {
     mic92 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKbBp2dH2X3dcU1zh+xW3ZsdYROKpJd3n13ssOP092qE joerg@turingmachine"
   }
   netlify_dns_zone = "wiki.thalheim.io"
+  domain           = "wiki.thalheim.io"
   nixos_flake_attr = "nixos-wiki-production"
-  nixos_vars_file = "${path.module}/nixos-vars.json"
+  nixos_vars_file  = "${path.module}/nixos-vars.json"
+  tags             = {
+    Terraform = "true"
+    Target    = "nixos-wiki.thalheim.io"
+  }
 }
