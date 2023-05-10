@@ -1,0 +1,9 @@
+# Go to https://gitlab.com/-/profile/personal_access_tokens      
+export GITLAB_USER=<your-gitlab-username>
+export GITLAB_TOKEN=<your-gitlab-token>
+
+# https://app.netlify.com/user/applications#personal-access-tokens
+export NETLIFY_TOKEN=<your-netlify-token>
+
+# https://console.hetzner.cloud/projects/162464/security/tokens
+export HCLOUD_TOKEN=<your-hetzner-token>
