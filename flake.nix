@@ -28,6 +28,9 @@
             (pkgs.terraform.withPlugins (p: [
               p.netlify
               p.hcloud
+              p.null
+              p.external
+              p.local
             ]))
           ];
         };

@@ -1,1 +1,2 @@
 /.envrc.private
+.terraform.lock.hcl
