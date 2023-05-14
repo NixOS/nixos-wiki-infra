@@ -1,8 +1,3 @@
-variable "admin_ssh_keys" {
-  type = map(string)
-  description = "SSH public keys for admin user (name -> key)"
-}
-
 variable "server_type" {
   type = string
   default = "cx21"
