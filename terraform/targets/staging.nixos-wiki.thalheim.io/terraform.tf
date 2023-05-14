@@ -10,11 +10,11 @@ terraform {
 }
 
 module "wiki" {
-  source = "../../modules/wiki"
+  source           = "../../modules/wiki"
   netlify_dns_zone = "nixos-wiki.thalheim.io"
   nixos_flake_attr = "nixos-wiki-staging"
-  nixos_vars_file = "${path.module}/nixos-vars.json"
-  tags             = {
+  nixos_vars_file  = "${path.module}/nixos-vars.json"
+  tags = {
     Terraform = "true"
     Target    = "staging-nixos-wiki.thalheim.io"
   }
