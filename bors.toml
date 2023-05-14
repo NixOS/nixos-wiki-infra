@@ -2,5 +2,7 @@ cut_body_after = "" # don't include text from the PR body in the merge commit me
 status = [
   "Evaluate flake.nix",
   "check treefmt [x86_64-linux]",
-  "package default [x86_64-linux]"
+  "package default [x86_64-linux]",
+  "nixosConfig nixos-wiki-thalheim-io",
+  "nixosConfig staging-nixos-wiki-thalheim-io",
 ]
