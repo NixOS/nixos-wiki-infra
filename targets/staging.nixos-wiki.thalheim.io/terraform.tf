@@ -10,7 +10,7 @@ terraform {
 }
 
 module "wiki" {
-  source           = "../../modules/wiki"
+  source           = "../../modules/nixos-wiki"
   netlify_dns_zone = "nixos-wiki.thalheim.io"
   nixos_flake_attr = "nixos-wiki-thalheim-io"
   nixos_vars_file  = "${path.module}/nixos-vars.json"
