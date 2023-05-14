@@ -5,5 +5,6 @@ in {
     self.nixosModules.nixos-wiki
     self.nixosModules.hcloud
   ];
-  config.users.users.root.openssh.authorizedKeys.keys = nixosVars.ssh_keys;
+  users.users.root.openssh.authorizedKeys.keys = nixosVars.ssh_keys;
+  system.stateVersion = "23.05";
 }
