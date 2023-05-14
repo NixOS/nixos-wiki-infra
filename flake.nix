@@ -18,8 +18,8 @@
       systems = lib.systems.flakeExposed;
       imports = [
         inputs.treefmt-nix.flakeModule
-        ./terraform/targets/flake-module.nix
-        ./nix/modules/flake-module.nix
+        ./targets/flake-module.nix
+        ./modules/flake-module.nix
       ];
       perSystem = { config, pkgs, ... }: {
         treefmt = {
