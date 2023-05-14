@@ -1,6 +1,6 @@
 { inputs, ... }: {
   flake.nixosModules = {
-    hcloud.imports = [ 
+    hcloud.imports = [
       inputs.srvos.nixosModules.server
       inputs.srvos.nixosModules.hardware-hetzner-cloud
     ];
