@@ -13,7 +13,7 @@ module "wiki" {
   source           = "../../modules/wiki"
   netlify_dns_zone = "nixos-wiki.thalheim.io"
   domain           = "nixos-wiki.thalheim.io"
-  nixos_flake_attr = "nixos-wiki-production"
+  nixos_flake_attr = "nixos-wiki-thalheim-io"
   nixos_vars_file  = "${path.module}/nixos-vars.json"
   tags = {
     Terraform = "true"

@@ -8,7 +8,7 @@ in
     (builtins.map
       (name:
         lib.nameValuePair
-          name
+          (builtins.replaceStrings [ "." ] [ "-" ] name)
           (lib.nixosSystem {
             system = "x86_64-linux";
             # Make flake available in modules
