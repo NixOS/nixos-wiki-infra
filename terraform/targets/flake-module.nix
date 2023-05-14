@@ -1,26 +1,25 @@
 { lib, self, ... }:
 let
-  collectNixosHosts = { directory }:
-    lib.mapAttrs'
-      (name: _:
-      lib.nameValuePair
-        name
-        (lib.nixosSystem {
-          system = "x86_64-linux";
-          # Make flake available in modules
-          specialArgs = {
-            self = {
-              inputs = self.inputs;
-              nixosModules = self.nixosModules;
-            };
-          };
-
-          modules = [ (directory + "/${name}/configuration.nix") ];
-        }))
-      (builtins.readDir directory);
+  entries = builtins.attrNames (builtins.readDir ./.);
+  configs = builtins.filter (dir: builtins.pathExists (./. + "/${dir}/configuration.nix")) entries;
 in
-{ 
-  flake.nixosConfigurations = collectNixosHosts {
-    directory = ".";
-  };
+{
+  flake.nixosConfigurations = lib.listToAttrs
+    (builtins.map
+      (name:
+        lib.nameValuePair
+          name
+          (lib.nixosSystem {
+            system = "x86_64-linux";
+            # Make flake available in modules
+            specialArgs = {
+              self = {
+                inputs = self.inputs;
+                nixosModules = self.nixosModules;
+              };
+            };
+
+            modules = [ (./. + "/${name}/configuration.nix") ];
+          }))
+      configs);
 }
