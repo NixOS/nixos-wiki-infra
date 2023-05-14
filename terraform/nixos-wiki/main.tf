@@ -34,6 +34,6 @@ resource "hcloud_server" "nixos_wiki" {
 locals {
   nixos_vars = {
     ipv6_address = hcloud_server.nixos_wiki.ipv6_address
-    ssh_keys = data.hcloud_ssh_keys.nixos_wiki.ssh_keys.*.public_key
+    ssh_keys     = data.hcloud_ssh_keys.nixos_wiki.ssh_keys.*.public_key
   }
 }
