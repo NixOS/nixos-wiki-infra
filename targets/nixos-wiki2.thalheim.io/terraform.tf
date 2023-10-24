@@ -15,6 +15,7 @@ module "wiki" {
   domain           = "nixos-wiki2.thalheim.io"
   nixos_flake_attr = "nixos-wiki2-thalheim-io"
   nixos_vars_file  = "${path.module}/nixos-vars.json"
+  sops_file        = abspath("${path.module}/secrets.yaml")
   tags = {
     Terraform = "true"
     Target    = "nixos-wiki2.thalheim.io"
