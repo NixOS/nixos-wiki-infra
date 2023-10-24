@@ -20,6 +20,11 @@ variable "nixos_vars_file" {
   description = "File to write NixOS configuration variables to"
 }
 
+variable "sops_file" {
+  type        = string
+  description = "File to SOPS secrets file"
+}
+
 variable "nixos_flake_attr" {
   type        = string
   description = "NixOS configuration flake attribute"

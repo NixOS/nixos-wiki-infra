@@ -29,7 +29,10 @@ module "deploy" {
   target_host            = hcloud_server.nixos_wiki.ipv4_address
   instance_id            = hcloud_server.nixos_wiki.id
   extra_files_script     = "${path.module}/decrypt-age-keys.sh"
-  debug_logging          = true
+  extra_environment = {
+    SOPS_FILE = var.sops_file
+  }
+  debug_logging = true
 }
 
 locals {
