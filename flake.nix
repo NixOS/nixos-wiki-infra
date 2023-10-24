@@ -30,10 +30,12 @@
           programs.terraform.enable = true;
           programs.nixpkgs-fmt.enable = true;
         };
-        packages.default = pkgs.mkShell {
+        packages.default = let
+          terraformHalal = pkgs.terraform.overrideAttrs (_old: { meta = _old.meta // { license = lib.licenses.free; }; });
+        in pkgs.mkShell {
           packages = [
             pkgs.bashInteractive
-            (pkgs.terraform.withPlugins (p: [
+            (terraformHalal.withPlugins (p: [
               p.netlify
               p.hcloud
               p.null
