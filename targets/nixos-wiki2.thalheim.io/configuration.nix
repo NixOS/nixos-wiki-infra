@@ -1,6 +1,8 @@
-{ self, lib, ... }: let
+{ self, lib, ... }:
+let
   nixosVars = builtins.fromJSON (builtins.readFile ./nixos-vars.json);
-in {
+in
+{
   imports = [
     self.nixosModules.nixos-wiki
     self.nixosModules.nixos-wiki-backup
