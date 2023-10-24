@@ -14,6 +14,10 @@
     srvos.url = "github:numtide/srvos";
     # Use the version of nixpkgs that has been tested to work with SrvOS
     srvos.inputs.nixpkgs.follows = "nixpkgs";
+
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    sops-nix.inputs.nixpkgs-stable.follows = "";
   };
 
   outputs = inputs@{ flake-parts, ... }:
@@ -35,6 +39,7 @@
         in pkgs.mkShell {
           packages = [
             pkgs.bashInteractive
+            pkgs.sops
             (terraformHalal.withPlugins (p: [
               p.netlify
               p.hcloud

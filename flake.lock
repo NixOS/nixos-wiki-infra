@@ -61,8 +61,30 @@
         "disko": "disko",
         "flake-parts": "flake-parts",
         "nixpkgs": "nixpkgs",
+        "sops-nix": "sops-nix",
         "srvos": "srvos",
         "treefmt-nix": "treefmt-nix"
+      }
+    },
+    "sops-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "nixpkgs-stable": []
+      },
+      "locked": {
+        "lastModified": 1697943852,
+        "narHash": "sha256-DaBxUPaZhQ3yLCmAATshYB7qo7NwcMvSFWz9T3bjYYY=",
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "rev": "30a0ba4a20703b4bfe047fe5def1fc24978e322c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "type": "github"
       }
     },
     "srvos": {

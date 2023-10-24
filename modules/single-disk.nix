@@ -1,37 +1,28 @@
 { self, ... }:
 let
-  partitions = [
-    {
-      name = "grub";
-      end = "1M";
-      part-type = "primary";
-      flags = [ "bios_grub" ];
-    }
-    {
-      name = "ESP";
-      start = "1MiB";
-      end = "500MiB";
-      bootable = true;
+  partitions = {
+    boot = {
+      size = "1M";
+      type = "EF02"; # for grub MBR
+    };
+    esp = {
+      size = "500M";
+      type = "EF00"; # for grub MBR
       content = {
         type = "filesystem";
         format = "vfat";
         mountpoint = "/boot";
       };
-    }
-    {
-      name = "root";
-      start = "100MiB";
-      end = "100%";
-      part-type = "primary";
-      bootable = true;
+    };
+    root = {
+      size = "100%";
       content = {
         type = "filesystem";
-        # We use xfs because it has support for compression and has a quite good performance for databases
-        format = "xfs";
+        format = "ext4";
         mountpoint = "/";
       };
-    }
-  ];
+    };
+  };
 in
 {
   imports = [
@@ -42,8 +33,7 @@ in
       type = "disk";
       device = "/dev/sda";
       content = {
-        type = "table";
-        format = "gpt";
+        type = "gpt";
         inherit partitions;
       };
     };
