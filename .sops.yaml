@@ -1,0 +1,9 @@
+keys:
+  - &joerg age17n64ahe3wesh8l8lj0zylf4nljdmqn28hvqns2g7hgm9mdkhlsvsjuvkxz
+  - &nixos-wiki2 age1p3dl7q5ahjdhl3g72mqk9pxy3gcptw9dqmg6syq9f9s03ppqp4rsqm93n2
+creation_rules:
+  - path_regex: targets/nixos-wiki2\.thalheim\.io/secrets\.yaml$
+    key_groups:
+    - age:
+      - *joerg
+      - *nixos-wiki2
