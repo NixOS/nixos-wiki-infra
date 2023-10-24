@@ -55,6 +55,7 @@ in
 
     serviceConfig = {
       ExecStart = [
+        "${pkgs.coreutils}/bin/mkdir -p /var/backup"
         "${pkgs.wget}/bin/wget https://nixos.wiki/images/wikidump.xml.gz -O ${wikiDump}.new"
         "${pkgs.coreutils}/bin/mv ${wikiDump}.new ${wikiDump}"
       ];
