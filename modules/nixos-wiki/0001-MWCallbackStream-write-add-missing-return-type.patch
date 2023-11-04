@@ -1,7 +1,7 @@
 From c88ac02c0ef24025f00d359e0bec96dbf2583357 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?J=C3=B6rg=20Thalheim?= <joerg@thalheim.io>
 Date: Sat, 4 Nov 2023 18:28:03 +0000
-Subject: [PATCH] MWCallbackStream::write: add missing return type
+Subject: [PATCH 1/2] MWCallbackStream::write: add missing return type
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
