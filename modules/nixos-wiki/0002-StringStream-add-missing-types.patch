@@ -1,0 +1,113 @@
+From fb19bb8089981c5fc56c9532f5ab19bde98446aa Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?J=C3=B6rg=20Thalheim?= <joerg@thalheim.io>
+Date: Sat, 4 Nov 2023 18:39:57 +0000
+Subject: [PATCH 2/2] StringStream: add missing types
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Jörg Thalheim <joerg@thalheim.io>
+---
+ includes/Rest/StringStream.php | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/includes/Rest/StringStream.php b/includes/Rest/StringStream.php
+index bd7295c28b5..1131dfa8d0c 100644
+--- a/includes/Rest/StringStream.php
++++ b/includes/Rest/StringStream.php
+@@ -36,34 +36,34 @@ public function copyToStream( $stream ) {
+ 		fwrite( $stream, $this->getContents() );
+ 	}
+ 
+-	public function __toString() {
++	public function __toString(): string {
+ 		return $this->contents;
+ 	}
+ 
+-	public function close() {
++	public function close(): void {
+ 	}
+ 
+ 	public function detach() {
+ 		return null;
+ 	}
+ 
+-	public function getSize() {
++	public function getSize(): ?int {
+ 		return strlen( $this->contents );
+ 	}
+ 
+-	public function tell() {
++	public function tell(): int {
+ 		return $this->offset;
+ 	}
+ 
+-	public function eof() {
++	public function eof(): bool {
+ 		return $this->offset >= strlen( $this->contents );
+ 	}
+ 
+-	public function isSeekable() {
++	public function isSeekable(): bool {
+ 		return true;
+ 	}
+ 
+-	public function seek( $offset, $whence = SEEK_SET ) {
++	public function seek( int $offset, int $whence = SEEK_SET ): void {
+ 		switch ( $whence ) {
+ 			case SEEK_SET:
+ 				$this->offset = $offset;
+@@ -88,15 +88,15 @@ public function seek( $offset, $whence = SEEK_SET ) {
+ 		}
+ 	}
+ 
+-	public function rewind() {
++	public function rewind(): void {
+ 		$this->offset = 0;
+ 	}
+ 
+-	public function isWritable() {
++	public function isWritable(): bool {
+ 		return true;
+ 	}
+ 
+-	public function write( $string ) {
++	public function write( string $string ): int {
+ 		if ( $this->offset === strlen( $this->contents ) ) {
+ 			$this->contents .= $string;
+ 		} else {
+@@ -107,11 +107,11 @@ public function write( $string ) {
+ 		return strlen( $string );
+ 	}
+ 
+-	public function isReadable() {
++	public function isReadable(): bool {
+ 		return true;
+ 	}
+ 
+-	public function read( $length ) {
++	public function read( int $length ): string {
+ 		if ( $this->offset === 0 && $length >= strlen( $this->contents ) ) {
+ 			$ret = $this->contents;
+ 		} elseif ( $this->offset >= strlen( $this->contents ) ) {
+@@ -123,7 +123,7 @@ public function read( $length ) {
+ 		return $ret;
+ 	}
+ 
+-	public function getContents() {
++	public function getContents() : string {
+ 		if ( $this->offset === 0 ) {
+ 			$ret = $this->contents;
+ 		} elseif ( $this->offset >= strlen( $this->contents ) ) {
+@@ -135,7 +135,7 @@ public function getContents() {
+ 		return $ret;
+ 	}
+ 
+-	public function getMetadata( $key = null ) {
++	public function getMetadata( ?string $key = null ) {
+ 		return null;
+ 	}
+ }
+-- 
+2.42.0
+

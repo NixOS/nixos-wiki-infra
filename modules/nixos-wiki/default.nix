@@ -24,7 +24,10 @@
       uploadsDir = "/var/lib/mediawiki-uploads/";
       passwordFile = config.sops.secrets."nixos-wiki".path;
       package = pkgs.mediawiki.overrideAttrs (old: {
-        patches = [ ./0001-MWCallbackStream-write-add-missing-return-type.patch ];
+        patches = [
+          ./0001-MWCallbackStream-write-add-missing-return-type.patch
+          ./0002-StringStream-add-missing-types.patch
+        ];
       });
 
       extensions.SyntaxHighlight_GeSHi = null; # provides <SyntaxHighlight> tags
