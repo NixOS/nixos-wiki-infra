@@ -101,6 +101,7 @@
       '';
     };
 
+    networking.firewall.allowedTCPPorts = [ 443 80 ];
     security.acme.acceptTerms = true;
     services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
       enableACME = lib.mkDefault true;
