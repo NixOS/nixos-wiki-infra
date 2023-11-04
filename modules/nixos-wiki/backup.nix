@@ -32,6 +32,7 @@ let
       systemctl stop phpfpm-mediawiki.service
       runuser -u postgres -- dropdb mediawiki
       systemctl restart postgresql
+      runuser -u postgres -- psql -c "ALTER DATABASE mediawiki OWNER TO mediawiki"
       systemctl restart mediawiki-init.service
       cat <<EOF | runuser -u mediawiki -- mediawiki-maintenance deleteBatch.php
       Main_Page
