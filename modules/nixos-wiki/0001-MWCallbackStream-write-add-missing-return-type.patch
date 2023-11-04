@@ -1,0 +1,32 @@
+From c88ac02c0ef24025f00d359e0bec96dbf2583357 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?J=C3=B6rg=20Thalheim?= <joerg@thalheim.io>
+Date: Sat, 4 Nov 2023 18:28:03 +0000
+Subject: [PATCH] MWCallbackStream::write: add missing return type
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+PHP Fatal Error from line 49 of /nix/store/rh28r8z3fqnqlfmqf0yn3ka1laysw1cm-mediawiki-full-1.40.1/share/mediawiki/includes/http/MWCallbackStream.php:
+Declaration of MWCallbackStream::write($string) must be compatible with Psr\Http\Message\StreamInterface::write(string $string): int
+
+Signed-off-by: Jörg Thalheim <joerg@thalheim.io>
+---
+ includes/http/MWCallbackStream.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/includes/http/MWCallbackStream.php b/includes/http/MWCallbackStream.php
+index 3566019dcd6..c1bc911940b 100644
+--- a/includes/http/MWCallbackStream.php
++++ b/includes/http/MWCallbackStream.php
+@@ -46,7 +46,7 @@ public function __construct( callable $cb ) {
+ 		$this->callback = $cb;
+ 	}
+ 
+-	public function write( $string ) {
++	public function write( $string ): int {
+ 		return call_user_func( $this->callback, $this, $string );
+ 	}
+ }
+-- 
+2.42.0
+
