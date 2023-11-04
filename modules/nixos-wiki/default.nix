@@ -23,6 +23,9 @@
       nginx.hostName = config.services.nixos-wiki.hostname;
       uploadsDir = "/var/lib/mediawiki-uploads/";
       passwordFile = config.sops.secrets."nixos-wiki".path;
+      package = pkgs.mediawiki.overrideAttrs (old: {
+        patches = [ ./0001-MWCallbackStream-write-add-missing-return-type.patch ];
+      });
 
       extensions.SyntaxHighlight_GeSHi = null; # provides <SyntaxHighlight> tags
       extensions.ParserFunctions = null;
