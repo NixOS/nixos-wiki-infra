@@ -104,6 +104,9 @@
         $wgEmergencyContact = "nixos-wiki-emergency@thalheim.io";
         $wgPasswordSender   = "nixos-wiki@thalheim.io";           # Default FROM address
         $wgNoReplyAddress   = "nixos-wiki-no-reply@thalheim.io";  # Default Reply-To address
+
+        # To purge all page cache increase this using: date +%Y%m%d%H%M%S
+        $wgCacheEpoch = 20231115172319;
       '';
     };
 
