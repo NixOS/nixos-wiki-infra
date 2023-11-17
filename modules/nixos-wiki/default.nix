@@ -23,20 +23,14 @@
       nginx.hostName = config.services.nixos-wiki.hostname;
       uploadsDir = "/var/lib/mediawiki-uploads/";
       passwordFile = config.sops.secrets."nixos-wiki".path;
-      package = pkgs.mediawiki.overrideAttrs (old: {
-        patches = [
-          ./0001-MWCallbackStream-write-add-missing-return-type.patch
-          ./0002-StringStream-add-missing-types.patch
-        ];
-      });
 
       extensions.SyntaxHighlight_GeSHi = null; # provides <SyntaxHighlight> tags
       extensions.ParserFunctions = null;
       extensions.Cite = null;
       extensions.VisualEditor = null;
       extensions.AuthManagerOAuth = pkgs.fetchzip {
-        url = "https://github.com/mohe2015/AuthManagerOAuth/releases/download/v0.3.0/AuthManagerOAuth.zip";
-        hash = "sha256-4ev8LwuConmHzFm5cPr+ni9aYPDOHLArGoJhzdugEn4=";
+        url = "https://github.com/Mic92/AuthManagerOAuth/releases/download/vendor-bugfix/AuthManagerOAuth.zip";
+        hash = "sha256-Xq56QxBYpAG51HQw4TJLnzwHWztv0EhTGXk/i3w2+fs=";
       }; # Github login
       extensions.ConfirmEdit = null; # Combat SPAM with a simple Captcha
       extensions.StopForumSpam = pkgs.fetchzip {
