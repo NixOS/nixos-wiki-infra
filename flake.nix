@@ -34,6 +34,7 @@
         inputs.treefmt-nix.flakeModule
         ./targets/flake-module.nix
         ./modules/flake-module.nix
+        ./checks/flake-module.nix
       ];
       perSystem = { config, pkgs, ... }: {
         treefmt = {
