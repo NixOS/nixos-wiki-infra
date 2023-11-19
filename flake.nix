@@ -21,7 +21,7 @@
   };
 
   outputs = inputs@{ flake-parts, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; } ({ lib, ... }: {
+    flake-parts.lib.mkFlake { inherit inputs; } ({ self, lib, ... }: {
       systems = [
         "aarch64-linux"
         "x86_64-linux"
@@ -36,7 +36,7 @@
         ./modules/flake-module.nix
         ./checks/flake-module.nix
       ];
-      perSystem = { config, pkgs, ... }: {
+      perSystem = { config, self', system, pkgs, ... }: {
         treefmt = {
           projectRootFile = "flake.nix";
           programs.hclfmt.enable = true;
@@ -56,6 +56,14 @@
               ]))
             ];
           };
+
+        checks =
+          let
+            nixosMachines = lib.mapAttrs' (name: config: lib.nameValuePair "nixos-${name}" config.config.system.build.toplevel) ((lib.filterAttrs (_: config: config.pkgs.system == system)) self.nixosConfigurations);
+            packages = lib.mapAttrs' (n: lib.nameValuePair "package-${n}") self'.packages;
+            devShells = lib.mapAttrs' (n: lib.nameValuePair "devShell-${n}") self'.devShells;
+          in
+          nixosMachines // packages // devShells;
       };
     });
 }
