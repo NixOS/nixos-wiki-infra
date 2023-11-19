@@ -1,15 +1,11 @@
 { self, ... }: {
   perSystem =
     { pkgs
+    , lib
     , ...
     }: {
-      checks =
-        let
-          # this gives us a reference to our flake but also all flake inputs
-          checkArgs = { inherit self pkgs; };
-        in
-        {
-          test = import ./test.nix checkArgs;
-        };
+      checks = lib.optionalAttrs pkgs.stdenv.isLinux {
+        test = import ./test.nix { inherit self pkgs; };
+      };
     };
 }
