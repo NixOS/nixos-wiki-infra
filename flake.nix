@@ -22,7 +22,14 @@
 
   outputs = inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } ({ lib, ... }: {
-      systems = lib.systems.flakeExposed;
+      systems = [
+        "aarch64-linux"
+        "x86_64-linux"
+        "riscv64-linux"
+
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
       imports = [
         inputs.treefmt-nix.flakeModule
         ./targets/flake-module.nix
