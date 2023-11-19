@@ -1,4 +1,7 @@
 { config, pkgs, lib, ... }:
+let
+  cfg = config.services.nixos-wiki;
+in
 {
   options = {
     services.nixos-wiki = {
@@ -6,31 +9,49 @@
         type = lib.types.str;
         description = "The hostname of the wiki";
       };
+      adminPasswordFile = lib.mkOption {
+        type = lib.types.path;
+        description = "The password file for the wiki admin";
+      };
       githubClientId = lib.mkOption {
         type = lib.types.str;
         description = "The github client id for the wiki";
+      };
+      githubClientSecretFile = lib.mkOption {
+        type = lib.types.path;
+        description = "The github client secret for the wiki";
+      };
+      emergencyContact = lib.mkOption {
+        type = lib.types.str;
+        description = "The emergency contact for the wiki";
+      };
+      passwordSender = lib.mkOption {
+        type = lib.types.str;
+        description = "default FROM address in emails";
+      };
+      noReplyAddress = lib.mkOption {
+        type = lib.types.str;
+        description = "default Reply-To address in emails";
       };
     };
   };
 
   config = {
-    sops.secrets."nixos-wiki".owner = config.services.phpfpm.pools.mediawiki.user;
-    sops.secrets.nixos-wiki-github-client-secret.owner = config.services.phpfpm.pools.mediawiki.user;
     services.mediawiki = {
       enable = true;
       webserver = "nginx";
       database.type = "postgres";
       nginx.hostName = config.services.nixos-wiki.hostname;
       uploadsDir = "/var/lib/mediawiki-uploads/";
-      passwordFile = config.sops.secrets."nixos-wiki".path;
+      passwordFile = cfg.adminPasswordFile;
 
       extensions.SyntaxHighlight_GeSHi = null; # provides <SyntaxHighlight> tags
       extensions.ParserFunctions = null;
       extensions.Cite = null;
       extensions.VisualEditor = null;
       extensions.AuthManagerOAuth = pkgs.fetchzip {
-        url = "https://github.com/Mic92/AuthManagerOAuth/releases/download/vendor-bugfix/AuthManagerOAuth.zip";
-        hash = "sha256-Xq56QxBYpAG51HQw4TJLnzwHWztv0EhTGXk/i3w2+fs=";
+        url = "https://github.com/mohe2015/AuthManagerOAuth/releases/download/v0.3.2/AuthManagerOAuth.zip";
+        hash = "sha256-hr/DLyL6IzQs67eA46RdmuVlfCiAbq+eZCRLfjLxUpc=";
       }; # Github login
       extensions.ConfirmEdit = null; # Combat SPAM with a simple Captcha
       extensions.StopForumSpam = pkgs.fetchzip {
@@ -44,8 +65,8 @@
         # allow local login
         $wgAuthManagerOAuthConfig = [
           'github' => [
-            'clientId'                => '${config.services.nixos-wiki.githubClientId}',
-            'clientSecret'            => file_get_contents("${config.sops.secrets.nixos-wiki-github-client-secret.path}"),
+            'clientId'                => '${cfg.githubClientId}',
+            'clientSecret'            => file_get_contents("${cfg.githubClientSecretFile}"),
             'urlAuthorize'            => 'https://github.com/login/oauth/authorize',
             'urlAccessToken'          => 'https://github.com/login/oauth/access_token',
             'urlResourceOwnerDetails' => 'https://api.github.com/user'
@@ -95,9 +116,10 @@
 
         $wgEnableEmail = true;
         $wgAllowHTMLEmail = false;
-        $wgEmergencyContact = "nixos-wiki-emergency@thalheim.io";
-        $wgPasswordSender   = "nixos-wiki@thalheim.io";           # Default FROM address
-        $wgNoReplyAddress   = "nixos-wiki-no-reply@thalheim.io";  # Default Reply-To address
+
+        $wgEmergencyContact = "${cfg.emergencyContact}";
+        $wgPasswordSender   = "${cfg.passwordSender}";
+        $wgNoReplyAddress   = "${cfg.noReplyAddress}";
 
         # To purge all page cache increase this using: date +%Y%m%d%H%M%S
         $wgCacheEpoch = 20231115172319;
@@ -108,7 +130,7 @@
     security.acme.acceptTerms = true;
     services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
       enableACME = lib.mkDefault true;
-      forceSSL = true;
+      forceSSL = lib.mkDefault true;
       locations."=/nixos.png".alias = ./nixos.png;
     };
   };
