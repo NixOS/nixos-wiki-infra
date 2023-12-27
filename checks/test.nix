@@ -6,6 +6,9 @@
       imports = [
         self.nixosModules.nixos-wiki
       ];
+      networking.extraHosts = ''
+        127.0.0.1 nixos-wiki.example.com
+      '';
       security.acme.defaults.email = "admin@example.com";
       services.nixos-wiki = {
         hostname = "nixos-wiki.example.com";
@@ -29,7 +32,7 @@
     machine.wait_for_unit("phpfpm-mediawiki.service")
     machine.wait_for_unit("nginx.service")
 
-    page = machine.succeed("curl -vL http://localhost/")
+    page = machine.succeed("curl -vL http://nixos-wiki.example.com/")
     assert "MediaWiki has been installed" in page
   '';
 }
