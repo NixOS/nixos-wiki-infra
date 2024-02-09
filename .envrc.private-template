@@ -2,5 +2,5 @@
 export GITLAB_USER=<your-gitlab-username>
 export GITLAB_TOKEN=<your-gitlab-token>
 
-# https://console.hetzner.cloud/projects/2356507/security/tokens
+# https://console.hetzner.cloud/projects/2643361/security/tokens
 export HCLOUD_TOKEN=<your-hetzner-token>
