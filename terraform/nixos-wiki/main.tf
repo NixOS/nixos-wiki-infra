@@ -17,7 +17,7 @@ resource "hcloud_server" "nixos_wiki" {
   lifecycle {
     # Don't destroy server instance if ssh keys changes.
     ignore_changes  = [ssh_keys]
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 
