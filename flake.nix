@@ -45,17 +45,20 @@
         };
         packages.default =
           pkgs.mkShell {
-            packages = [
-              pkgs.bashInteractive
-              pkgs.sops
-              (pkgs.opentofu.withPlugins (p: [
-                p.netlify
-                p.hcloud
-                p.null
-                p.external
-                p.local
-              ]))
-            ];
+            packages =
+              let
+                halalify = drv: drv.overrideAttrs (_old: { meta = _old.meta // { license = lib.licenses.free; }; });
+              in
+              [
+                pkgs.bashInteractive
+                pkgs.sops
+                (halalify (pkgs.terraform.withPlugins (p: [
+                  p.hcloud
+                  p.null
+                  p.external
+                  p.local
+                ])))
+              ];
           };
 
         checks =
