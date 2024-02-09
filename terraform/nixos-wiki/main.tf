@@ -41,3 +41,11 @@ locals {
     ssh_keys     = data.hcloud_ssh_keys.nixos_wiki.ssh_keys.*.public_key
   }
 }
+
+output "ipv4_address" {
+  value = hcloud_server.nixos_wiki.ipv4_address
+}
+
+output "ipv6_address" {
+  value = hcloud_server.nixos_wiki.ipv6_address
+}
