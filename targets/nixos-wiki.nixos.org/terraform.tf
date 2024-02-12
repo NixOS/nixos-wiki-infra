@@ -12,12 +12,12 @@ terraform {
 module "wiki" {
   source           = "../../terraform/nixos-wiki"
   domain           = "nixos-wiki2.thalheim.io"
-  nixos_flake_attr = "nixos-wiki2-thalheim-io"
+  nixos_flake_attr = "nixos-wiki-nixos-org"
   nixos_vars_file  = "${path.module}/nixos-vars.json"
   sops_file        = abspath("${path.module}/secrets.yaml")
   tags = {
     Terraform = "true"
-    Target    = "nixos-wiki2.thalheim.io"
+    Target    = "wiki.nixos.org"
   }
 }
 
