@@ -47,17 +47,19 @@
           pkgs.mkShell {
             packages =
               let
-                halalify = drv: drv.overrideAttrs (_old: { meta = _old.meta // { license = lib.licenses.free; }; });
+                convert2Tofu = provider: provider.override (prev: {
+                  homepage = builtins.replaceStrings [ "registry.terraform.io/providers" ] [ "registry.opentofu.org" ] prev.homepage;
+                });
               in
               [
                 pkgs.bashInteractive
                 pkgs.sops
-                (halalify (pkgs.terraform.withPlugins (p: [
+                (pkgs.opentofu.withPlugins (p: builtins.map convert2Tofu [
                   p.hcloud
                   p.null
                   p.external
                   p.local
-                ])))
+                ]))
               ];
           };
 
