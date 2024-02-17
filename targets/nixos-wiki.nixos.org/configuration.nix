@@ -25,6 +25,31 @@ in
     noReplyAddress = "nixos-wiki-no-reply@thalheim.io";
   };
 
+  services.cloud-init.enable = lib.mkForce false;
+
+  systemd.network.networks."10-wan" = {
+    # match the interface by name
+    matchConfig.MACAddress = "96:00:03:02:b6:04";
+    address = [
+      # configure addresses including subnet mask
+      "65.21.240.250/32"
+      "2a01:4f9:c012:8178::/64"
+    ];
+    routes = [
+      # create default routes for both IPv6 and IPv4
+      { routeConfig.Gateway = "fe80::1"; }
+      # or when the gateway is not on the same network
+      {
+        routeConfig = {
+          Gateway = "172.31.1.1";
+          GatewayOnLink = true;
+        };
+      }
+    ];
+    # make the routes on this interface a dependency for network-online.target
+    linkConfig.RequiredForOnline = "routable";
+  };
+
   sops.defaultSopsFile = ./secrets/secrets.yaml;
   boot.loader.grub.devices = lib.mkForce [ "/dev/sda" ];
 }
