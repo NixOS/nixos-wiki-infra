@@ -5,7 +5,7 @@ keys:
   - &julienmalka age109qksyjgdnf7elnk98dh4vtxt0epju7xjemlqng0j0x75st5zg9qm9h3hy
 
 creation_rules:
-  - path_regex: targets/nixos-wiki2\.thalheim\.io/secrets\.yaml$
+  - path_regex: targets/nixos-wiki\.nixos\.org/secrets/*
     key_groups:
     - age:
       - *joerg

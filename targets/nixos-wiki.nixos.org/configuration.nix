@@ -25,6 +25,6 @@ in
     noReplyAddress = "nixos-wiki-no-reply@thalheim.io";
   };
 
-  sops.defaultSopsFile = ./secrets.yaml;
+  sops.defaultSopsFile = ./secrets/secrets.yaml;
   boot.loader.grub.devices = lib.mkForce [ "/dev/sda" ];
 }
