@@ -13,8 +13,27 @@ let
       --add-flags ${config.services.mediawiki.finalPackage}/share/mediawiki/maintenance/run.php
   '';
 
-  wiki-restore = pkgs.writeShellApplication {
-    name = "wiki-restore";
+  wiki-backup = pkgs.writeShellApplication
+    {
+      name = "wiki-backup";
+      runtimeInputs = [
+        pkgs.postgresql
+        pkgs.util-linux
+      ];
+      text = ''
+        tmpdir=$(mktemp -d)
+        cleanup() { rm -rf "$tmpdir"; }
+
+        chown postgres:users "$tmpdir"
+        mkdir -p /var/lib/mediawiki/backup/
+        runuser -u postgres -- pg_dump --format=custom --file "$tmpdir"/db mediawiki 
+        cp "$tmpdir"/db /var/lib/mediawiki/backup/db
+        trap cleanup EXIT
+      '';
+    };
+
+  old-wiki-restore = pkgs.writeShellApplication {
+    name = "old-wiki-restore";
     runtimeInputs = [
       pkgs.postgresql
       pkgs.coreutils
@@ -51,7 +70,7 @@ in
 {
   environment.systemPackages = [ mediawiki-maintenance ];
 
-  systemd.services.wiki-backup = {
+  systemd.services.old-wiki-backup = {
     startAt = "hourly";
 
     serviceConfig = {
@@ -64,17 +83,95 @@ in
     };
   };
 
-  systemd.services.wiki-restore = {
+  systemd.services.old-wiki-restore = {
     startAt = "daily";
     path = [ pkgs.postgresql mediawiki-maintenance ];
 
     serviceConfig = {
-      ExecStart = "${wiki-restore}/bin/wiki-restore";
+      ExecStart = "${old-wiki-restore}/bin/old-wiki-restore";
       Type = "oneshot";
     };
   };
 
+  systemd.services.wiki-backup = {
+    startAt = "daily";
+    path = [ pkgs.postgresql ];
+
+    unitConfig = {
+      Conflicts = [ "phpfpm-mediawiki.service" ];
+      OnSuccess = [ "phpfpm-mediawiki.service" ];
+      OnFailure = [ "phpfpm-mediawiki.service" ];
+    };
+    serviceConfig = {
+      ExecStart = "${wiki-backup}/bin/wiki-backup";
+      Type = "oneshot";
+    };
+  };
+
+
   services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
     locations."=/wikidump.xml.gz".alias = wikiDump;
   };
+
+
+  sops.secrets.storagebox-ssh-key = {
+    sopsFile = ../../targets/nixos-wiki.nixos.org/secrets/backup_share_ssh_key;
+    format = "binary";
+    path = "/var/keys/storagebox-ssh-key";
+    mode = "0600";
+    owner = "root";
+    group = "root";
+  };
+
+  sops.secrets.backup-secret = {
+    sopsFile = ../../targets/nixos-wiki.nixos.org/secrets/borg_encryption_passphrase;
+    format = "binary";
+    path = "/var/keys/borg-secret";
+    mode = "0600";
+    owner = "root";
+    group = "root";
+  };
+
+
+  programs.ssh.knownHosts."[u391032.your-storagebox.de]:23".publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5EB5p/5Hp3hGW1oHok+PIOH9Pbn7cnUiGmUEBrCVjnAw+HrKyN8bYVV0dIGllswYXwkG/+bgiBlE6IVIBAq+JwVWu1Sss3KarHY3OvFJUXZoZyRRg/Gc/+LRCE7lyKpwWQ70dbelGRyyJFH36eNv6ySXoUYtGkwlU5IVaHPApOxe4LHPZa/qhSRbPo2hwoh0orCtgejRebNtW5nlx00DNFgsvn8Svz2cIYLxsPVzKgUxs8Zxsxgn+Q/UvR7uq4AbAhyBMLxv7DjJ1pc7PJocuTno2Rw9uMZi1gkjbnmiOh6TTXIEWbnroyIhwc8555uto9melEUmWNQ+C+PwAK+MPw==";
+
+  systemd.services.borgbackup-job-state = {
+    wants = [ "wiki-backup.service" ];
+    after = [ "wiki-backup.service" ];
+  };
+
+  services.borgbackup.jobs.state = {
+    # Create the repo
+    doInit = true;
+
+    # Create daily backups, but prune to a reasonable amount
+    startAt = "daily";
+    prune.keep = {
+      daily = 7;
+      weekly = 4;
+      monthly = 3;
+    };
+
+    paths = [ "/var/lib/mediawiki-uploads" "/var/lib/mediawiki/backup" ];
+
+    # Where to backup it to
+    repo = "u391032-sub1@u391032.your-storagebox.de:wiki.nixos.org/repo";
+    environment.BORG_RSH = "ssh -p 23 -i /var/keys/storagebox-ssh-key";
+
+    # Authenticated & encrypted, key resides in the repository
+    encryption = {
+      mode = "repokey-blake2";
+      passCommand = "cat /var/keys/borg-secret";
+    };
+
+    # Reduce the backup size
+    compression = "auto,zstd";
+
+    # Show summary detailing data usage once completed
+    extraCreateArgs = "--stats";
+  };
+
+
+
+
 }

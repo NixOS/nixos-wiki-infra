@@ -15,6 +15,11 @@ in
   sops.secrets.nixos-wiki.owner = config.services.phpfpm.pools.mediawiki.user;
   sops.secrets.nixos-wiki-github-client-secret.owner = config.services.phpfpm.pools.mediawiki.user;
 
+  networking = {
+    hostName = "wiki";
+    domain = "nixos.org";
+  };
+
   services.nixos-wiki = {
     hostname = "wiki.staging.julienmalka.me";
     adminPasswordFile = config.sops.secrets.nixos-wiki.path;
