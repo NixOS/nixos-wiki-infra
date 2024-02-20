@@ -33,7 +33,9 @@ in
     address = [
       # configure addresses including subnet mask
       "65.21.240.250/32"
+      # TODO: drop this ip and only keep ::1
       "2a01:4f9:c012:8178::/64"
+      "2a01:4f9:c012:8178::1/64"
     ];
     routes = [
       # create default routes for both IPv6 and IPv4
