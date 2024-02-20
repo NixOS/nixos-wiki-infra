@@ -55,8 +55,8 @@ in
       }; # Github login
       extensions.ConfirmEdit = null; # Combat SPAM with a simple Captcha
       extensions.StopForumSpam = pkgs.fetchzip {
-        url = "https://extdist.wmflabs.org/dist/extensions/StopForumSpam-REL1_41-73c94fb.tar.gz";
-        hash = "sha256-UVRKDqgg4abj5gnbx8fytkkOeEwC+o68SEYlG4WFrcU=";
+        url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/StopForumSpam-REL1_41-73c94fb/StopForumSpam-REL1_41-861c37b.tar.gz";
+        hash = "sha256-/7gfBiKA9CliEPjXjcHrYKp4JMayXwtixlZFvnA5D2E=";
       };
 
       extraConfig = ''
