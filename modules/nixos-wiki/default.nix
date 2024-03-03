@@ -115,6 +115,7 @@ in
         $wgEditPageFrameOptions = "DENY";
 
         $wgEnableEmail = true;
+        $wgEmailConfirmToEdit = true;
         $wgAllowHTMLEmail = false;
 
         $wgEmergencyContact = "${cfg.emergencyContact}";
