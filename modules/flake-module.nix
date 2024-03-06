@@ -6,6 +6,7 @@
       inputs.sops-nix.nixosModules.sops
       inputs.srvos.nixosModules.hardware-hetzner-cloud
       inputs.srvos.nixosModules.mixins-telegraf
+      ./postfix.nix
       ./single-disk.nix
       ./monitoring.nix
       {
