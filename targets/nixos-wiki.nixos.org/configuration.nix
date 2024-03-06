@@ -23,7 +23,7 @@ in
   services.nixos-wiki = {
     hostname = "wiki.staging.julienmalka.me";
     adminPasswordFile = config.sops.secrets.nixos-wiki.path;
-    githubClientId = "Iv1.95ed182c83df1d22";
+    githubClientId = "Iv1.fcbe65bcecdda275";
     githubClientSecretFile = config.sops.secrets.nixos-wiki-github-client-secret.path;
     emergencyContact = "nixos-wiki@thalheim.io";
     passwordSender = "nixos-wiki@thalheim.io";
