@@ -27,6 +27,9 @@ let
       '';
     };
 
+  # to restore:
+  # $ runuser -u postgres -- pg_restore --format=custom -d mediawiki < /tmp/db
+
   wiki-dump = pkgs.writeShellApplication
     {
       name = "wiki-dump";
