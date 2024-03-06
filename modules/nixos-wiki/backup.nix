@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-  wikiDump = "/var/backup/wikidump.xml.gz";
+  wikiDump = "/var/lib/mediawiki/backup/wikidump.xml.zst";
 
   mediawiki-maintenance = pkgs.runCommand "mediawiki-maintenance"
     {
@@ -21,14 +21,22 @@ let
         pkgs.util-linux
       ];
       text = ''
-        tmpdir=$(mktemp -d)
-        cleanup() { rm -rf "$tmpdir"; }
-
-        chown postgres:users "$tmpdir"
         mkdir -p /var/lib/mediawiki/backup/
-        runuser -u postgres -- pg_dump --format=custom --file "$tmpdir"/db mediawiki 
-        cp "$tmpdir"/db /var/lib/mediawiki/backup/db
-        trap cleanup EXIT
+        runuser -u postgres -- pg_dump --format=custom mediawiki > /var/lib/mediawiki/backup/db.tmp
+        mv /var/lib/mediawiki/backup/{db.tmp,db}
+      '';
+    };
+
+  wiki-dump = pkgs.writeShellApplication
+    {
+      name = "wiki-dump";
+      runtimeInputs = [ pkgs.util-linux pkgs.coreutils ];
+      text = ''
+        mkdir -p /var/lib/mediawiki/backup/
+        runuser -u mediawiki -- ${mediawiki-maintenance}/bin/mediawiki-maintenance dumpBackup.php \
+          --full --include-files --uploads --quiet | \
+          ${pkgs.zstd}/bin/zstd > ${wikiDump}.tmp
+        mv ${wikiDump}{.tmp,}
       '';
     };
 
@@ -41,6 +49,12 @@ let
       mediawiki-maintenance
     ];
     text = ''
+      if $# != 1; then
+        echo "Usage: $0 <wikidump.xml.gz>" >&2
+        exit 1
+      fi
+      dump=$1
+
       tmpdir=$(mktemp -d)
       cleanup() { rm -rf "$tmpdir"; }
       cd "$tmpdir"
@@ -58,7 +72,7 @@ let
       MediaWiki:About
       EOF
       trap cleanup EXIT
-      cp ${wikiDump} "$tmpdir"
+      cp "$dump" "$tmpdir/wikidump.xml.gz"
       chown mediawiki:nginx "$tmpdir/wikidump.xml.gz"
       chmod 644 "$tmpdir/wikidump.xml.gz"
       runuser -u mediawiki -- mediawiki-maintenance importDump.php --uploads "$tmpdir/wikidump.xml.gz"
@@ -68,33 +82,12 @@ let
   };
 in
 {
-  environment.systemPackages = [ mediawiki-maintenance ];
-
-  systemd.services.old-wiki-backup = {
-    startAt = "hourly";
-
-    serviceConfig = {
-      ExecStart = [
-        "${pkgs.coreutils}/bin/mkdir -p /var/backup"
-        "${pkgs.wget}/bin/wget https://nixos.wiki/images/wikidump.xml.gz -O ${wikiDump}.new"
-        "${pkgs.coreutils}/bin/mv ${wikiDump}.new ${wikiDump}"
-      ];
-      Type = "oneshot";
-    };
-  };
-
-  systemd.services.old-wiki-restore = {
-    startAt = "daily";
-    path = [ pkgs.postgresql mediawiki-maintenance ];
-
-    serviceConfig = {
-      ExecStart = "${old-wiki-restore}/bin/old-wiki-restore";
-      Type = "oneshot";
-    };
-  };
+  environment.systemPackages = [
+    mediawiki-maintenance
+    old-wiki-restore
+  ];
 
   systemd.services.wiki-backup = {
-    startAt = "daily";
     path = [ pkgs.postgresql ];
 
     unitConfig = {
@@ -108,11 +101,21 @@ in
     };
   };
 
+  systemd.services.wiki-dump = {
+    startAt = "daily";
 
-  services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
-    locations."=/wikidump.xml.gz".alias = wikiDump;
+    unitConfig = {
+      Conflicts = [ "phpfpm-mediawiki.service" ];
+      OnSuccess = [ "phpfpm-mediawiki.service" ];
+      OnFailure = [ "phpfpm-mediawiki.service" ];
+    };
+    serviceConfig = {
+      ExecStart = "${wiki-dump}/bin/wiki-dump";
+      Type = "oneshot";
+    };
   };
 
+  services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName}.locations."=/wikidump.xml.zst".alias = wikiDump;
 
   sops.secrets.storagebox-ssh-key = {
     sopsFile = ../../targets/nixos-wiki.nixos.org/secrets/backup_share_ssh_key;
@@ -132,7 +135,6 @@ in
     group = "root";
   };
 
-
   programs.ssh.knownHosts."[u391032.your-storagebox.de]:23".publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5EB5p/5Hp3hGW1oHok+PIOH9Pbn7cnUiGmUEBrCVjnAw+HrKyN8bYVV0dIGllswYXwkG/+bgiBlE6IVIBAq+JwVWu1Sss3KarHY3OvFJUXZoZyRRg/Gc/+LRCE7lyKpwWQ70dbelGRyyJFH36eNv6ySXoUYtGkwlU5IVaHPApOxe4LHPZa/qhSRbPo2hwoh0orCtgejRebNtW5nlx00DNFgsvn8Svz2cIYLxsPVzKgUxs8Zxsxgn+Q/UvR7uq4AbAhyBMLxv7DjJ1pc7PJocuTno2Rw9uMZi1gkjbnmiOh6TTXIEWbnroyIhwc8555uto9melEUmWNQ+C+PwAK+MPw==";
 
   systemd.services.borgbackup-job-state = {
@@ -140,7 +142,7 @@ in
     after = [ "wiki-backup.service" ];
   };
 
-  services.borgbackup.jobs.state = {
+  services.borgbackup.jobs.${config.networking.hostName} = {
     # Create the repo
     doInit = true;
 
@@ -158,6 +160,17 @@ in
     repo = "u391032-sub1@u391032.your-storagebox.de:wiki.nixos.org/repo";
     environment.BORG_RSH = "ssh -p 23 -i /var/keys/storagebox-ssh-key";
 
+    preHook = ''
+      set -x
+      ${config.systemd.package}/bin/systemctl start wiki-backup
+      set +x
+    '';
+    postHook = ''
+      cat > /var/log/telegraf/borgbackup-job-${config.networking.hostName}.service <<EOF
+      task,frequency=daily last_run=$(date +%s)i,state="$([[ $exitStatus == 0 ]] && echo ok || echo fail)"
+      EOF
+    '';
+
     # Authenticated & encrypted, key resides in the repository
     encryption = {
       mode = "repokey-blake2";
@@ -171,7 +184,7 @@ in
     extraCreateArgs = "--stats";
   };
 
-
-
-
+  systemd.services."borgbackup-job-${config.networking.hostName}".serviceConfig.ReadWritePaths = [
+    "/var/log/telegraf"
+  ];
 }
