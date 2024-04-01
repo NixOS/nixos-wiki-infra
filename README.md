@@ -29,6 +29,13 @@ $ ls -la /tmp/restore/var/lib/mediawiki-uploads/
 $ umount /tmp/restore/
 ```
 
+## FAQ:
+
+### When logging in with "Github auth", the app shows "Act on your behalf" as a permission.
+
+We created the Oauth app with read-only access and minimal permissions. Unfortunally GitHub mis-represents this information.
+Read more about this issue here: https://github.com/orgs/community/discussions/37117
+
 ## Join our Matrix
 
 https://matrix.to/#/#wiki:nixos.org
