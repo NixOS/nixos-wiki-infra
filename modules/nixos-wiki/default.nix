@@ -38,6 +38,7 @@ in
 
   config = {
     services.mediawiki = {
+      name = "NixOS Wiki";
       enable = true;
       webserver = "nginx";
       database.type = "postgres";
@@ -54,10 +55,11 @@ in
         hash = "sha256-hr/DLyL6IzQs67eA46RdmuVlfCiAbq+eZCRLfjLxUpc=";
       }; # Github login
       extensions.ConfirmEdit = null; # Combat SPAM with a simple Captcha
-      extensions.StopForumSpam = pkgs.fetchzip {
-        url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/StopForumSpam-REL1_41-73c94fb/StopForumSpam-REL1_41-861c37b.tar.gz";
-        hash = "sha256-/7gfBiKA9CliEPjXjcHrYKp4JMayXwtixlZFvnA5D2E=";
-      };
+      #extensions.StopForumSpam = pkgs.fetchzip {
+      #  url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/StopForumSpam-REL1_41-73c94fb/StopForumSpam-REL1_41-861c37b.tar.gz";
+      #  hash = "sha256-/7gfBiKA9CliEPjXjcHrYKp4JMayXwtixlZFvnA5D2E=";
+      #};
+
 
       extraConfig = ''
         #$wgDebugLogFile = "/var/log/mediawiki/debug.log";
@@ -100,10 +102,10 @@ in
         ];
 
         # Combat SPAM with IP-Blocklists (StopForumSpam extension)
-        $wgEnableDnsBlacklist = true;
-        $wgDnsBlacklistUrls = array(
-          'dnsbl.dronebl.org'
-        );
+        #$wgEnableDnsBlacklist = true;
+        #$wgDnsBlacklistUrls = array(
+        #  'dnsbl.dronebl.org'
+        #);
 
         # required for fancy VisualEditor extension
         $wgGroupPermissions['user']['writeapi'] = true;
@@ -115,7 +117,8 @@ in
         $wgEditPageFrameOptions = "DENY";
 
         $wgEnableEmail = true;
-        $wgEmailConfirmToEdit = true;
+        # FIXME: we cannot enable this because of github login
+        $wgEmailConfirmToEdit = false;
         $wgAllowHTMLEmail = false;
 
         $wgEmergencyContact = "${cfg.emergencyContact}";
@@ -124,8 +127,12 @@ in
 
         # To purge all page cache increase this using: date +%Y%m%d%H%M%S
         $wgCacheEpoch = 20231115172319;
+
+        $wgPygmentizePath = "${pkgs.python3Packages.pygments}/bin/pygmentize";
       '';
     };
+
+    services.postgresql.package = pkgs.postgresql_16;
 
     networking.firewall.allowedTCPPorts = [ 443 80 ];
     security.acme.acceptTerms = true;

@@ -17,12 +17,12 @@ let
     {
       name = "wiki-backup";
       runtimeInputs = [
-        pkgs.postgresql
+        config.services.postgresql.package
         pkgs.util-linux
       ];
       text = ''
         mkdir -p /var/lib/mediawiki/backup/
-        runuser -u postgres -- pg_dump --format=custom mediawiki > /var/lib/mediawiki/backup/db.tmp
+        runuser -u postgres -- pg_dump --compress=zstd --format=custom mediawiki > /var/lib/mediawiki/backup/db.tmp
         mv /var/lib/mediawiki/backup/{db.tmp,db}
       '';
     };
@@ -42,53 +42,9 @@ let
         mv ${wikiDump}{.tmp,}
       '';
     };
-
-  old-wiki-restore = pkgs.writeShellApplication {
-    name = "old-wiki-restore";
-    runtimeInputs = [
-      pkgs.postgresql
-      pkgs.coreutils
-      pkgs.util-linux
-      mediawiki-maintenance
-    ];
-    text = ''
-      if $# != 1; then
-        echo "Usage: $0 <wikidump.xml.gz>" >&2
-        exit 1
-      fi
-      dump=$1
-
-      tmpdir=$(mktemp -d)
-      cleanup() { rm -rf "$tmpdir"; }
-      cd "$tmpdir"
-      chown mediawiki:nginx "$tmpdir"
-
-      rm -rf /var/lib/mediawiki-uploads
-      install -d -m 755 -o mediawiki -g nginx /var/lib/mediawiki-uploads
-      systemctl stop phpfpm-mediawiki.service
-      runuser -u postgres -- dropdb mediawiki
-      systemctl restart postgresql
-      runuser -u postgres -- psql -c "ALTER DATABASE mediawiki OWNER TO mediawiki"
-      systemctl restart mediawiki-init.service
-      cat <<EOF | runuser -u mediawiki -- mediawiki-maintenance deleteBatch.php
-      Main_Page
-      MediaWiki:About
-      EOF
-      trap cleanup EXIT
-      cp "$dump" "$tmpdir/wikidump.xml.gz"
-      chown mediawiki:nginx "$tmpdir/wikidump.xml.gz"
-      chmod 644 "$tmpdir/wikidump.xml.gz"
-      runuser -u mediawiki -- mediawiki-maintenance importDump.php --uploads "$tmpdir/wikidump.xml.gz"
-      runuser -u mediawiki -- mediawiki-maintenance rebuildrecentchanges.php
-      systemctl start phpfpm-mediawiki.service
-    '';
-  };
 in
 {
-  environment.systemPackages = [
-    mediawiki-maintenance
-    old-wiki-restore
-  ];
+  environment.systemPackages = [ mediawiki-maintenance ];
 
   systemd.services.wiki-backup = {
     path = [ pkgs.postgresql ];
