@@ -127,6 +127,8 @@ in
       '';
     };
 
+    services.postgresql.package = pkgs.postgresql_16;
+
     networking.firewall.allowedTCPPorts = [ 443 80 ];
     security.acme.acceptTerms = true;
     services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {

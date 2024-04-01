@@ -17,12 +17,12 @@ let
     {
       name = "wiki-backup";
       runtimeInputs = [
-        pkgs.postgresql
+        config.services.postgresql.package
         pkgs.util-linux
       ];
       text = ''
         mkdir -p /var/lib/mediawiki/backup/
-        runuser -u postgres -- pg_dump --format=custom mediawiki > /var/lib/mediawiki/backup/db.tmp
+        runuser -u postgres -- pg_dump --compress=zstd --format=custom mediawiki > /var/lib/mediawiki/backup/db.tmp
         mv /var/lib/mediawiki/backup/{db.tmp,db}
       '';
     };
@@ -46,7 +46,7 @@ let
   old-wiki-restore = pkgs.writeShellApplication {
     name = "old-wiki-restore";
     runtimeInputs = [
-      pkgs.postgresql
+      config.services.postgresql.package
       pkgs.coreutils
       pkgs.util-linux
       mediawiki-maintenance
