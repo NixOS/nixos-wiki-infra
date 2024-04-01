@@ -115,7 +115,8 @@ in
         $wgEditPageFrameOptions = "DENY";
 
         $wgEnableEmail = true;
-        $wgEmailConfirmToEdit = true;
+        # FIXME: we cannot enable this because of github login
+        $wgEmailConfirmToEdit = false;
         $wgAllowHTMLEmail = false;
 
         $wgEmergencyContact = "${cfg.emergencyContact}";
