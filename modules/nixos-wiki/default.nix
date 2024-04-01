@@ -60,6 +60,10 @@ in
         url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/MobileFrontend-REL1_41-6dbf6c2.tar.gz/MobileFrontend-REL1_41-6dbf6c2.tar.gz";
         hash = "sha256-LsKPlVId7DzbkS7xc+fSYBiasq4AofCjCfbBaN/eSE8=";
       }; # Responsive skin
+      extensions.DarkMode = pkgs.fetchzip {
+        url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/DarkMode-REL1_41-d647ab5.tar.gz/DarkMode-REL1_41-d647ab5.tar.gz";
+        hash = "sha256-ERvWGDKfT6nqFbz7q8iqZFe2uhwoSQ2ePUy4tlPDaOE=";
+      };
 
       #extensions.StopForumSpam = pkgs.fetchzip {
       #  url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/StopForumSpam-REL1_41-73c94fb/StopForumSpam-REL1_41-861c37b.tar.gz";
@@ -95,8 +99,8 @@ in
         # Pretty URLs
         $wgUsePathInfo = true;
 
-        # cache pages with APCu
-        $wgMainCacheType = CACHE_ACCEL;
+        # cache pages with db
+        $wgMainCacheType = CACHE_DB;
 
         # TODO: nixos favicon
         #$wgFavicon = "/favicon.ico";
@@ -148,5 +152,4 @@ in
       locations."=/nixos.png".alias = ./nixos.png;
     };
   };
-
 }
