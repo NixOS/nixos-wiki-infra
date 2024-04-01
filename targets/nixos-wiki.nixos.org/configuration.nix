@@ -26,8 +26,8 @@ in
     githubClientId = "Iv1.fcbe65bcecdda275";
     githubClientSecretFile = config.sops.secrets.nixos-wiki-github-client-secret.path;
     emergencyContact = "wiki@nixos.org";
-    passwordSender = "wiki@nixos.org";
-    noReplyAddress = "wiki-no-reply@nixos.org";
+    passwordSender = "wiki@wiki.nixos.org";
+    noReplyAddress = "wiki-no-reply@wiki.nixos.org";
   };
 
   services.cloud-init.enable = lib.mkForce false;
