@@ -55,6 +55,7 @@ in
         hash = "sha256-hr/DLyL6IzQs67eA46RdmuVlfCiAbq+eZCRLfjLxUpc=";
       }; # Github login
       extensions.ConfirmEdit = null; # Combat SPAM with a simple Captcha
+      extensions.MobileFrontend = null; # Responsive skin
       #extensions.StopForumSpam = pkgs.fetchzip {
       #  url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/StopForumSpam-REL1_41-73c94fb/StopForumSpam-REL1_41-861c37b.tar.gz";
       #  hash = "sha256-/7gfBiKA9CliEPjXjcHrYKp4JMayXwtixlZFvnA5D2E=";
