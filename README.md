@@ -28,3 +28,7 @@ $ systemctl start phpfpm-mediawiki.service
 $ ls -la /tmp/restore/var/lib/mediawiki-uploads/
 $ umount /tmp/restore/
 ```
+
+## Join our Matrix
+
+https://matrix.to/#/#wiki:nixos.org
