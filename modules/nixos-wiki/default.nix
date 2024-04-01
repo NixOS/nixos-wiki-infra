@@ -102,7 +102,6 @@ in
         # cache pages with db
         $wgMainCacheType = CACHE_DB;
 
-        # TODO: nixos favicon
         #$wgFavicon = "/favicon.ico";
         $wgDefaultSkin = 'vector-2022';
         # configure logos for vector-2022: https://www.mediawiki.org/wiki/Manual:$wgLogos
@@ -150,6 +149,7 @@ in
       enableACME = lib.mkDefault true;
       forceSSL = lib.mkDefault true;
       locations."=/nixos.png".alias = ./nixos.png;
+      locations."=/favicon.ico".alias = ./favicon.ico;
     };
   };
 }
