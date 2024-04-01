@@ -125,6 +125,8 @@ in
 
         # To purge all page cache increase this using: date +%Y%m%d%H%M%S
         $wgCacheEpoch = 20231115172319;
+
+        $wgPygmentizePath = "${pkgs.python3Packages.pygments}/bin/pygmentize";
       '';
     };
 
