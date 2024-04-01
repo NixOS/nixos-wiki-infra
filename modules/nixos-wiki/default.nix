@@ -38,6 +38,7 @@ in
 
   config = {
     services.mediawiki = {
+      name = "NixOS Wiki";
       enable = true;
       webserver = "nginx";
       database.type = "postgres";
