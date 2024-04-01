@@ -165,7 +165,7 @@ in
 
     preHook = ''
       set -x
-      ${config.systemd.package}/bin/systemctl start wiki-backup
+      ${config.systemd.package}/bin/systemctl start --wait wiki-backup
       set +x
     '';
     postHook = ''
