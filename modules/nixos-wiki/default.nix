@@ -54,10 +54,11 @@ in
         hash = "sha256-hr/DLyL6IzQs67eA46RdmuVlfCiAbq+eZCRLfjLxUpc=";
       }; # Github login
       extensions.ConfirmEdit = null; # Combat SPAM with a simple Captcha
-      extensions.StopForumSpam = pkgs.fetchzip {
-        url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/StopForumSpam-REL1_41-73c94fb/StopForumSpam-REL1_41-861c37b.tar.gz";
-        hash = "sha256-/7gfBiKA9CliEPjXjcHrYKp4JMayXwtixlZFvnA5D2E=";
-      };
+      #extensions.StopForumSpam = pkgs.fetchzip {
+      #  url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/StopForumSpam-REL1_41-73c94fb/StopForumSpam-REL1_41-861c37b.tar.gz";
+      #  hash = "sha256-/7gfBiKA9CliEPjXjcHrYKp4JMayXwtixlZFvnA5D2E=";
+      #};
+
 
       extraConfig = ''
         #$wgDebugLogFile = "/var/log/mediawiki/debug.log";
@@ -100,10 +101,10 @@ in
         ];
 
         # Combat SPAM with IP-Blocklists (StopForumSpam extension)
-        $wgEnableDnsBlacklist = true;
-        $wgDnsBlacklistUrls = array(
-          'dnsbl.dronebl.org'
-        );
+        #$wgEnableDnsBlacklist = true;
+        #$wgDnsBlacklistUrls = array(
+        #  'dnsbl.dronebl.org'
+        #);
 
         # required for fancy VisualEditor extension
         $wgGroupPermissions['user']['writeapi'] = true;
