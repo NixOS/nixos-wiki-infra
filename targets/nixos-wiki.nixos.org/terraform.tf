@@ -11,7 +11,7 @@ terraform {
 
 module "wiki" {
   source           = "../../terraform/nixos-wiki"
-  domain           = "nixos-wiki2.thalheim.io"
+  domain           = "wiki.nixos.org"
   nixos_flake_attr = "nixos-wiki-nixos-org"
   nixos_vars_file  = "${path.module}/nixos-vars.json"
   sops_file        = abspath("${path.module}/secrets/secrets.yaml")

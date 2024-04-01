@@ -21,13 +21,13 @@ in
   };
 
   services.nixos-wiki = {
-    hostname = "wiki.staging.julienmalka.me";
+    hostname = "wiki.nixos.org";
     adminPasswordFile = config.sops.secrets.nixos-wiki.path;
     githubClientId = "Iv1.fcbe65bcecdda275";
     githubClientSecretFile = config.sops.secrets.nixos-wiki-github-client-secret.path;
-    emergencyContact = "nixos-wiki@thalheim.io";
-    passwordSender = "nixos-wiki@thalheim.io";
-    noReplyAddress = "nixos-wiki-no-reply@thalheim.io";
+    emergencyContact = "wiki@nixos.org";
+    passwordSender = "wiki@nixos.org";
+    noReplyAddress = "wiki-no-reply@nixos.org";
   };
 
   services.cloud-init.enable = lib.mkForce false;
