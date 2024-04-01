@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 
 let
   domain = "wiki.nixos.org";
@@ -12,9 +12,15 @@ in
   sops.secrets.opendkim-private-key.owner = config.services.postfix.user;
 
   services.opendkim.keyPath = "/run/opendkim-keys";
-  systemd.tmpfiles.rules = [
-    "f /run/opendkim-keys/${config.services.opendkim.selector}.private 0600 ${config.services.postfix.user} ${config.services.postfix.group} - - - ${config.sops.secrets.opendkim-private-key.path}"
-  ];
+  systemd.services.opendkim.serviceConfig = {
+    ExecStartPre = [
+      (
+        "+${pkgs.writeShellScript "opendkim-keys" ''
+          install -o ${config.services.postfix.user} -g ${config.services.postfix.group} -D -m0700 ${config.sops.secrets.opendkim-private-key.path} /run/opendkim-keys/${config.services.opendkim.selector}.private
+        ''}"
+      )
+    ];
+  };
 
   # postfix configuration for sending emails only
   services.postfix = {
