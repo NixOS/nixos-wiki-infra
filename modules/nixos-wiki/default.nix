@@ -55,6 +55,12 @@ in
         hash = "sha256-hr/DLyL6IzQs67eA46RdmuVlfCiAbq+eZCRLfjLxUpc=";
       }; # Github login
       extensions.ConfirmEdit = null; # Combat SPAM with a simple Captcha
+      # https://www.mediawiki.org/wiki/Extension:MobileFrontend/
+      extensions.MobileFrontend = pkgs.fetchzip {
+        url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/MobileFrontend-REL1_41-6dbf6c2.tar.gz/MobileFrontend-REL1_41-6dbf6c2.tar.gz";
+        hash = "sha256-LsKPlVId7DzbkS7xc+fSYBiasq4AofCjCfbBaN/eSE8=";
+      }; # Responsive skin
+
       #extensions.StopForumSpam = pkgs.fetchzip {
       #  url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/StopForumSpam-REL1_41-73c94fb/StopForumSpam-REL1_41-861c37b.tar.gz";
       #  hash = "sha256-/7gfBiKA9CliEPjXjcHrYKp4JMayXwtixlZFvnA5D2E=";
