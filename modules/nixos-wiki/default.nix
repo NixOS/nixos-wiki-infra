@@ -95,8 +95,8 @@ in
         # Pretty URLs
         $wgUsePathInfo = true;
 
-        # cache pages with APCu
-        $wgMainCacheType = CACHE_ACCEL;
+        # cache pages with db
+        $wgMainCacheType = CACHE_DB;
 
         # TODO: nixos favicon
         #$wgFavicon = "/favicon.ico";
@@ -148,5 +148,4 @@ in
       locations."=/nixos.png".alias = ./nixos.png;
     };
   };
-
 }
