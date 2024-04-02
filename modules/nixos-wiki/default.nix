@@ -139,10 +139,19 @@ in
 
         $wgPygmentizePath = "${pkgs.python3Packages.pygments}/bin/pygmentize";
 
-        # Enable extra groups
-        ## enable trusted group
+        # add extra groups
+        ## add trusted group
         $wgGroupPermissions['trusted'] = $wgGroupPermissions['user'];
         $wgGroupPermissions['trusted']['delete'] = true;
+
+        ## add moderator group
+        $wgGroupPermissions['moderator'] = $wgGroupPermissions['user'];
+        $wgGroupPermissions['moderator']['delete'] = true;
+        $wgGroupPermissions['moderator']['blockusers'] = true;
+        $wgGroupPermissions['moderator']['rollback'] = true;
+        $wgGroupPermissions['moderator']['viewdeleted'] = true;
+        $wgGroupPermissions['moderator']['oversight'] = true;
+        $wgGroupPermissions['moderator']['protect'] = true;
       '';
     };
 
