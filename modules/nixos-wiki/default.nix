@@ -138,6 +138,11 @@ in
         $wgCacheEpoch = 20231115172319;
 
         $wgPygmentizePath = "${pkgs.python3Packages.pygments}/bin/pygmentize";
+
+        # Enable extra groups
+        ## enable trusted group
+        $wgGroupPermissions['trusted'] = $wgGroupPermissions['user'];
+        $wgGroupPermissions['trusted']['delete'] = true;
       '';
     };
 
