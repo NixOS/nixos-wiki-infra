@@ -4,5 +4,8 @@
     "config:recommended",
     ":dependencyDashboard"
   ],
+  "nix": {
+    "enabled": true
+  },
   "lockFileMaintenance": { "enabled": true }
 }
