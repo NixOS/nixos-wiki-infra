@@ -43,3 +43,23 @@ Read more about this issue here: https://github.com/orgs/community/discussions/3
 ## Join our Matrix
 
 https://matrix.to/#/#wiki:nixos.org
+
+
+## Roles
+
+Currently, the users having priviledged roles on the wiki are:
+
+### Administrators
+- [Mic92](https://github.com/Mic92/)
+- [JulienMalka](https://github.com/JulienMalka)
+- [Lassulus](https://github.com/lassulus/)
+- [samueldr](https://github.com/samueldr/)
+
+### Moderators
+- [Hexa](https://github.com/mweinelt)
+- [Ryantm](https://github.com/ryantm/)
+
+### Trusted users (can delete pages)
+- [0x4A6F](https://github.com/0x4A6F)
+- [jopejoe1](https://github.com/jopejoe1)
+- [Artturin](https://github.com/Artturin)
