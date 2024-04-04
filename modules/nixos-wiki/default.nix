@@ -152,6 +152,9 @@ in
         $wgGroupPermissions['moderator']['viewdeleted'] = true;
         $wgGroupPermissions['moderator']['oversight'] = true;
         $wgGroupPermissions['moderator']['protect'] = true;
+
+        ## remove restrictions on display titles
+        $wgRestrictDisplayTitle = false;
       '';
     };
 
