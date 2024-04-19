@@ -56,7 +56,10 @@ in
           hash = "sha256-hr/DLyL6IzQs67eA46RdmuVlfCiAbq+eZCRLfjLxUpc=";
         }; # Github login
         ConfirmEdit = null; # Combat SPAM with a simple Captcha
-        # https://www.mediawiki.org/wiki/Extension:MobileFrontend/
+        DiscussionTools = null; # Adds a new discussion tool to the talk pages
+        Thanks = null; # Adds a "thank" button
+        Linter = null; # Dependency of DiscussionTools
+        Echo = null; # Dependency of DiscussionTools
       } // pkgs.callPackages ./extensions.nix { };
       extraConfig = ''
         #$wgDebugLogFile = "/var/log/mediawiki/debug.log";
@@ -142,6 +145,10 @@ in
 
         ## remove restrictions on display titles
         $wgRestrictDisplayTitle = false;
+
+        # Notify users via email on changes
+        $wgEnotifWatchlist = true;
+        $wgEnotifUserTalk = true;
       '';
     };
 
