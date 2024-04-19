@@ -46,31 +46,18 @@ in
       uploadsDir = "/var/lib/mediawiki-uploads/";
       passwordFile = cfg.adminPasswordFile;
 
-      extensions.SyntaxHighlight_GeSHi = null; # provides <SyntaxHighlight> tags
-      extensions.ParserFunctions = null;
-      extensions.Cite = null;
-      extensions.VisualEditor = null;
-      extensions.AuthManagerOAuth = pkgs.fetchzip {
-        url = "https://github.com/mohe2015/AuthManagerOAuth/releases/download/v0.3.2/AuthManagerOAuth.zip";
-        hash = "sha256-hr/DLyL6IzQs67eA46RdmuVlfCiAbq+eZCRLfjLxUpc=";
-      }; # Github login
-      extensions.ConfirmEdit = null; # Combat SPAM with a simple Captcha
-      # https://www.mediawiki.org/wiki/Extension:MobileFrontend/
-      extensions.MobileFrontend = pkgs.fetchzip {
-        url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/MobileFrontend-REL1_41-6dbf6c2.tar.gz/MobileFrontend-REL1_41-6dbf6c2.tar.gz";
-        hash = "sha256-LsKPlVId7DzbkS7xc+fSYBiasq4AofCjCfbBaN/eSE8=";
-      }; # Responsive skin
-      extensions.DarkMode = pkgs.fetchzip {
-        url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/DarkMode-REL1_41-d647ab5.tar.gz/DarkMode-REL1_41-d647ab5.tar.gz";
-        hash = "sha256-ERvWGDKfT6nqFbz7q8iqZFe2uhwoSQ2ePUy4tlPDaOE=";
-      };
-
-      #extensions.StopForumSpam = pkgs.fetchzip {
-      #  url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/StopForumSpam-REL1_41-73c94fb/StopForumSpam-REL1_41-861c37b.tar.gz";
-      #  hash = "sha256-/7gfBiKA9CliEPjXjcHrYKp4JMayXwtixlZFvnA5D2E=";
-      #};
-
-
+      extensions = {
+        SyntaxHighlight_GeSHi = null; # provides <SyntaxHighlight> tags
+        ParserFunctions = null;
+        Cite = null;
+        VisualEditor = null;
+        AuthManagerOAuth = pkgs.fetchzip {
+          url = "https://github.com/mohe2015/AuthManagerOAuth/releases/download/v0.3.2/AuthManagerOAuth.zip";
+          hash = "sha256-hr/DLyL6IzQs67eA46RdmuVlfCiAbq+eZCRLfjLxUpc=";
+        }; # Github login
+        ConfirmEdit = null; # Combat SPAM with a simple Captcha
+        # https://www.mediawiki.org/wiki/Extension:MobileFrontend/
+      } // pkgs.callPackages ./extensions.nix {};
       extraConfig = ''
         #$wgDebugLogFile = "/var/log/mediawiki/debug.log";
 
