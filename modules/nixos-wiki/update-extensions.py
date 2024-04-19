@@ -67,15 +67,15 @@ def mirror_extension(extension_name: str, mediawiki_version: str) -> Extension:
         with TemporaryDirectory() as tmpdir:
             download_file(download_url.geturl(), f"{tmpdir}/{base_name}")
             run(["gh", "release", "upload", base_name, f"{tmpdir}/{base_name}"])
-    hash = run(["nix-prefetch-url", mirror_url], stdout=subprocess.PIPE).stdout.strip()
+    hash = run(["nix-prefetch-url", "--unpack", mirror_url], stdout=subprocess.PIPE).stdout.strip()
     return Extension(name=extension_name, hash=hash, url=mirror_url)
 
 
 def write_nix_file(file: IO[str], mirrored_extensions: list[Extension]) -> None:
-    file.write("{ fetchurl }: {\n")
+    file.write("{ fetchzip }: {\n")
     for extension in mirrored_extensions:
         file.write(
-            f'  "{extension.name}" = fetchurl {{ url = "{extension.url}"; sha256 = "{extension.hash}"; }};\n'
+            f'  "{extension.name}" = fetchzip {{ url = "{extension.url}"; sha256 = "{extension.hash}"; }};\n'
         )
     file.write("}\n")
 
