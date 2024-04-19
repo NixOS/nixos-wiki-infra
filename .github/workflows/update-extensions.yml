@@ -5,7 +5,7 @@ on:
   schedule:
     - cron:  '51 2 * * *'
 jobs:
-  update-submodules:
+  update-extensions:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,5 +18,5 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          title: Update zsh modules
+          title: Update mediawiki extensions
           labels: merge-queue
