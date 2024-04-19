@@ -77,7 +77,7 @@ def write_nix_file(file: IO[str], mirrored_extensions: list[Extension]) -> None:
         file.write(
             f'  "{extension.name}" = fetchurl {{ url = "{extension.url}"; sha256 = "{extension.hash}"; }};\n'
         )
-    file.write("}")
+    file.write("}\n")
 
 
 def get_mediawiki_version(mediawiki_version: str | None = None) -> str:
