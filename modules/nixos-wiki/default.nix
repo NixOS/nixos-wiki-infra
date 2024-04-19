@@ -57,7 +57,7 @@ in
         }; # Github login
         ConfirmEdit = null; # Combat SPAM with a simple Captcha
         # https://www.mediawiki.org/wiki/Extension:MobileFrontend/
-      } // pkgs.callPackages ./extensions.nix {};
+      } // pkgs.callPackages ./extensions.nix { };
       extraConfig = ''
         #$wgDebugLogFile = "/var/log/mediawiki/debug.log";
 

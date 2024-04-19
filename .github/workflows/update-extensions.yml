@@ -3,9 +3,12 @@ on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
-    - cron:  '51 2 * * *'
+    - cron: "51 2 * * *"
+permissions:
+  pull-requests: write
+  contents: write
 jobs:
-  update-submodules:
+  update-extensions:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,8 +18,10 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
       - run: ./modules/nixos-wiki/update-extensions.py ./modules/nixos-wiki/extensions.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          title: Update zsh modules
+          title: Update mediawiki extensions
           labels: merge-queue
