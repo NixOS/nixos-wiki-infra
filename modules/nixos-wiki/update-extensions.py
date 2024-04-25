@@ -5,6 +5,7 @@ import os
 import shlex
 import subprocess
 import sys
+import time
 import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
@@ -67,8 +68,17 @@ def mirror_extension(extension_name: str, mediawiki_version: str) -> Extension:
         with TemporaryDirectory() as tmpdir:
             download_file(download_url.geturl(), f"{tmpdir}/{base_name}")
             run(["gh", "release", "upload", base_name, f"{tmpdir}/{base_name}"])
-    hash = run(["nix-prefetch-url", "--unpack", mirror_url], stdout=subprocess.PIPE).stdout.strip()
-    return Extension(name=extension_name, hash=hash, url=mirror_url)
+    for i in range(3):
+        try:
+           hash = run(["nix-prefetch-url", "--unpack", mirror_url], stdout=subprocess.PIPE).stdout.strip()
+        except subprocess.CalledProcessError:
+            # sometimes github takes a while to make releases available
+            print("nix-prefetch-url failed, retrying")
+            time.sleep(i * 5)
+            continue
+        else:
+            return Extension(name=extension_name, hash=hash, url=mirror_url)
+    raise Exception("Failed to fetch extension, see above")
 
 
 def write_nix_file(file: IO[str], mirrored_extensions: list[Extension]) -> None:
