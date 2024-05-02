@@ -63,3 +63,4 @@ Currently, the users having priviledged roles on the wiki are:
 - [0x4A6F](https://github.com/0x4A6F)
 - [jopejoe1](https://github.com/jopejoe1)
 - [Artturin](https://github.com/Artturin)
+- [Klinger](https://discourse.nixos.org/u/klinger)
