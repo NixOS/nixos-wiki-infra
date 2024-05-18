@@ -161,6 +161,7 @@ in
       forceSSL = lib.mkDefault true;
       locations."=/nixos.png".alias = ./nixos.png;
       locations."=/favicon.ico".alias = ./favicon.ico;
+      locations."=/robots.txt".alias = ./robots.txt;
     };
   };
 }
