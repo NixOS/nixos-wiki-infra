@@ -62,6 +62,13 @@ in
         Echo = null; # Dependency of DiscussionTools
       } // pkgs.callPackages ./extensions.nix { };
       extraConfig = ''
+        # docs https://www.mediawiki.org/wiki/Extension:QuestyCaptcha
+        $wgCaptchaQuestions = [
+          "What Linux distribution is this wiki about?" => [ 'nixos', 'NixOS', 'NIXOS', 'Nixos' ],
+          "What is the package manager of NixOS called?" => [ 'Nix', 'nix', 'NIX' ],
+        ];
+        wfLoadExtensions([ 'ConfirmEdit/QuestyCaptcha' ]);
+
         #$wgDebugLogFile = "/var/log/mediawiki/debug.log";
 
         # allow local login
