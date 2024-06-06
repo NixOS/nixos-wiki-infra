@@ -68,7 +68,7 @@ def mirror_extension(extension_name: str, mediawiki_version: str) -> Extension:
         with TemporaryDirectory() as tmpdir:
             download_file(download_url.geturl(), f"{tmpdir}/{base_name}")
             run(["gh", "release", "upload", base_name, f"{tmpdir}/{base_name}"])
-    for i in range(3):
+    for i in range(30):
         try:
            hash = run(["nix-prefetch-url", "--unpack", mirror_url], stdout=subprocess.PIPE).stdout.strip()
         except subprocess.CalledProcessError:
