@@ -156,6 +156,9 @@ in
         # Notify users via email on changes
         $wgEnotifWatchlist = true;
         $wgEnotifUserTalk = true;
+
+        # Block spam by regex
+        $wgSpamRegex = "seo (software|tools)|pornstars";
       '';
     };
 
