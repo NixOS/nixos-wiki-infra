@@ -1,10 +1,7 @@
 queue_rules:
   - name: default
     merge_conditions:
-      - check-success=Evaluate flake.nix
-      - check-success=check treefmt [x86_64-linux]
-      - check-success=nixosConfig nixos-wiki2-thalheim-io
-      - check-success=package default [x86_64-linux]
+      - check-success=buildbot/nix-eval
 defaults:
   actions:
     queue:
