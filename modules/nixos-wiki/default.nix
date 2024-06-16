@@ -107,11 +107,13 @@ in
           'icon' => '/nixos.png',
         ];
 
-        # Combat SPAM with IP-Blocklists (StopForumSpam extension)
-        #$wgEnableDnsBlacklist = true;
-        #$wgDnsBlacklistUrls = array(
-        #  'dnsbl.dronebl.org'
-        #);
+        # Combat SPAM with IP-Blocklists
+        # https://www.mediawiki.org/wiki/Manual:Combating_spam#Honeypots,_DNS_BLs_and_HTTP_BLs
+        $wgEnableDnsBlacklist = true;
+        $wgDnsBlacklistUrls = array(
+          'xbl.spamhaus.org',
+          'opm.tornevall.org'
+        );
 
         # required for fancy VisualEditor extension
         $wgGroupPermissions['user']['writeapi'] = true;
