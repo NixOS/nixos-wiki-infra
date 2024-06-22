@@ -9,7 +9,7 @@ Checkout [./targets/nixos-wiki.nixos.org]() for an example terraform deployment 
 ## Downloading a dump of the wiki
 
 This is useful if you want to run your own instance.
-Every day an xml dump is updated here:
+Every day an XML dump is updated here:
 
 https://wiki.nixos.org/wikidump.xml.zst
 
@@ -31,13 +31,13 @@ $ umount /tmp/restore/
 
 ## FAQ:
 
-### When logging in with "Github auth", the app shows "Act on your behalf" as a permission.
+### When logging in with "GitHub auth", the app shows "Act on your behalf" as a permission.
 
 We created the Oauth app with read-only access and minimal permissions:
 
 ![](./oauth-permissions.png)
 
-Unfortunally GitHub mis-represents this information.
+Unfortunately, GitHub misrepresents this information.
 Read more about this issue here: https://github.com/orgs/community/discussions/37117
 
 ## Join our Matrix
