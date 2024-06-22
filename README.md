@@ -47,20 +47,8 @@ https://matrix.to/#/#wiki:nixos.org
 
 ## Roles
 
-Currently, the users having priviledged roles on the wiki are:
-
-### Administrators
-- [Mic92](https://github.com/Mic92/)
-- [JulienMalka](https://github.com/JulienMalka)
-- [Lassulus](https://github.com/lassulus/)
-- [samueldr](https://github.com/samueldr/)
-
-### Moderators
-- [Hexa](https://github.com/mweinelt)
-- [Ryantm](https://github.com/ryantm/)
-
-### Trusted users (can delete pages)
-- [0x4A6F](https://github.com/0x4A6F)
-- [jopejoe1](https://github.com/jopejoe1)
-- [Artturin](https://github.com/Artturin)
-- [Klinger](https://discourse.nixos.org/u/klinger)
+Various roles are present on the wiki:
+* Bureaucrats can assign roles to others. ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=bureaucrat), [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#bureaucrat))
+* Administrators can perform almost all restricted actions. ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=sysop), [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#sysop))
+* Moderators can perform a limited subset of restricted actions. ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=moderator), [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#moderator))
+* Trusted users can perform page deletions. ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=trusted), [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#trusted))
