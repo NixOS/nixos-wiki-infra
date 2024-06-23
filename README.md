@@ -1,6 +1,8 @@
 # nixos-wiki-infra
 
-This project contains the setup of https://wiki.nixos.org
+This project contains the setup of [the official NixOS Wiki (wiki.nixos.org)](https://wiki.nixos.org).
+
+Additionally, [this project's GitHub Issues](https://github.com/NixOS/nixos-wiki-infra/issues) host a space for coordination and discussion of wiki activities, in tandem with [the Matrix channel `#wiki:nixos.org`](https://matrix.to/#/#wiki:nixos.org).
 
 ## Examples
 
@@ -39,11 +41,6 @@ We created the Oauth app with read-only access and minimal permissions:
 
 Unfortunately, GitHub misrepresents this information.
 Read more about this issue here: https://github.com/orgs/community/discussions/37117
-
-## Join our Matrix
-
-https://matrix.to/#/#wiki:nixos.org
-
 
 ## Roles
 
