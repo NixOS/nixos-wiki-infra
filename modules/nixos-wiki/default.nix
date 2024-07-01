@@ -111,7 +111,8 @@ in
         # https://www.mediawiki.org/wiki/Manual:Combating_spam#Honeypots,_DNS_BLs_and_HTTP_BLs
         $wgEnableDnsBlacklist = true;
         $wgDnsBlacklistUrls = array(
-          'xbl.spamhaus.org',
+          # Spamhouse blocks users from Austrialian ISPs, maybe because of residential IPs?
+          # 'xbl.spamhaus.org',
           'opm.tornevall.org'
         );
 
