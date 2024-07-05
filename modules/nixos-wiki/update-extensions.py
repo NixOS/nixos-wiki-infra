@@ -70,7 +70,8 @@ def mirror_extension(extension_name: str, mediawiki_version: str) -> Extension:
             run(["gh", "release", "upload", base_name, f"{tmpdir}/{base_name}"])
     for i in range(30):
         try:
-           hash = run(["nix-prefetch-url", "--unpack", mirror_url], stdout=subprocess.PIPE).stdout.strip()
+           data = run(["nix", "store", "prefetch-file", "--unpack", mirror_url, "--json"], stdout=subprocess.PIPE).stdout.strip()
+           hash = json.loads(data)["hash"]
         except subprocess.CalledProcessError:
             # sometimes github takes a while to make releases available
             print("nix-prefetch-url failed, retrying")
@@ -85,7 +86,7 @@ def write_nix_file(file: IO[str], mirrored_extensions: list[Extension]) -> None:
     file.write("{ fetchzip }: {\n")
     for extension in mirrored_extensions:
         file.write(
-            f'  "{extension.name}" = fetchzip {{ url = "{extension.url}"; sha256 = "{extension.hash}"; }};\n'
+            f'  "{extension.name}" = fetchzip {{ url = "{extension.url}"; hash = "{extension.hash}"; }};\n'
         )
     file.write("}\n")
 

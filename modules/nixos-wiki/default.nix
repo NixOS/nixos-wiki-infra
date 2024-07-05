@@ -165,6 +165,11 @@ in
       '';
     };
 
+    # https://www.mediawiki.org/wiki/Help:Extension:Translate/Installation
+    services.phpfpm.pools.mediawiki.phpOptions = ''
+      extension=${pkgs.phpExtensions.yaml}/lib/php/extensions/yaml.so
+    '';
+
     services.postgresql.package = pkgs.postgresql_16;
 
     networking.firewall.allowedTCPPorts = [ 443 80 ];
