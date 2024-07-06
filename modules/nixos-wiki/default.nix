@@ -141,6 +141,7 @@ in
 
         # Enable Translate extension for all users
         $wgGroupPermissions['user']["translate"] = true;
+        $wgGroupPermissions['user']["pagetranslation"] = true;
 
         # add extra groups
         ## add trusted group
