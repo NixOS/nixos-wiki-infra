@@ -70,8 +70,11 @@ def mirror_extension(extension_name: str, mediawiki_version: str) -> Extension:
             run(["gh", "release", "upload", base_name, f"{tmpdir}/{base_name}"])
     for i in range(30):
         try:
-           data = run(["nix", "store", "prefetch-file", "--unpack", mirror_url, "--json"], stdout=subprocess.PIPE).stdout.strip()
-           hash = json.loads(data)["hash"]
+            data = run(
+                ["nix", "store", "prefetch-file", "--unpack", mirror_url, "--json"],
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
+            hash = json.loads(data)["hash"]
         except subprocess.CalledProcessError:
             # sometimes github takes a while to make releases available
             print("nix-prefetch-url failed, retrying")

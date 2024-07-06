@@ -1,6 +1,6 @@
-# Go to https://gitlab.com/-/profile/personal_access_tokens      
-export GITLAB_USER=<your-gitlab-username>
-export GITLAB_TOKEN=<your-gitlab-token>
+# Go to https://gitlab.com/-/profile/personal_access_tokens
+export GITLAB_USER='<your-gitlab-username>'
+export GITLAB_TOKEN='<your-gitlab-token>'
 
 # https://console.hetzner.cloud/projects/2643361/security/tokens
-export HCLOUD_TOKEN=<your-hetzner-token>
+export HCLOUD_TOKEN='<your-hetzner-token>'

@@ -1,17 +1,22 @@
 # nixos-wiki-infra
 
-This project contains the setup of [the official NixOS Wiki (wiki.nixos.org)](https://wiki.nixos.org).
+This project contains the setup of
+[the official NixOS Wiki (wiki.nixos.org)](https://wiki.nixos.org).
 
-Additionally, [this project's GitHub Issues](https://github.com/NixOS/nixos-wiki-infra/issues) host a space for coordination and discussion of wiki activities, in tandem with [the Matrix channel `#wiki:nixos.org`](https://matrix.to/#/#wiki:nixos.org).
+Additionally,
+[this project's GitHub Issues](https://github.com/NixOS/nixos-wiki-infra/issues)
+host a space for coordination and discussion of wiki activities, in tandem with
+[the Matrix channel `#wiki:nixos.org`](https://matrix.to/#/#wiki:nixos.org).
 
 ## Examples
 
-Checkout [./targets/nixos-wiki.nixos.org]() for an example terraform deployment on hetzner cloud.
+Checkout [./targets/nixos-wiki.nixos.org]() for an example terraform deployment
+on hetzner cloud.
 
 ## Downloading a dump of the wiki
 
-This is useful if you want to run your own instance.
-Every day an XML dump is updated here:
+This is useful if you want to run your own instance. Every day an XML dump is
+updated here:
 
 https://wiki.nixos.org/wikidump.xml.zst
 
@@ -39,13 +44,22 @@ We created the Oauth app with read-only access and minimal permissions:
 
 ![](./oauth-permissions.png)
 
-Unfortunately, GitHub misrepresents this information.
-Read more about this issue here: https://github.com/orgs/community/discussions/37117
+Unfortunately, GitHub misrepresents this information. Read more about this issue
+here: https://github.com/orgs/community/discussions/37117
 
 ## Roles
 
 Various roles are present on the wiki:
-* Bureaucrats can assign roles to others. ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=bureaucrat), [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#bureaucrat))
-* Administrators can perform almost all restricted actions. ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=sysop), [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#sysop))
-* Moderators can perform a limited subset of restricted actions. ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=moderator), [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#moderator))
-* Trusted users can perform page deletions. ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=trusted), [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#trusted))
+
+- Bureaucrats can assign roles to others.
+  ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=bureaucrat),
+  [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#bureaucrat))
+- Administrators can perform almost all restricted actions.
+  ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=sysop),
+  [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#sysop))
+- Moderators can perform a limited subset of restricted actions.
+  ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=moderator),
+  [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#moderator))
+- Trusted users can perform page deletions.
+  ([members](https://wiki.nixos.org/w/index.php?title=Special:ListUsers&group=trusted),
+  [permissions](https://wiki.nixos.org/wiki/Special:ListGroupRights#trusted))
