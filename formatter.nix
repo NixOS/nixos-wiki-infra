@@ -1,12 +1,7 @@
 {
 
   perSystem =
-    { config
-    , self'
-    , system
-    , pkgs
-    , ...
-    }:
+    { pkgs, ... }:
     {
       treefmt = {
         projectRootFile = "flake.nix";
@@ -23,6 +18,7 @@
         ];
         programs.hclfmt.enable = true;
         programs.nixpkgs-fmt.enable = true;
+        programs.deadnix.enable = true;
         programs.ruff.format = true;
         programs.ruff.check = true;
         programs.shfmt.enable = true;
