@@ -139,10 +139,15 @@ in
 
         $wgPygmentizePath = "${pkgs.python3Packages.pygments}/bin/pygmentize";
 
+        # Enable Translate extension for all users
+        $wgGroupPermissions['user']["translate"] = true;
+
         # add extra groups
         ## add trusted group
         $wgGroupPermissions['trusted'] = $wgGroupPermissions['user'];
         $wgGroupPermissions['trusted']['delete'] = true;
+        # allow trusted users to manage translations
+        $wgGroupPermissions['trusted']['translate-manage'] = true;
 
         ## add moderator group
         $wgGroupPermissions['moderator'] = $wgGroupPermissions['user'];
