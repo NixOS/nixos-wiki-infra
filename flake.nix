@@ -24,7 +24,6 @@
       systems = [
         "aarch64-linux"
         "x86_64-linux"
-        "riscv64-linux"
 
         "x86_64-darwin"
         "aarch64-darwin"
@@ -34,32 +33,9 @@
         ./targets/flake-module.nix
         ./modules/flake-module.nix
         ./checks/flake-module.nix
+        ./formatter.nix
       ];
       perSystem = { config, self', system, pkgs, ... }: {
-        treefmt = {
-          projectRootFile = "flake.nix";
-          programs.hclfmt.enable = true;
-          programs.nixpkgs-fmt.enable = true;
-        };
-        packages.default =
-          pkgs.mkShell {
-            packages =
-              let
-                convert2Tofu = provider: provider.override (prev: {
-                  homepage = builtins.replaceStrings [ "registry.terraform.io/providers" ] [ "registry.opentofu.org" ] prev.homepage;
-                });
-              in
-              [
-                pkgs.bashInteractive
-                pkgs.sops
-                (pkgs.opentofu.withPlugins (p: builtins.map convert2Tofu [
-                  p.hcloud
-                  p.null
-                  p.external
-                  p.local
-                ]))
-              ];
-          };
 
         checks =
           let
