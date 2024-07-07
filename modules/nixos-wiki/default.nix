@@ -70,6 +70,7 @@ in
         wfLoadExtensions([ 'ConfirmEdit/QuestyCaptcha' ]);
 
         #$wgDebugLogFile = "/var/log/mediawiki/debug.log";
+        #$wgShowExceptionDetails = true;
 
         # allow local login
         $wgAuthManagerOAuthConfig = [
