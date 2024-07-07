@@ -179,6 +179,23 @@ in
 
     services.postgresql.package = pkgs.postgresql_16;
 
+    # Postgresql doesn't have column size index limits unlike MySQL,
+    # which breaks inserting translation tasks into the database jobqueue.
+    # As far as I can see nothing tries to query the job_cmd column with a LIKE query,
+    # so we don't actually need the index on that column.
+    systemd.services.mediawiki-init.script = lib.mkAfter ''
+      if [ ! -f /var/lib/mediwiki/.mediawiki-job-index-fix ]; then
+        psql -U postgres -d mediawiki -c <<SQL
+        DROP INDEX IF EXISTS job_cmd;
+        -- the original index looks like this, we leave job_params out because it gets too long
+        -- CREATE INDEX job_cmd ON job (job_cmd, job_namespace, job_title, job_params);
+        -- source: https://github.com/wikimedia/mediawiki/blob/17079782a776849ec51d5c3d3712edc217cce65b/maintenance/postgres/tables-generated.sql#L480
+        CREATE INDEX job_cmd ON job (job_cmd, job_namespace, job_title);
+        SQL
+        touch /var/lib/mediwiki/.mediawiki-job-index-fix
+      fi
+    '';
+
     networking.firewall.allowedTCPPorts = [ 443 80 ];
     security.acme.acceptTerms = true;
     services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
