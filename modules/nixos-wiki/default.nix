@@ -185,13 +185,13 @@ in
     # so we don't actually need the index on that column.
     systemd.services.mediawiki-init.script = lib.mkAfter ''
       if [ ! -f /var/lib/mediwiki/.mediawiki-job-index-fix ]; then
-        psql -U postgres -d mediawiki -c <<SQL
-        DROP INDEX IF EXISTS job_cmd;
-        -- the original index looks like this, we leave job_params out because it gets too long
-        -- CREATE INDEX job_cmd ON job (job_cmd, job_namespace, job_title, job_params);
-        -- source: https://github.com/wikimedia/mediawiki/blob/17079782a776849ec51d5c3d3712edc217cce65b/maintenance/postgres/tables-generated.sql#L480
-        CREATE INDEX job_cmd ON job (job_cmd, job_namespace, job_title);
-        SQL
+        psql -U postgres -d mediawiki -c <<'EOF'
+      DROP INDEX IF EXISTS job_cmd;
+      -- the original index looks like this, we leave job_params out because it gets too long
+      -- CREATE INDEX job_cmd ON job (job_cmd, job_namespace, job_title, job_params);
+      -- source: https://github.com/wikimedia/mediawiki/blob/17079782a776849ec51d5c3d3712edc217cce65b/maintenance/postgres/tables-generated.sql#L480
+      CREATE INDEX job_cmd ON job (job_cmd, job_namespace, job_title);
+      EOF
         touch /var/lib/mediwiki/.mediawiki-job-index-fix
       fi
     '';
