@@ -31,6 +31,7 @@
 
     machine.wait_for_unit("phpfpm-mediawiki.service")
     machine.wait_for_unit("nginx.service")
+    machine.wait_for_unit("mediawiki-init.service")
 
     page = machine.succeed("curl -vL http://nixos-wiki.example.com/")
     assert "MediaWiki has been installed" in page
