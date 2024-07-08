@@ -173,9 +173,14 @@ in
     };
 
     # https://www.mediawiki.org/wiki/Help:Extension:Translate/Installation
-    services.phpfpm.pools.mediawiki.phpOptions = ''
-      extension=${pkgs.phpExtensions.yaml}/lib/php/extensions/yaml.so
-    '';
+    services.phpfpm.pools.mediawiki.phpOptions =
+      let
+        phpVersion = builtins.replaceStrings [ "." ] [ "" ] (lib.versions.majorMinor config.services.phpfpm.pools.mediawiki.phpPackage.version);
+        extensions = pkgs."php${phpVersion}Extensions";
+      in
+      ''
+        extension=${extensions.yaml}/lib/php/extensions/yaml.so
+      '';
 
     services.postgresql.package = pkgs.postgresql_16;
 
@@ -195,6 +200,9 @@ in
         touch /var/lib/mediawiki/.mediawiki-job-index-fix
       fi
     '';
+    systemd.services.mediawiki-init.serviceConfig.RemainAfterExit = true;
+
+
 
     networking.firewall.allowedTCPPorts = [ 443 80 ];
     security.acme.acceptTerms = true;
