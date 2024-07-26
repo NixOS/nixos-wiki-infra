@@ -169,6 +169,13 @@ in
 
         # Block spam by regex
         $wgSpamRegex = ["seo (software|tools)|pornstars"];
+
+        # Configure ExternalData for querying websites
+        # Querying outside of specified sources only enabled if legacy mode is enabled
+        $wgExternalDataSources["nixpkgs"] = [
+          'url' => 'https://raw.githubusercontent.com/NixOS/nixpkgs/$branch$/$filepath$',
+          'params' => [ 'branch' 'filepath' ]
+        ];
       '';
     };
 
