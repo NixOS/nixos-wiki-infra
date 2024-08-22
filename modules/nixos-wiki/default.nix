@@ -168,7 +168,7 @@ in
         $wgEnotifUserTalk = true;
 
         # Block spam by regex
-        $wgSpamRegex = ["seo (software|tools)|pornstars|casino|gambling|viagra"];
+        $wgSpamRegex = ["/seo (software|tools)|pornstars|casino|gambling|viagra/i"];
       '';
     };
 
