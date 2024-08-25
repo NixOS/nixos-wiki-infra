@@ -35,7 +35,7 @@
         ./checks/flake-module.nix
         ./formatter.nix
       ];
-      perSystem = { self', system, pkgs, ... }: {
+      perSystem = { self', system, ... }: {
 
         checks =
           let

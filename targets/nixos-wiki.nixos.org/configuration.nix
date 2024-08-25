@@ -56,5 +56,4 @@ in
   };
 
   sops.defaultSopsFile = ./secrets/secrets.yaml;
-  boot.loader.grub.devices = lib.mkForce [ "/dev/sda" ];
 }
