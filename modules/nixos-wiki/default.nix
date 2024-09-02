@@ -168,8 +168,8 @@ in
         $wgEnotifUserTalk = true;
 
         # Block spam by regex
-        $wgSpamRegex = ["seo (software|tools)|pornstars"];
-
+        $wgSpamRegex = ["/seo (software|tools)|pornstars|casino|gambling|viagra/i"];
+        
         # Configure ExternalData for querying websites
         # Querying outside of specified sources only enabled if legacy mode is enabled
         $wgExternalDataSources["nixpkgs"] = [
