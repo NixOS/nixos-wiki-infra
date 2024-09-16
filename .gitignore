@@ -1,3 +1,4 @@
 /.envrc.private
 .terraform.lock.hcl
 **/.terraform
+.direnv
