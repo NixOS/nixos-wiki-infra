@@ -29,32 +29,42 @@
         ];
         programs.shellcheck.enable = true;
         programs.deno.enable = true;
+        programs.black.enable = true;
       };
-      packages.default = pkgs.mkShell {
-        packages =
-          let
-            convert2Tofu =
-              provider:
-              provider.override (prev: {
-                homepage = builtins.replaceStrings [ "registry.terraform.io/providers" ] [
-                  "registry.opentofu.org"
+      packages = {
+        default = pkgs.mkShell {
+          packages =
+            let
+              convert2Tofu =
+                provider:
+                provider.override (prev: {
+                  homepage = builtins.replaceStrings [ "registry.terraform.io/providers" ] [
+                    "registry.opentofu.org"
+                  ]
+                    prev.homepage;
+                });
+            in
+            [
+              pkgs.bashInteractive
+              pkgs.sops
+              (pkgs.opentofu.withPlugins (
+                p:
+                builtins.map convert2Tofu [
+                  p.hcloud
+                  p.null
+                  p.external
+                  p.local
                 ]
-                  prev.homepage;
-              });
-          in
-          [
-            pkgs.bashInteractive
-            pkgs.sops
-            (pkgs.opentofu.withPlugins (
-              p:
-              builtins.map convert2Tofu [
-                p.hcloud
-                p.null
-                p.external
-                p.local
-              ]
-            ))
-          ];
+              ))
+            ];
+        };
+      }
+      // (import ./checks/linkcheck/pkgs { inherit pkgs; });
+      devShells.linkcheck = pkgs.mkShell {
+        packages = [
+          pkgs.lychee
+          (pkgs.python3.withPackages (pypkgs: [ pypkgs.lxml ]))
+        ];
       };
     };
 }

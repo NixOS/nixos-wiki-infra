@@ -1,0 +1,27 @@
+# an allowlist of known bad regexprs
+# each line can be a comment or a regex or a full/partial url
+# comments will be stripped out
+# urls must be urlencoded
+# stitched up into --exclude args per line and passed to lychee
+
+(http://(server|unix|hydra)|https://(cache|relay-server)/)
+
+# %7B is { matches urls inside nix expressions like ${version} etc.
+(.*\.(domain|tld|mydomain|local).*|my.app|%7B)
+
+(qemu/1.0|locating-rules/1.0)
+
+# no need to fetch cache extries
+(cache.nixos.org|fzakaria.cachix.org)
+
+# urls in example snippets
+(USERNAME/nixpkgs|your_username/nixpkgs|fooUser/barRepo|code.visualstudio.com/sha|path/to/patch)
+
+# works in browser
+https://www.phoronix.com/news/Mesa-Delete-Clover-Discussion
+
+# works with git clone
+https://review.coreboot.org/coreboot.git
+
+# works in browser
+https://pypi.org/project/stt/#files
