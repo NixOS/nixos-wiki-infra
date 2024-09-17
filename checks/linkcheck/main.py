@@ -6,6 +6,23 @@ import xml.etree.ElementTree as ET
 from typing import NoReturn
 
 
+def get_revision_timestamp(revision: ET.Element, ns: dict[str, str]) -> str:
+    timestamp = revision.find("mw:timestamp", ns)
+    if timestamp is None:
+        print(
+            f"Timestamp tag not found in revision: {ET.tostring(revision)}",
+            file=sys.stderr,
+        )
+        return ""
+    if timestamp.text is None:
+        print(
+            f"Timestamp text doesn't exist in revision: {ET.tostring(revision)}",
+            file=sys.stderr,
+        )
+        return ""
+    return timestamp.text
+
+
 # filter out unimportant pages like Talk:, User:, and old revisions of posts
 def process_dump(dump_file: str, out_file: str) -> None:
     tree = ET.parse(dump_file)
@@ -15,7 +32,17 @@ def process_dump(dump_file: str, out_file: str) -> None:
     ET.register_namespace("", ns["mw"])
 
     for page in root.findall("mw:page", ns):
-        title = page.find("mw:title", ns).text
+        title_tag = page.find("mw:title", ns)
+        if title_tag is None:
+            print(f"Title tag not found in page: {ET.tostring(page)}", file=sys.stderr)
+            continue
+        title = title_tag.text
+        if title is None:
+            print(
+                f"Title text doesn't exist in page: {ET.tostring(page)}",
+                file=sys.stderr,
+            )
+            continue
 
         if title.startswith("User:") or title.startswith("Talk:"):
             root.remove(page)
@@ -25,7 +52,7 @@ def process_dump(dump_file: str, out_file: str) -> None:
 
         if len(revisions) > 1:
             latest_revision = max(
-                revisions, key=lambda rev: rev.find("mw:timestamp", ns).text
+                revisions, key=lambda revison: get_revision_timestamp(revison, ns)
             )
 
             # Remove all revisions except the latest one
@@ -58,6 +85,11 @@ def dump_link_map(jsonfile: str, dumpfile: str) -> None:
 
             for doc in root.findall("doc"):
                 title = doc.attrib.get("title")
+                if title is None:
+                    print(
+                        f"Title not found in doc: {ET.tostring(doc)}", file=sys.stderr
+                    )
+                    continue
                 title = re.sub(r"\s+", "_", title)
                 content = doc.text
 
