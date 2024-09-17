@@ -16,19 +16,19 @@ python3 ../main.py filter wikidump.xml wikidump-filtered.xml
 # generate exclude args from allowlist
 python3 ../main.py badlinks ../allowed.links exclude-args
 
-# exlude sending requests to the wiki
-echo "--exclude wiki.nixos.org/wiki" >>exclude-args
-extrargs="$extrargs --exclude wiki.nixos.org/wiki"
-excludeargs=$(cat exclude-args)
+extrargs=(
+  # exlude sending requests to the wiki
+  "--exclude" "wiki.nixos.org/wiki"
+  # default is too high
+  "--max-concurrency" "16"
+)
+read -r -a excludeargs <<<"$(<exclude-args)"
 
 # extract only the text from the filtered xml dump
 nix --extra-experimental-features "nix-command flakes" run ..#wikiextractor wikidump-filtered.xml
 
 # lychee requires .md or .html format files to parse
-find text -type f | grep -v .html | xargs -I{} mv {} "{}.html"
-
-# default is too high
-extrargs="$extrargs --max-concurrency 16"
+find text -type f ! -name "*.html" -print0 | xargs -0 -I{} mv {} "{}.html"
 
 # github_token from env or fallback to gh (local dev)
 if [ -z "${GITHUB_TOKEN}" ]; then
@@ -40,40 +40,36 @@ fi
 
 if [ -n "${GITHUB_TOKEN}" ]; then
   echo using github token
-  extrargs="$extrargs --github-token $GITHUB_TOKEN"
+  extrargs+=("--github-token" "$GITHUB_TOKEN")
 fi
 
-# shellcheck disable=SC2086
 # fetch links
 lychee -E \
   --cache --scheme http --scheme https \
-  --include-verbatim $excludeargs $extrargs \
+  --include-verbatim "${excludeargs[@]}" "${extrargs[@]}" \
   text |
   tee lychee.log
 
-# shellcheck disable=SC2086
 # get all links ignoring the allowlist (allowed.links)
 lychee -E \
   --cache --scheme http --scheme https \
-  --include-verbatim $extrargs \
+  --include-verbatim "${extrargs[@]}" \
   text |
   tee lychee-full.log
 
-# shellcheck disable=SC2086
 # save fail_map so we can construct wiki link map to failed urls
 lychee -E \
   --cache --scheme http --scheme https \
-  --include-verbatim $excludeargs $extrargs \
+  --include-verbatim "${excludeargs[@]}" "${extrargs[@]}" \
   --format json \
   text >lychee.json
 
 # get archive suggestions
 # --timeout not working with --suggest see https://github.com/lycheeverse/lychee/issues/1501
 # TODO remove timeout command later after the issue is fixed
-# shellcheck disable=SC2086
 timeout 30 lychee -E \
   --cache --scheme http --scheme https \
-  --include-verbatim $excludeargs $extrargs \
+  --include-verbatim "${excludeargs[@]}" "${extrargs[@]}" \
   --suggest \
   text |
   tee lychee-wayback.log
