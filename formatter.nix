@@ -29,7 +29,6 @@
         ];
         programs.shellcheck.enable = true;
         programs.deno.enable = true;
-        programs.black.enable = true;
       };
       packages = {
         default = pkgs.mkShell {
