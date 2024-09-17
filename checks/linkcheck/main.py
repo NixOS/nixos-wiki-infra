@@ -3,6 +3,7 @@ import csv
 import re
 import sys
 import argparse
+import bisect
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -72,38 +73,43 @@ def badlinks_print(args: argparse.Namespace) -> None:
                 of.write(f"--exclude {stripped_line} ")
 
 
+def read_lychee_file(lychee_file: Path) -> list[list[str]]:
+    fail_data = json.loads(lychee_file.read_text())
+    failed_urls = []
+    for xml_file, failed_url_entries in fail_data["fail_map"].items():
+        with open(xml_file, "r", encoding="utf-8") as xmlf:
+            root = ET.fromstring(f"<root>{xmlf.read()}</root>")
+        for doc in root.findall("doc"):
+            title = doc.attrib.get("title")
+            if title is None:
+                print(f"Title not found in doc: {ET.tostring(doc)}", file=sys.stderr)
+                continue
+            title = re.sub(r"\s+", "_", title)
+            content = doc.text
+            for entry in failed_url_entries:
+                url = entry["url"]
+                status = entry.get("status", {}).get("code", 403)
+                if url in content:
+                    bisect.insort(
+                        failed_urls,
+                        [
+                            status,
+                            url,
+                            f"https://wiki.nixos.org/wiki/{title}",
+                        ],
+                    )
+    return failed_urls
+
+
 def dump_link_map(args: argparse.Namespace) -> None:
-    fail_data = json.loads(args.json_file.read_text())
+    failed_urls = read_lychee_file(args.json_file)
 
     with args.dump_file.open(mode="w", newline="", encoding="utf-8") as csv_file:
         csv_writer = csv.writer(csv_file, delimiter="\t", quotechar='"')
         csv_writer.writerow(["STATUS", "URL", "WIKIURL"])
 
-        for xml_file, failed_url_entries in fail_data["fail_map"].items():
-            with open(xml_file, "r", encoding="utf-8") as xmlf:
-                root = ET.fromstring(f"<root>{xmlf.read()}</root>")
-
-            for doc in root.findall("doc"):
-                title = doc.attrib.get("title")
-                if title is None:
-                    print(
-                        f"Title not found in doc: {ET.tostring(doc)}", file=sys.stderr
-                    )
-                    continue
-                title = re.sub(r"\s+", "_", title)
-                content = doc.text
-
-                for entry in failed_url_entries:
-                    url = entry["url"]
-                    status = entry.get("status", {}).get("code", 403)
-                    if url in content:
-                        csv_writer.writerow(
-                            [
-                                status,
-                                url,
-                                f"https://wiki.nixos.org/wiki/{title}",
-                            ]
-                        )
+        for item in failed_urls:
+            csv_writer.writerow(item)
 
 
 def main() -> None:

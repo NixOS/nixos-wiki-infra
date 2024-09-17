@@ -81,13 +81,6 @@ timeout 30 lychee -E \
 # csv of status, url, corresponding wiki page link
 python3 ../main.py dumplinkmap lychee.json failed-wiki-links.csv
 
-# sort for consistency
-{
-  head -n 1 failed-wiki-links.csv
-  tail -n +2 failed-wiki-links.csv | sort -t$'\t' -k2,2
-} >sorted_filename.tsv
-mv sorted_filename.tsv failed-wiki-links.csv
-
 cat failed-wiki-links.csv
 
 dest="../lychee-$(printf '%(%Y-%m-%d)T\n')-report"
