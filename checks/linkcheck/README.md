@@ -21,13 +21,10 @@ Dead links if detected early have a chance to prevent linkrot.
 ## Instructions
 
 ```shell
-cd ./checks/linkcheck
-direnv allow # or # nix develop ..#linkcheck
-./lychee.sh
+./checks/linkcheck/lychee.sh
 ```
 
-It can be run from anywhere so `/path/to/checks/linkcheck/lychee.sh` works but
-the report will be generated at `/path/to/checks/linkcheck`.
+The report will be generated at `/path/to/checks/linkcheck`.
 
 As usual, `nix fmt` works inside linkcheck dir.
 
