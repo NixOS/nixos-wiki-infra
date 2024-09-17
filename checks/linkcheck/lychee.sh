@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p curl zstd bash findutils gnused coreutils lychee
+#! nix-shell -i bash -p python3 curl zstd bash findutils gnused coreutils lychee
 # shellcheck shell=bash
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
@@ -11,10 +11,10 @@ pushd "$workdir" || exit
 curl "https://wiki.nixos.org/wikidump.xml.zst" | zstd -d >wikidump.xml
 
 # filter unimportant pages like User:* Talk:*
-python ../main.py filter wikidump.xml wikidump-filtered.xml
+python3 ../main.py filter wikidump.xml wikidump-filtered.xml
 
 # generate exclude args from allowlist
-python ../main.py badlinks ../allowed.links exclude-args
+python3 ../main.py badlinks ../allowed.links exclude-args
 
 # exlude sending requests to the wiki
 echo "--exclude wiki.nixos.org/wiki" >>exclude-args
@@ -79,7 +79,7 @@ timeout 30 lychee -E \
   tee lychee-wayback.log
 
 # csv of status, url, corresponding wiki page link
-python ../main.py dumplinkmap lychee.json failed-wiki-links.csv
+python3 ../main.py dumplinkmap lychee.json failed-wiki-links.csv
 
 # sort for consistency
 {
