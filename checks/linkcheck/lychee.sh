@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p 'python3.withPackages (ps: with ps; [ lxml ])' curl zstd bash findutils gnused coreutils lychee
+#! nix-shell -i bash -p "python3.withPackages (ps: with ps; [ lxml ])" curl zstd bash findutils gnused coreutils lychee
 # shellcheck shell=bash
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
