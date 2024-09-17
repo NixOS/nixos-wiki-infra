@@ -121,7 +121,7 @@ Usage: python main.py [action] <inputfile> <outfile>
     sys.exit(status)
 
 
-if __name__ == "__main__":
+def main() -> None:
     if len(sys.argv) < 2:
         print_usage(1)
     action = sys.argv[1]
@@ -144,3 +144,7 @@ if __name__ == "__main__":
         print_usage(0)
     else:
         print_usage(1)
+
+
+if __name__ == "__main__":
+    main()
