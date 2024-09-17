@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p wget p7zip bash findutils gnused coreutils lychee
+#! nix-shell -i bash -p curl zstd bash findutils gnused coreutils lychee
 # shellcheck shell=bash
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
@@ -8,8 +8,7 @@ workdir="$SCRIPT_DIR/workdir"
 mkdir -p "$workdir"
 pushd "$workdir" || exit
 
-wget -O wikidump.xml.zst "https://wiki.nixos.org/wikidump.xml.zst"
-7z x -aoa wikidump.xml.zst
+curl "https://wiki.nixos.org/wikidump.xml.zst" | zstd -d >wikidump.xml
 
 # filter unimportant pages like User:* Talk:*
 python ../main.py filter wikidump.xml wikidump-filtered.xml
