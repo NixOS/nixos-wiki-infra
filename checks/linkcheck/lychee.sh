@@ -91,7 +91,7 @@ mv sorted_filename.tsv failed-wiki-links.csv
 cat failed-wiki-links.csv
 
 dest="../lychee-$(printf '%(%Y-%m-%d)T\n')-report"
-mkdir "$dest"
+mkdir -p "$dest"
 cp ../allowed.links lychee*.log failed-wiki-links.csv "$dest"
 
 popd || exit
