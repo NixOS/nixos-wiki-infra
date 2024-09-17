@@ -3,10 +3,11 @@ import csv
 import re
 import sys
 import xml.etree.ElementTree as ET
+from typing import NoReturn
 
 
 # filter out unimportant pages like Talk:, User:, and old revisions of posts
-def process_dump(dump_file, out_file):
+def process_dump(dump_file: str, out_file: str) -> None:
     tree = ET.parse(dump_file)
     root = tree.getroot()
 
@@ -35,7 +36,7 @@ def process_dump(dump_file, out_file):
     tree.write(out_file, encoding="utf-8", xml_declaration=False)
 
 
-def badlinks_print(known_file, outfile):
+def badlinks_print(known_file: str, outfile: str) -> None:
     with open(known_file, "r") as infile, open(outfile, "w") as of:
         for line in infile:
             stripped_line = line.strip()
@@ -43,7 +44,7 @@ def badlinks_print(known_file, outfile):
                 of.write(f"--exclude {stripped_line} ")
 
 
-def dump_link_map(jsonfile, dumpfile):
+def dump_link_map(jsonfile: str, dumpfile: str) -> None:
     with open(jsonfile, "r") as json_file:
         fail_data = json.load(json_file)
 
@@ -73,7 +74,7 @@ def dump_link_map(jsonfile, dumpfile):
                         )
 
 
-def print_usage(status=0):
+def print_usage(status: int = 0) -> NoReturn:
     print(
         """
 Usage: python main.py [action] <inputfile> <outfile>
