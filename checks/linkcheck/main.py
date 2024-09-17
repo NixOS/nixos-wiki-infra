@@ -4,6 +4,7 @@ import re
 import sys
 import argparse
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 
 def get_revision_timestamp(revision: ET.Element, ns: dict[str, str]) -> str:
@@ -24,8 +25,8 @@ def get_revision_timestamp(revision: ET.Element, ns: dict[str, str]) -> str:
 
 
 # filter out unimportant pages like Talk:, User:, and old revisions of posts
-def process_dump( args: argparse.Namespace) -> None:
-    tree = ET.parse(args.dump_file)
+def process_dump(args: argparse.Namespace) -> None:
+    tree = ET.parse(str(args.dump_file))
     root = tree.getroot()
 
     ns = {"mw": "http://www.mediawiki.org/xml/export-0.11/"}
@@ -60,12 +61,11 @@ def process_dump( args: argparse.Namespace) -> None:
                 if revision != latest_revision:
                     page.remove(revision)
 
-    tree.write(args.out_file, encoding="utf-8", xml_declaration=False)
+    tree.write(str(args.out_file), encoding="utf-8", xml_declaration=False)
 
 
 def badlinks_print(args: argparse.Namespace) -> None:
-    # known_file: str, outfile: str) -> None:
-    with open(args.known_file, "r") as infile, open(args.outfile, "w") as of:
+    with args.known_file.open() as infile, args.out_file.open("w") as of:
         for line in infile:
             stripped_line = line.strip()
             if stripped_line and not stripped_line.startswith("#"):
@@ -73,10 +73,9 @@ def badlinks_print(args: argparse.Namespace) -> None:
 
 
 def dump_link_map(args: argparse.Namespace) -> None:
-    with open(args.jsonfile, "r") as json_file:
-        fail_data = json.load(json_file)
+    fail_data = json.loads(args.json_file.read_text())
 
-    with open(args.dumpfile, mode="w", newline="", encoding="utf-8") as csv_file:
+    with args.dump_file.open(mode="w", newline="", encoding="utf-8") as csv_file:
         csv_writer = csv.writer(csv_file, delimiter="\t", quotechar='"')
         csv_writer.writerow(["STATUS", "URL", "WIKIURL"])
 
@@ -112,22 +111,22 @@ def main() -> None:
     subparsers = parser.add_subparsers()
     parser_filter = subparsers.add_parser("filter", help="Filter out unimportant pages")
 
-    parser_filter.add_argument("dump_file", type=str)
-    parser_filter.add_argument("out_file", type=str)
+    parser_filter.add_argument("dump_file", type=Path)
+    parser_filter.add_argument("out_file", type=Path)
     parser_filter.set_defaults(func=process_dump)
 
     parser_badlinks = subparsers.add_parser(
         "badlinks", help="Parse and print known allowed links"
     )
-    parser_badlinks.add_argument("known_file", type=str)
-    parser_badlinks.add_argument("out_file", type=str)
+    parser_badlinks.add_argument("known_file", type=Path)
+    parser_badlinks.add_argument("out_file", type=Path)
     parser_badlinks.set_defaults(func=badlinks_print)
 
     parser_dumplinkmap = subparsers.add_parser(
         "dumplinkmap", help="Dump a map of url and nixos article where it is present"
     )
-    parser_dumplinkmap.add_argument("jsonfile", type=str)
-    parser_dumplinkmap.add_argument("dumpfile", type=str)
+    parser_dumplinkmap.add_argument("json_file", type=Path)
+    parser_dumplinkmap.add_argument("dump_file", type=Path)
     parser_dumplinkmap.set_defaults(func=dump_link_map)
 
     args = parser.parse_args()
