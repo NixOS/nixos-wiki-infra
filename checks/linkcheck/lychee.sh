@@ -8,7 +8,8 @@ workdir="$SCRIPT_DIR/workdir"
 mkdir -p "$workdir"
 pushd "$workdir" || exit
 
-curl "https://wiki.nixos.org/wikidump.xml.zst" | zstd -d >wikidump.xml
+curl -o wikidump.xml.zst "https://wiki.nixos.org/wikidump.xml.zst" -z wikidump.xml.zst
+<wikidump.xml.zst zstd -d >wikidump.xml
 
 # filter unimportant pages like User:* Talk:*
 python3 ../main.py filter wikidump.xml wikidump-filtered.xml
@@ -17,7 +18,7 @@ python3 ../main.py filter wikidump.xml wikidump-filtered.xml
 python3 ../main.py badlinks ../allowed.links exclude-args
 
 extrargs=(
-  # exlude sending requests to the wiki
+  # exclude sending requests to the wiki
   "--exclude" "wiki.nixos.org/wiki"
   # default is too high
   "--max-concurrency" "16"

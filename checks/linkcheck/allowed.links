@@ -9,19 +9,30 @@
 # %7B is { matches urls inside nix expressions like ${version} etc.
 (.*\.(domain|tld|mydomain|local).*|my.app|%7B)
 
+# xml namespaces need not be retrievable urls https://stackoverflow.com/a/27614076
 (qemu/1.0|locating-rules/1.0)
 
 # no need to fetch cache extries
 (cache.nixos.org|fzakaria.cachix.org)
 
-# urls in example snippets
+# urls in example snippets (url status can be 404)
 (USERNAME/nixpkgs|your_username/nixpkgs|fooUser/barRepo|code.visualstudio.com/sha|path/to/patch)
-
-# works in browser
-https://www.phoronix.com/news/Mesa-Delete-Clover-Discussion
+https://github.com/Artturin/nixpkgs/archive/add-swap-options.tar.gz
 
 # works with git clone
 https://review.coreboot.org/coreboot.git
 
+# works as intended
+https://one.one.one.one/dns-query
+
 # works in browser
+https://www.phoronix.com/news/Mesa-Delete-Clover-Discussion
 https://pypi.org/project/stt/#files
+https://static-web-server.net/$
+https://static-web-server.net/configuration/config-file/
+https://static-web-server.net/features/security-headers/
+
+# reddit working posts
+reddit.com/r/XMG_gg/comments/ic7vt7/fusion15_linux_how_to_fix_thunderbolttb3_dock_usb
+reddit.com/r/NixOS/comments/31lx3i/windows_and_nixos_dual_boot
+reddit.com/r/NixOS/comments/nuclde/how_to_properly_set_up_lidclose_behaviour_on_a
