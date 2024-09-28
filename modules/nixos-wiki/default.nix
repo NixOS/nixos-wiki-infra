@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   cfg = config.services.nixos-wiki;
 in
@@ -175,7 +180,9 @@ in
     # https://www.mediawiki.org/wiki/Help:Extension:Translate/Installation
     services.phpfpm.pools.mediawiki.phpOptions =
       let
-        phpVersion = builtins.replaceStrings [ "." ] [ "" ] (lib.versions.majorMinor config.services.phpfpm.pools.mediawiki.phpPackage.version);
+        phpVersion = builtins.replaceStrings [ "." ] [ "" ] (
+          lib.versions.majorMinor config.services.phpfpm.pools.mediawiki.phpPackage.version
+        );
         extensions = pkgs."php${phpVersion}Extensions";
       in
       ''
@@ -202,9 +209,10 @@ in
     '';
     systemd.services.mediawiki-init.serviceConfig.RemainAfterExit = true;
 
-
-
-    networking.firewall.allowedTCPPorts = [ 443 80 ];
+    networking.firewall.allowedTCPPorts = [
+      443
+      80
+    ];
     security.acme.acceptTerms = true;
     services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
       enableACME = lib.mkDefault true;

@@ -19,31 +19,39 @@
     sops-nix.inputs.nixpkgs-stable.follows = "";
   };
 
-  outputs = inputs@{ flake-parts, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; } ({ self, lib, ... }: {
-      systems = [
-        "aarch64-linux"
-        "x86_64-linux"
+  outputs =
+    inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } (
+      { self, lib, ... }:
+      {
+        systems = [
+          "aarch64-linux"
+          "x86_64-linux"
 
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-      imports = [
-        inputs.treefmt-nix.flakeModule
-        ./targets/flake-module.nix
-        ./modules/flake-module.nix
-        ./checks/flake-module.nix
-        ./formatter.nix
-      ];
-      perSystem = { self', system, ... }: {
+          "x86_64-darwin"
+          "aarch64-darwin"
+        ];
+        imports = [
+          inputs.treefmt-nix.flakeModule
+          ./targets/flake-module.nix
+          ./modules/flake-module.nix
+          ./checks/flake-module.nix
+          ./formatter.nix
+        ];
+        perSystem =
+          { self', system, ... }:
+          {
 
-        checks =
-          let
-            nixosMachines = lib.mapAttrs' (name: config: lib.nameValuePair "nixos-${name}" config.config.system.build.toplevel) ((lib.filterAttrs (_: config: config.pkgs.system == system)) self.nixosConfigurations);
-            packages = lib.mapAttrs' (n: lib.nameValuePair "package-${n}") self'.packages;
-            devShells = lib.mapAttrs' (n: lib.nameValuePair "devShell-${n}") self'.devShells;
-          in
-          nixosMachines // packages // devShells;
-      };
-    });
+            checks =
+              let
+                nixosMachines = lib.mapAttrs' (
+                  name: config: lib.nameValuePair "nixos-${name}" config.config.system.build.toplevel
+                ) ((lib.filterAttrs (_: config: config.pkgs.system == system)) self.nixosConfigurations);
+                packages = lib.mapAttrs' (n: lib.nameValuePair "package-${n}") self'.packages;
+                devShells = lib.mapAttrs' (n: lib.nameValuePair "devShell-${n}") self'.devShells;
+              in
+              nixosMachines // packages // devShells;
+          };
+      }
+    );
 }

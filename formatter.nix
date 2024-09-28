@@ -17,7 +17,8 @@
           "targets/nixos-wiki.nixos.org/secrets/*"
         ];
         programs.hclfmt.enable = true;
-        programs.nixpkgs-fmt.enable = true;
+        programs.nixfmt.enable = true;
+        programs.nixfmt.package = pkgs.nixfmt-rfc-style;
         programs.deadnix.enable = true;
         programs.ruff.format = true;
         programs.ruff.check = true;
@@ -39,8 +40,7 @@
                 provider.override (prev: {
                   homepage = builtins.replaceStrings [ "registry.terraform.io/providers" ] [
                     "registry.opentofu.org"
-                  ]
-                    prev.homepage;
+                  ] prev.homepage;
                 });
             in
             [
@@ -57,8 +57,7 @@
               ))
             ];
         };
-      }
-      // (import ./checks/linkcheck/pkgs { inherit pkgs; });
+      } // (import ./checks/linkcheck/pkgs { inherit pkgs; });
       devShells.linkcheck = pkgs.mkShell {
         packages = [
           pkgs.lychee

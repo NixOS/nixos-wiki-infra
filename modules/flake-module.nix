@@ -1,4 +1,5 @@
-{ inputs, ... }: {
+{ inputs, ... }:
+{
   flake.nixosModules = {
     hcloud.imports = [
       inputs.srvos.nixosModules.server

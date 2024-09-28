@@ -1,4 +1,6 @@
-{ pkgs ? import <nixpkgs> { } }:
+{
+  pkgs ? import <nixpkgs> { },
+}:
 {
   wikiextractor = pkgs.callPackage ./wikiextractor.nix { };
 }
