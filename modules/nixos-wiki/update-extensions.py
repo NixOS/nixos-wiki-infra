@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i python3 -p python3 python3Packages.requests python3Packages.beautifulsoup4 gh
+#!nix-shell -i python3 -p nixfmt-rfc-style python3 python3Packages.requests python3Packages.beautifulsoup4 gh
 import json
 import os
 import shlex
@@ -10,7 +10,6 @@ import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import IO
 
 import requests
 from bs4 import BeautifulSoup
@@ -85,13 +84,12 @@ def mirror_extension(extension_name: str, mediawiki_version: str) -> Extension:
     raise Exception("Failed to fetch extension, see above")
 
 
-def write_nix_file(file: IO[str], mirrored_extensions: list[Extension]) -> None:
-    file.write("{ fetchzip }: {\n")
+def extension_nix_expression(mirrored_extensions: list[Extension]) -> str:
+    expression = "{ fetchzip }: {\n"
     for extension in mirrored_extensions:
-        file.write(
-            f'  "{extension.name}" = fetchzip {{ url = "{extension.url}"; hash = "{extension.hash}"; }};\n'
-        )
-    file.write("}\n")
+        expression += f'  "{extension.name}" = fetchzip {{ url = "{extension.url}"; hash = "{extension.hash}"; }};\n'
+    expression += "}\n"
+    return expression
 
 
 def get_mediawiki_version(mediawiki_version: str | None = None) -> str:
@@ -130,8 +128,9 @@ def main():
         extension = mirror_extension(name, mediawiki_version)
         mirrored_extensions.append(extension)
 
-    with open("extensions.nix", "w") as file:
-        write_nix_file(file, mirrored_extensions)
+    nix_extensions = Path("extensions.nix")
+    nix_extensions.write_text(extension_nix_expression(mirrored_extensions))
+    run(["nixfmt", str(nix_extensions)])
 
 
 if __name__ == "__main__":
