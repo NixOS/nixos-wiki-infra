@@ -1,4 +1,9 @@
-{ self, lib, config, ... }:
+{
+  self,
+  lib,
+  config,
+  ...
+}:
 let
   nixosVars = builtins.fromJSON (builtins.readFile ./nixos-vars.json);
 in

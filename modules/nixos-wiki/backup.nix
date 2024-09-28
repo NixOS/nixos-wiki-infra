@@ -2,46 +2,49 @@
 let
   wikiDump = "/var/lib/mediawiki/backup/wikidump.xml.zst";
 
-  mediawiki-maintenance = pkgs.runCommand "mediawiki-maintenance"
-    {
-      nativeBuildInputs = [ pkgs.makeWrapper ];
-      preferLocalBuild = true;
-    } ''
-    mkdir -p $out/bin
-    makeWrapper ${config.services.phpfpm.pools.mediawiki.phpPackage}/bin/php $out/bin/mediawiki-maintenance \
-      --set MEDIAWIKI_CONFIG ${config.services.phpfpm.pools.mediawiki.phpEnv.MEDIAWIKI_CONFIG} \
-      --add-flags ${config.services.mediawiki.finalPackage}/share/mediawiki/maintenance/run.php
-  '';
-
-  wiki-backup = pkgs.writeShellApplication
-    {
-      name = "wiki-backup";
-      runtimeInputs = [
-        config.services.postgresql.package
-        pkgs.util-linux
-      ];
-      text = ''
-        mkdir -p /var/lib/mediawiki/backup/
-        runuser -u postgres -- pg_dump --compress=zstd --format=custom mediawiki > /var/lib/mediawiki/backup/db.tmp
-        mv /var/lib/mediawiki/backup/{db.tmp,db}
+  mediawiki-maintenance =
+    pkgs.runCommand "mediawiki-maintenance"
+      {
+        nativeBuildInputs = [ pkgs.makeWrapper ];
+        preferLocalBuild = true;
+      }
+      ''
+        mkdir -p $out/bin
+        makeWrapper ${config.services.phpfpm.pools.mediawiki.phpPackage}/bin/php $out/bin/mediawiki-maintenance \
+          --set MEDIAWIKI_CONFIG ${config.services.phpfpm.pools.mediawiki.phpEnv.MEDIAWIKI_CONFIG} \
+          --add-flags ${config.services.mediawiki.finalPackage}/share/mediawiki/maintenance/run.php
       '';
-    };
+
+  wiki-backup = pkgs.writeShellApplication {
+    name = "wiki-backup";
+    runtimeInputs = [
+      config.services.postgresql.package
+      pkgs.util-linux
+    ];
+    text = ''
+      mkdir -p /var/lib/mediawiki/backup/
+      runuser -u postgres -- pg_dump --compress=zstd --format=custom mediawiki > /var/lib/mediawiki/backup/db.tmp
+      mv /var/lib/mediawiki/backup/{db.tmp,db}
+    '';
+  };
 
   # to restore:
   # $ runuser -u postgres -- pg_restore --format=custom -d mediawiki < /tmp/db
 
-  wiki-dump = pkgs.writeShellApplication
-    {
-      name = "wiki-dump";
-      runtimeInputs = [ pkgs.util-linux pkgs.coreutils ];
-      text = ''
-        mkdir -p /var/lib/mediawiki/backup/
-        runuser -u mediawiki -- ${mediawiki-maintenance}/bin/mediawiki-maintenance dumpBackup.php \
-          --full --include-files --uploads --quiet | \
-          ${pkgs.zstd}/bin/zstd > ${wikiDump}.tmp
-        mv ${wikiDump}{.tmp,}
-      '';
-    };
+  wiki-dump = pkgs.writeShellApplication {
+    name = "wiki-dump";
+    runtimeInputs = [
+      pkgs.util-linux
+      pkgs.coreutils
+    ];
+    text = ''
+      mkdir -p /var/lib/mediawiki/backup/
+      runuser -u mediawiki -- ${mediawiki-maintenance}/bin/mediawiki-maintenance dumpBackup.php \
+        --full --include-files --uploads --quiet | \
+        ${pkgs.zstd}/bin/zstd > ${wikiDump}.tmp
+      mv ${wikiDump}{.tmp,}
+    '';
+  };
 in
 {
   environment.systemPackages = [ mediawiki-maintenance ];
@@ -74,7 +77,8 @@ in
     };
   };
 
-  services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName}.locations."=/wikidump.xml.zst".alias = wikiDump;
+  services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName}.locations."=/wikidump.xml.zst".alias =
+    wikiDump;
 
   sops.secrets.storagebox-ssh-key = {
     sopsFile = ../../targets/nixos-wiki.nixos.org/secrets/backup_share_ssh_key;
@@ -113,7 +117,10 @@ in
       monthly = 3;
     };
 
-    paths = [ "/var/lib/mediawiki-uploads" "/var/lib/mediawiki/backup" ];
+    paths = [
+      "/var/lib/mediawiki-uploads"
+      "/var/lib/mediawiki/backup"
+    ];
 
     # Where to backup it to
     repo = "u391032-sub1@u391032.your-storagebox.de:wiki.nixos.org/repo";
