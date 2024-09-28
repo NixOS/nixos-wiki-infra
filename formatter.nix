@@ -29,7 +29,7 @@
           "*.envrc.private-template"
         ];
         programs.shellcheck.enable = true;
-        programs.deno.enable = true;
+        programs.deno.enable = !pkgs.deno.meta.broken;
       };
       packages = {
         default = pkgs.mkShell {
