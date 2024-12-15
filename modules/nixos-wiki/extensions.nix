@@ -17,7 +17,7 @@
     hash = "sha256-nbayoTRyj2YRap6VE+a2rXkwZX6l09lkxm1cnz++d7c=";
   };
   "UniversalLanguageSelector" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/UniversalLanguageSelector-REL1_42-87f8601.tar.gz/UniversalLanguageSelector-REL1_42-87f8601.tar.gz";
-    hash = "sha256-kp6AfSfIOAtvuI+hAXmPbWSPlHuBOKl+s61kzqeD2uY=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/UniversalLanguageSelector-REL1_42-5b9eb56.tar.gz/UniversalLanguageSelector-REL1_42-5b9eb56.tar.gz";
+    hash = "sha256-ztiid785tGPQWgHcpUdciyXa1jGitx+xyYH2f5HwaMU=";
   };
 }
