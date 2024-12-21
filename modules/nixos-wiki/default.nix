@@ -105,6 +105,9 @@ in
         # cache pages with db
         $wgMainCacheType = CACHE_DB;
 
+        wfLoadSkin( 'MinervaNeue' );
+        $wgDefaultMobileSkin = 'minerva';
+
         #$wgFavicon = "/favicon.ico";
         $wgDefaultSkin = 'vector-2022';
         # configure logos for vector-2022: https://www.mediawiki.org/wiki/Manual:$wgLogos
