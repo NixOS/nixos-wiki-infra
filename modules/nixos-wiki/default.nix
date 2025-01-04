@@ -217,9 +217,16 @@ in
       80
     ];
     security.acme.acceptTerms = true;
+    services.nginx.appendHttpConfig = ''
+      limit_req_zone $binary_remote_addr zone=ip:20m rate=5r/s;
+      limit_req_status 429;
+    '';
     services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
       enableACME = lib.mkDefault true;
       forceSSL = lib.mkDefault true;
+      extraConfig = ''
+        limit_req zone=ip burst=20 nodelay;
+      '';
       locations."=/nixos.png".alias = ./nixos.png;
       locations."=/favicon.ico".alias = ./favicon.ico;
       locations."=/robots.txt".alias = ./robots.txt;
