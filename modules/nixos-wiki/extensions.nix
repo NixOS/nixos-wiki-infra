@@ -13,8 +13,8 @@
     hash = "sha256-U7mNjhr0kI46gWForiUBKXQEYSuvME8+YVwMOVpuhm0=";
   };
   "Translate" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Translate-REL1_42-3806370.tar.gz/Translate-REL1_42-3806370.tar.gz";
-    hash = "sha256-nAzG+RnPy8M1f3YmpbGWGDEZrN1npXKuew+rLQym7dE=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Translate-REL1_42-f069396.tar.gz/Translate-REL1_42-f069396.tar.gz";
+    hash = "sha256-Exb+SI0jBoY3JCwVc+fqGpsX6KtrR3GAjMUs7Pv/oI8=";
   };
   "UniversalLanguageSelector" = fetchzip {
     url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/UniversalLanguageSelector-REL1_42-48e6777.tar.gz/UniversalLanguageSelector-REL1_42-48e6777.tar.gz";
