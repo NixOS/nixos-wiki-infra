@@ -69,8 +69,7 @@ in
       extraConfig = ''
         # docs https://www.mediawiki.org/wiki/Extension:QuestyCaptcha
         $wgCaptchaQuestions = [
-          "What Linux distribution is this wiki about?" => [ 'nixos', 'NixOS', 'NIXOS', 'Nixos' ],
-          "What is the package manager of NixOS called?" => [ 'Nix', 'nix', 'NIX' ],
+          "What is the output of this command: nix-instantiate --raw --eval --expr 'builtins.hashString \"sha256\" \"NixOS wiki\"' ?" => "62e65110a5a6fa4f08256f7d9ee3461412babb37dc0955531b79dcf9732c9c91"
         ];
         wfLoadExtensions([ 'ConfirmEdit/QuestyCaptcha' ]);
 
