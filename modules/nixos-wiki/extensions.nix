@@ -1,8 +1,8 @@
 { fetchzip }:
 {
   "MobileFrontend" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/MobileFrontend-REL1_42-2da0a76.tar.gz/MobileFrontend-REL1_42-2da0a76.tar.gz";
-    hash = "sha256-MPUDNJ3KzY1ADa8Iy4f9g53QrTquwlfW+oGia3O3bEA=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/MobileFrontend-REL1_42-e8624ce.tar.gz/MobileFrontend-REL1_42-e8624ce.tar.gz";
+    hash = "sha256-57LYb3K/k2dSL4Hm5CFjkA1JKFZWG7idqxBovoN5GJs=";
   };
   "DarkMode" = fetchzip {
     url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/DarkMode-REL1_42-66aad97.tar.gz/DarkMode-REL1_42-66aad97.tar.gz";
