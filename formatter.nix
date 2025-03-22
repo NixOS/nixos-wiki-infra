@@ -46,6 +46,7 @@
             [
               pkgs.bashInteractive
               pkgs.sops
+              pkgs.nixos-rebuild-ng
               (pkgs.opentofu.withPlugins (
                 p:
                 builtins.map convert2Tofu [
