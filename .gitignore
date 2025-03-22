@@ -2,3 +2,6 @@
 .terraform.lock.hcl
 **/.terraform
 .direnv
+
+terraform.tfstate.backup
+.terraform.tfstate.lock.info

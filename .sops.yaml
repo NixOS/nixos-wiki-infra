@@ -9,3 +9,8 @@ creation_rules:
           - *joerg
           - *lassulus
           - *nixos-wiki2
+  - path_regex: targets/admins/secrets/*
+    key_groups:
+      - age:
+          - *joerg
+          - *lassulus

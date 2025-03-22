@@ -1,11 +1,19 @@
+variable "passphrase" {}
+
 terraform {
-  backend "http" {
-    address        = "https://gitlab.com/api/v4/projects/45776186/terraform/state/admins"
-    lock_address   = "https://gitlab.com/api/v4/projects/45776186/terraform/state/admins/lock"
-    unlock_address = "https://gitlab.com/api/v4/projects/45776186/terraform/state/admins/lock"
-    lock_method    = "POST"
-    unlock_method  = "DELETE"
-    retry_wait_min = "5"
+  encryption {
+    key_provider "pbkdf2" "mykey" {
+      passphrase = var.passphrase
+    }
+
+    method "aes_gcm" "encrypted" {
+      keys = key_provider.pbkdf2.mykey
+    }
+
+    state {
+      method   = method.aes_gcm.encrypted
+      enforced = true
+    }
   }
 }
 
