@@ -9,14 +9,17 @@
           "*/nixos-vars.json"
           "*/secrets.yaml"
           "*.lock"
+          "*.tfstate"
           ".gitignore"
           "modules/nixos-wiki/favicon.ico"
           "modules/nixos-wiki/nixos.png"
           "modules/nixos-wiki/robots.txt"
           "oauth-permissions.png"
           "targets/nixos-wiki.nixos.org/secrets/*"
+          "targets/admins/secrets/*"
+          "checks/linkcheck/allowed.links"
         ];
-        programs.hclfmt.enable = true;
+        programs.terraform.enable = true;
         programs.nixfmt.enable = true;
         programs.nixfmt.package = pkgs.nixfmt-rfc-style;
         programs.deadnix.enable = true;
@@ -38,14 +41,19 @@
               convert2Tofu =
                 provider:
                 provider.override (prev: {
-                  homepage = builtins.replaceStrings [ "registry.terraform.io/providers" ] [
-                    "registry.opentofu.org"
-                  ] prev.homepage;
+                  homepage =
+                    builtins.replaceStrings
+                      [ "registry.terraform.io/providers" ]
+                      [
+                        "registry.opentofu.org"
+                      ]
+                      prev.homepage;
                 });
             in
             [
               pkgs.bashInteractive
               pkgs.sops
+              pkgs.nixos-rebuild-ng
               (pkgs.opentofu.withPlugins (
                 p:
                 builtins.map convert2Tofu [
