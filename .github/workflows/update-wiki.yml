@@ -20,8 +20,7 @@ jobs:
       - run: ./modules/nixos-wiki/update-extensions.py ./modules/nixos-wiki/extensions.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run:
-          nix flake update
+      - run: nix flake update
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
