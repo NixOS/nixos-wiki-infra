@@ -1,11 +1,19 @@
+variable "passphrase" {}
+
 terraform {
-  backend "http" {
-    address        = "https://gitlab.com/api/v4/projects/54760013/terraform/state/nixos-wiki2.thalheim.io"
-    lock_address   = "https://gitlab.com/api/v4/projects/54760013/terraform/state/nixos-wiki2.thalheim.io/lock"
-    unlock_address = "https://gitlab.com/api/v4/projects/54760013/terraform/state/nixos-wiki2.thalheim.io/lock"
-    lock_method    = "POST"
-    unlock_method  = "DELETE"
-    retry_wait_min = "5"
+  encryption {
+    key_provider "pbkdf2" "sops" {
+      passphrase = var.passphrase
+    }
+
+    method "aes_gcm" "sops" {
+      keys = key_provider.pbkdf2.sops
+    }
+
+    state {
+      method   = method.aes_gcm.sops
+      enforced = true
+    }
   }
 }
 

@@ -2,12 +2,15 @@ keys:
   - &joerg age17n64ahe3wesh8l8lj0zylf4nljdmqn28hvqns2g7hgm9mdkhlsvsjuvkxz
   - &nixos-wiki2 age1p3dl7q5ahjdhl3g72mqk9pxy3gcptw9dqmg6syq9f9s03ppqp4rsqm93n2
   - &lassulus age1eq0e6uhjj2tja8v338tkdz8ema2aw5anpuyaq2uru7rt4lq7msyqqut6m2
-  - &julienmalka age109qksyjgdnf7elnk98dh4vtxt0epju7xjemlqng0j0x75st5zg9qm9h3hy
 creation_rules:
   - path_regex: targets/nixos-wiki\.nixos\.org/secrets/*
     key_groups:
       - age:
           - *joerg
           - *lassulus
-          - *julienmalka
           - *nixos-wiki2
+  - path_regex: targets/admins/secrets/*
+    key_groups:
+      - age:
+          - *joerg
+          - *lassulus

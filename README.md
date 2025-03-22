@@ -36,6 +36,26 @@ $ ls -la /tmp/restore/var/lib/mediawiki-uploads/
 $ umount /tmp/restore/
 ```
 
+## Applying terraform
+
+Updating hetzner ssh keys:
+
+```
+$ ./targets/admins/tf.sh apply
+```
+
+Deploying hetzner machine:
+
+```
+$ ./targets/nixos-wiki.nixos.org/tf.sh apply
+```
+
+## Updating NixOS server
+
+```
+$ ./targets/nixos-wiki.nixos.org/deploy.sh
+```
+
 ## FAQ:
 
 ### When logging in with "GitHub auth", the app shows "Act on your behalf" as a permission.
