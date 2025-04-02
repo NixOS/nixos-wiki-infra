@@ -1,16 +1,19 @@
 keys:
   - &joerg age17n64ahe3wesh8l8lj0zylf4nljdmqn28hvqns2g7hgm9mdkhlsvsjuvkxz
-  - &nixos-wiki2 age1p3dl7q5ahjdhl3g72mqk9pxy3gcptw9dqmg6syq9f9s03ppqp4rsqm93n2
+  - &joerg-mac age1nnm255ah9wa4gpsaq0v023a75lnmlcxszt9lc6az3mtwzxgrucfq45rp7h
+  - &nixos-wiki2 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPvvz9eHzae9yEih+b6OdKk1/ZSNPD1cDEzKVgAOoFuE
   - &lassulus age1eq0e6uhjj2tja8v338tkdz8ema2aw5anpuyaq2uru7rt4lq7msyqqut6m2
 creation_rules:
   - path_regex: targets/nixos-wiki\.nixos\.org/secrets/*
     key_groups:
       - age:
           - *joerg
+          - *joerg-mac
           - *lassulus
           - *nixos-wiki2
   - path_regex: targets/admins/secrets/*
     key_groups:
       - age:
           - *joerg
+          - *joerg-mac
           - *lassulus
