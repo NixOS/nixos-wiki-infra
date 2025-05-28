@@ -1,23 +1,23 @@
 { fetchzip }:
 {
   "MobileFrontend" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/MobileFrontend-REL1_43-81707e5.tar.gz/MobileFrontend-REL1_43-81707e5.tar.gz";
-    hash = "sha256-G86iox7wMgDLooQvEyPDlYtImHuWmfW3WVyq2p/alZo=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/MobileFrontend-REL1_43-4688c87.tar.gz/MobileFrontend-REL1_43-4688c87.tar.gz";
+    hash = "sha256-Hgqmwy0W5BLL+OhI2lw+T1kothP5RwS+Q3TvW04Co+M=";
   };
   "DarkMode" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/DarkMode-REL1_43-0105360.tar.gz/DarkMode-REL1_43-0105360.tar.gz";
-    hash = "sha256-Nm0OKuF39J8xM7WTFfW1Jgy4f+rmGtmDDVfIBLjmsy0=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/DarkMode-REL1_43-dc25af0.tar.gz/DarkMode-REL1_43-dc25af0.tar.gz";
+    hash = "sha256-Ikmz2YlN5D0XelqUYGbabZhiu731SYb+AuifYZHyGwE=";
   };
   "QuickInstantCommons" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/QuickInstantCommons-REL1_43-d780214.tar.gz/QuickInstantCommons-REL1_43-d780214.tar.gz";
-    hash = "sha256-kVVS7Q4xbbLZGFpedzVhe/xkznblQ/Jctw/1ornctiU=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/QuickInstantCommons-REL1_43-11bfc97.tar.gz/QuickInstantCommons-REL1_43-11bfc97.tar.gz";
+    hash = "sha256-u7fxFmjt8FWp3kTHZvHIy7CZ+1R8Dl/YSBqSwxuxJJU=";
   };
   "Translate" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Translate-REL1_43-5586bd6.tar.gz/Translate-REL1_43-5586bd6.tar.gz";
-    hash = "sha256-QjtItihudMggIzq0QwISW06Cujhm9+pSHaIoRMQAEls=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Translate-REL1_43-237e3ea.tar.gz/Translate-REL1_43-237e3ea.tar.gz";
+    hash = "sha256-7hA5q5M/YhSSo6A6O4Gd1zZN+UfRm8kQ+SR6BvSoDVs=";
   };
   "UniversalLanguageSelector" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/UniversalLanguageSelector-REL1_43-87e6d35.tar.gz/UniversalLanguageSelector-REL1_43-87e6d35.tar.gz";
-    hash = "sha256-Hsp67JDft2frRa4XVuHg3N9rySnAgS8xUpp8SnGdIhA=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/UniversalLanguageSelector-REL1_43-91516f2.tar.gz/UniversalLanguageSelector-REL1_43-91516f2.tar.gz";
+    hash = "sha256-DVricrriXsWWuV1+/VzJ9RzqGmkgFW0havA5bjBSMzg=";
   };
 }
