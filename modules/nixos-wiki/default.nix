@@ -65,6 +65,7 @@ in
         Thanks = null; # Adds a "thank" button
         Linter = null; # Dependency of DiscussionTools
         Echo = null; # Dependency of DiscussionTools
+        TemplateData = null; # Allows documenting template fields
       } // pkgs.callPackages ./extensions.nix { };
       extraConfig = ''
         # docs https://www.mediawiki.org/wiki/Extension:QuestyCaptcha
