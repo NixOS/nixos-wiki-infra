@@ -65,6 +65,14 @@ in
         Thanks = null; # Adds a "thank" button
         Linter = null; # Dependency of DiscussionTools
         Echo = null; # Dependency of DiscussionTools
+        Description2 = pkgs.fetchzip {
+          url = "https://extdist.wmflabs.org/dist/extensions/Description2-REL1_43-50e2aef.tar.gz";
+          hash = "sha256-ciUEUcg4tsgpvohuLYztFaGNBowR7p1dIKnNp4ooKtA=";
+        }; # Adds meta description tag
+        Mermaid = pkgs.fetchzip {
+          url = "https://github.com/SemanticMediaWiki/Mermaid/archive/refs/tags/3.1.0.zip";
+          hash = "sha256-tLOdAsXsaP/URvKcl5QWQiyhMy70qn8Fi8g3+ecNOWQ=";
+        }; # Adds diagram generation
       } // pkgs.callPackages ./extensions.nix { };
       extraConfig = ''
         # docs https://www.mediawiki.org/wiki/Extension:QuestyCaptcha
@@ -72,6 +80,12 @@ in
           "What is the output of this command: nix-instantiate --eval --expr 'builtins.hashString \"sha256\" \"NixOS wiki\"' ?" => "\"62e65110a5a6fa4f08256f7d9ee3461412babb37dc0955531b79dcf9732c9c91\""
         ];
         wfLoadExtensions([ 'ConfirmEdit/QuestyCaptcha' ]);
+
+        wfLoadExtension( 'Mermaid' );
+
+        # Enable automatic meta description tags on all pages
+        wfLoadExtension( 'Description2' );
+        $wgEnableMetaDescriptionFunctions = true;
 
         #$wgDebugLogFile = "/var/log/mediawiki/debug.log";
         #$wgShowExceptionDetails = true;
