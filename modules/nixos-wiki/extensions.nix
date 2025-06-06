@@ -9,8 +9,8 @@
     hash = "sha256-Ikmz2YlN5D0XelqUYGbabZhiu731SYb+AuifYZHyGwE=";
   };
   "QuickInstantCommons" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/QuickInstantCommons-REL1_43-11bfc97.tar.gz/QuickInstantCommons-REL1_43-11bfc97.tar.gz";
-    hash = "sha256-u7fxFmjt8FWp3kTHZvHIy7CZ+1R8Dl/YSBqSwxuxJJU=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/QuickInstantCommons-REL1_43-c0cc0c9.tar.gz/QuickInstantCommons-REL1_43-c0cc0c9.tar.gz";
+    hash = "sha256-RX5VoB69n1EAy7xxgDlnfBybZrm4w3ygI+sktIUb4OY=";
   };
   "Translate" = fetchzip {
     url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Translate-REL1_43-8b31384.tar.gz/Translate-REL1_43-8b31384.tar.gz";
