@@ -153,7 +153,7 @@ in
         $wgGroupPermissions['user']["pagetranslation"] = true;
 
         # add extra groups
-        ## add trusted group
+       ## add trusted group
         $wgGroupPermissions['trusted'] = $wgGroupPermissions['user'];
         $wgGroupPermissions['trusted']['delete'] = true;
         # allow trusted users to manage translations
@@ -177,6 +177,12 @@ in
 
         # Block spam by regex
         $wgSpamRegex = ["/seo (software|tools)|adult toys|pornstars|casino|gambling|viagra/i"];
+
+        # Visual Editor Settings
+        $wgVisualEditorAvailableNamespaces = [
+          'Help' => true,
+          'Project' => true,
+        ];
       '';
     };
 
