@@ -153,7 +153,7 @@ in
         $wgGroupPermissions['user']["pagetranslation"] = true;
 
         # add extra groups
-       ## add trusted group
+        ## add trusted group
         $wgGroupPermissions['trusted'] = $wgGroupPermissions['user'];
         $wgGroupPermissions['trusted']['delete'] = true;
         # allow trusted users to manage translations
