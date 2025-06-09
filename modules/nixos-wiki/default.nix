@@ -196,6 +196,9 @@ in
           'Help' => true,
           'Project' => true,
         ];
+
+        # Enable String Parser functions
+        $wgEnableStringFunctions = true;
       '';
     };
 
