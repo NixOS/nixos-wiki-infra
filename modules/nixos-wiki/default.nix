@@ -73,6 +73,7 @@ in
           url = "https://github.com/SemanticMediaWiki/Mermaid/archive/refs/tags/3.1.0.zip";
           hash = "sha256-tLOdAsXsaP/URvKcl5QWQiyhMy70qn8Fi8g3+ecNOWQ=";
         }; # Adds diagram generation
+        TemplateData = null; # Allows documenting template fields
       } // pkgs.callPackages ./extensions.nix { };
       extraConfig = ''
         # docs https://www.mediawiki.org/wiki/Extension:QuestyCaptcha
@@ -190,6 +191,14 @@ in
 
         # Block spam by regex
         $wgSpamRegex = ["/seo (software|tools)|adult toys|pornstars|casino|gambling|viagra/i"];
+
+        # Allow user-defined CSS for experimentation
+        $wgAllowUserCss = true;
+        # Visual Editor Settings
+        $wgVisualEditorAvailableNamespaces = [
+          'Help' => true,
+          'Project' => true,
+        ];
       '';
     };
 
