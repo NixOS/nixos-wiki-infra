@@ -178,6 +178,8 @@ in
         # Block spam by regex
         $wgSpamRegex = ["/seo (software|tools)|adult toys|pornstars|casino|gambling|viagra/i"];
 
+        # Allow user-defined CSS for experimentation
+        $wgAllowUserCss = true;
         # Visual Editor Settings
         $wgVisualEditorAvailableNamespaces = [
           'Help' => true,
