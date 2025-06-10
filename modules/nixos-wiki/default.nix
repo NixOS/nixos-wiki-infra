@@ -177,6 +177,12 @@ in
 
         # Block spam by regex
         $wgSpamRegex = ["/seo (software|tools)|adult toys|pornstars|casino|gambling|viagra/i"];
+
+        # Visual Editor Settings
+        $wgVisualEditorAvailableNamespaces = [
+          'Help' => true,
+          'Project' => true,
+        ];
       '';
     };
 
