@@ -180,6 +180,11 @@ in
 
         # Allow user-defined CSS for experimentation
         $wgAllowUserCss = true;
+        # Visual Editor Settings
+        $wgVisualEditorAvailableNamespaces = [
+          'Help' => true,
+          'Project' => true,
+        ];
       '';
     };
 
