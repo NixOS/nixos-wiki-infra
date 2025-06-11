@@ -180,6 +180,13 @@ in
 
         # Enable String Parser functions
         $wgEnableStringFunctions = true;
+        # Allow user-defined CSS for experimentation
+        $wgAllowUserCss = true;
+        # Visual Editor Settings
+        $wgVisualEditorAvailableNamespaces = [
+          'Help' => true,
+          'Project' => true,
+        ];
       '';
     };
 
