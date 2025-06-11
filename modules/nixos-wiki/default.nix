@@ -56,10 +56,6 @@ in
         ParserFunctions = null;
         Cite = null;
         VisualEditor = null;
-        AuthManagerOAuth = pkgs.fetchzip {
-          url = "https://github.com/mohe2015/AuthManagerOAuth/releases/download/v0.3.2/AuthManagerOAuth.zip";
-          hash = "sha256-hr/DLyL6IzQs67eA46RdmuVlfCiAbq+eZCRLfjLxUpc=";
-        }; # Github login
         ConfirmEdit = null; # Combat SPAM with a simple Captcha
         DiscussionTools = null; # Adds a new discussion tool to the talk pages
         Thanks = null; # Adds a "thank" button
