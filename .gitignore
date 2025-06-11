@@ -3,6 +3,7 @@
 **/.terraform
 .direnv
 result
+result-*
 
 terraform.tfstate.backup
 .terraform.tfstate.lock.info
