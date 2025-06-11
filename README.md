@@ -56,6 +56,27 @@ $ ./targets/nixos-wiki.nixos.org/tf.sh apply
 $ ./targets/nixos-wiki.nixos.org/deploy.sh
 ```
 
+## Testing
+
+Run NixOS VM integration tests to verify configuration:
+
+```
+$ nix build .#checks.x86_64-linux.test --log-format bar-with-logs
+```
+
+Format code:
+
+```
+$ nix fmt
+```
+
+Run link health checks:
+
+```
+$ nix develop .#linkcheck
+$ ./checks/linkcheck/lychee.sh
+```
+
 ## FAQ:
 
 ### When logging in with "GitHub auth", the app shows "Act on your behalf" as a permission.
