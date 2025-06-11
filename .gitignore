@@ -2,6 +2,7 @@
 .terraform.lock.hcl
 **/.terraform
 .direnv
+result
 
 terraform.tfstate.backup
 .terraform.tfstate.lock.info
