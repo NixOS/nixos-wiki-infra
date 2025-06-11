@@ -20,4 +20,16 @@
     url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/UniversalLanguageSelector-REL1_43-4ad159f.tar.gz/UniversalLanguageSelector-REL1_43-4ad159f.tar.gz";
     hash = "sha256-COB+N6q7lIYM7Vc334W3N8knrnhSlEpLIA/QM6Y6a6o=";
   };
+  "Description2" = fetchzip {
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Description2-REL1_43-50e2aef.tar.gz/Description2-REL1_43-50e2aef.tar.gz";
+    hash = "sha256-ciUEUcg4tsgpvohuLYztFaGNBowR7p1dIKnNp4ooKtA=";
+  };
+  "Mermaid" = fetchzip {
+    url = "https://github.com/SemanticMediaWiki/Mermaid/archive/refs/tags/3.1.0.zip";
+    hash = "sha256-tLOdAsXsaP/URvKcl5QWQiyhMy70qn8Fi8g3+ecNOWQ=";
+  };
+  "AuthManagerOAuth" = fetchzip {
+    url = "https://github.com/mohe2015/AuthManagerOAuth/archive/refs/tags/v0.3.2.zip";
+    hash = "sha256-0jMxLX7r4w44WMvtDt421vX+s622+j7WjbK6ClS/FKk=";
+  };
 }
