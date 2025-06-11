@@ -8,6 +8,9 @@ let
   cfg = config.services.nixos-wiki;
 in
 {
+  imports = [
+    ./pages.nix
+  ];
   options = {
     services.nixos-wiki = {
       hostname = lib.mkOption {

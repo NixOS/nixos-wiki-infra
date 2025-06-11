@@ -25,7 +25,16 @@
           emergencyContact = "nixos-wiki@thalheim.io";
           passwordSender = "nixos-wiki@thalheim.io";
           noReplyAddress = "nixos-wiki-no-reply@thalheim.io";
+          pages = {
+            pageConfig = {
+              "wiki-sync-test-page.wiki" = {
+                title = "Wiki Sync Test Page";
+                namespace = "";
+              };
+            };
+          };
         };
+
         services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
           enableACME = false;
           forceSSL = false;
@@ -36,11 +45,21 @@
   testScript = ''
     start_all()
 
-    machine.wait_for_unit("phpfpm-mediawiki.service")
-    machine.wait_for_unit("nginx.service")
-    machine.wait_for_unit("mediawiki-init.service")
+    wiki.wait_for_unit("phpfpm-mediawiki.service")
+    wiki.wait_for_unit("nginx.service")
+    wiki.wait_for_unit("mediawiki-init.service")
 
-    page = machine.succeed("curl -vL http://nixos-wiki.example.com/")
+    page = wiki.succeed("curl -vL http://nixos-wiki.example.com/")
     assert "MediaWiki has been installed" in page
+
+    # Test wiki pages sync functionality
+    print("Testing wiki pages sync...")
+
+    # Check that the test page was created on the wiki
+    print("Checking if test page was created...")
+    test_page = wiki.succeed("curl -s http://nixos-wiki.example.com/wiki/Wiki_Sync_Test_Page")
+
+    # Check for title in HTML
+    assert "Automatic synchronization from git repository" in test_page, f"Expected title not found in test page: {test_page}"
   '';
 }
