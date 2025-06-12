@@ -1,0 +1,16 @@
+{{DISPLAYTITLE:Wiki Sync Test Page}}
+This is a '''test page''' for the git-to-wiki synchronization system.
+
+== Features ==
+
+* Automatic synchronization from git repository
+* Page protection management
+* MediaWiki markup support
+
+== Test Content ==
+
+This page is managed through the git repository and automatically deployed to the wiki.
+
+Changes made to this file in the repository will be reflected on the wiki after deployment.
+
+[[Category:Test]]
