@@ -189,6 +189,8 @@ in
         # Block spam by regex
         $wgSpamRegex = ["/seo (software|tools)|adult toys|pornstars|casino|gambling|viagra/i"];
 
+        # Enable String Parser functions
+        $wgEnableStringFunctions = true;
         # Allow user-defined CSS for experimentation
         $wgAllowUserCss = true;
         # Visual Editor Settings
