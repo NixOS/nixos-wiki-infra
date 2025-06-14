@@ -5,8 +5,8 @@
     hash = "sha256-xiMg4T1hZLOLh3gxEhilw2XOVYer8RGGUyYZlvwYTt0=";
   };
   "DarkMode" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/DarkMode-REL1_43-dc25af0.tar.gz/DarkMode-REL1_43-dc25af0.tar.gz";
-    hash = "sha256-Ikmz2YlN5D0XelqUYGbabZhiu731SYb+AuifYZHyGwE=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/DarkMode-REL1_43-e04ad8e.tar.gz/DarkMode-REL1_43-e04ad8e.tar.gz";
+    hash = "sha256-ARUhmQ2EcaQ2a0qLh4dWx2EcYooCmmPVwS7DcbR+iKI=";
   };
   "QuickInstantCommons" = fetchzip {
     url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/QuickInstantCommons-REL1_43-c0cc0c9.tar.gz/QuickInstantCommons-REL1_43-c0cc0c9.tar.gz";
@@ -21,8 +21,8 @@
     hash = "sha256-COB+N6q7lIYM7Vc334W3N8knrnhSlEpLIA/QM6Y6a6o=";
   };
   "Description2" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Description2-REL1_43-50e2aef.tar.gz/Description2-REL1_43-50e2aef.tar.gz";
-    hash = "sha256-ciUEUcg4tsgpvohuLYztFaGNBowR7p1dIKnNp4ooKtA=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Description2-REL1_43-0eb3253.tar.gz/Description2-REL1_43-0eb3253.tar.gz";
+    hash = "sha256-zhbHSSmGZt9jvGuB0mk49tiotmJulOUp+mt5drnu40w=";
   };
   "Mermaid" = fetchzip {
     url = "https://github.com/SemanticMediaWiki/Mermaid/archive/refs/tags/3.1.0.zip";
