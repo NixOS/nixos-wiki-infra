@@ -38,6 +38,11 @@ in
         type = lib.types.str;
         description = "default Reply-To address in emails";
       };
+      testMode = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable test mode, which disables github login and uses a fixed admin password";
+      };
     };
   };
 
@@ -49,7 +54,7 @@ in
       database.type = "postgres";
       nginx.hostName = config.services.nixos-wiki.hostname;
       uploadsDir = "/var/lib/mediawiki-uploads/";
-      passwordFile = cfg.adminPasswordFile;
+      passwordFile = if cfg.testMode then pkgs.writeText "pass" "nixos-wiki00" else cfg.adminPasswordFile;
 
       extensions = {
         SyntaxHighlight_GeSHi = null; # provides <SyntaxHighlight> tags
@@ -89,15 +94,17 @@ in
         #$wgShowExceptionDetails = true;
 
         # allow local login
-        $wgAuthManagerOAuthConfig = [
-          'github' => [
-            'clientId'                => '${cfg.githubClientId}',
-            'clientSecret'            => file_get_contents("${cfg.githubClientSecretFile}"),
-            'urlAuthorize'            => 'https://github.com/login/oauth/authorize',
-            'urlAccessToken'          => 'https://github.com/login/oauth/access_token',
-            'urlResourceOwnerDetails' => 'https://api.github.com/user'
-          ],
-        ];
+        ${lib.optionalString (!cfg.testMode) ''
+          $wgAuthManagerOAuthConfig = [
+            'github' => [
+              'clientId'                => '${cfg.githubClientId}',
+              'clientSecret'            => file_get_contents("${cfg.githubClientSecretFile}"),
+              'urlAuthorize'            => 'https://github.com/login/oauth/authorize',
+              'urlAccessToken'          => 'https://github.com/login/oauth/access_token',
+              'urlResourceOwnerDetails' => 'https://api.github.com/user'
+            ],
+          ];
+        ''}
 
         # Enable account creation globally
         $wgGroupPermissions['*']['createaccount'] = true;
@@ -150,9 +157,11 @@ in
         $wgEmailConfirmToEdit = false;
         $wgAllowHTMLEmail = false;
 
-        $wgEmergencyContact = "${cfg.emergencyContact}";
-        $wgPasswordSender   = "${cfg.passwordSender}";
-        $wgNoReplyAddress   = "${cfg.noReplyAddress}";
+        ${lib.optionalString (!cfg.testMode) ''
+          $wgEmergencyContact = "${cfg.emergencyContact}";
+          $wgPasswordSender   = "${cfg.passwordSender}";
+          $wgNoReplyAddress   = "${cfg.noReplyAddress}";
+        ''}
 
         # To purge all page cache increase this using: date +%Y%m%d%H%M%S
         $wgCacheEpoch = 20231115172319;
@@ -244,8 +253,8 @@ in
       limit_req_status 429;
     '';
     services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
-      enableACME = lib.mkDefault true;
-      forceSSL = lib.mkDefault true;
+      enableACME = lib.mkDefault (!cfg.testMode);
+      forceSSL = lib.mkDefault (!cfg.testMode);
       extraConfig = ''
         limit_req zone=ip burst=20 nodelay;
       '';
