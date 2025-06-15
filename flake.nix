@@ -35,10 +35,16 @@
           ./targets/flake-module.nix
           ./modules/flake-module.nix
           ./checks/flake-module.nix
+          ./vm/flake-module.nix
           ./formatter.nix
         ];
         perSystem =
-          { self', system, ... }:
+          {
+            self',
+            system,
+            pkgs,
+            ...
+          }:
           {
 
             checks =

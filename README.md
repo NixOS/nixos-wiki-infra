@@ -77,6 +77,17 @@ $ nix develop .#linkcheck
 $ ./checks/linkcheck/lychee.sh
 ```
 
+## interactive VM
+
+You can also run the wiki in an interactive vm by running
+
+```nix
+nix run .#interactive-vm
+```
+
+you can then access the wiki at localhost:4360 follow the output of the script
+for more details (like passwords)
+
 ## FAQ:
 
 ### When logging in with "GitHub auth", the app shows "Act on your behalf" as a permission.
