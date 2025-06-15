@@ -65,8 +65,6 @@
               ];
             in
             ''
-              NIXOS_DISK_IMAGE=/tmp/wiki-vm.qcow2
-              export NIXOS_DISK_IMAGE
               echo 'access the wiki after startup at http://localhost:4360'
               echo 'user: admin, password: nixos-wiki00'
               echo 'you can also SSH into the VM with: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@localhost -p 2222'
