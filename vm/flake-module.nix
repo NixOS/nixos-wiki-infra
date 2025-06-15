@@ -71,7 +71,7 @@
               echo 'user: admin, password: nixos-wiki00'
               echo 'you can also SSH into the VM with: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@localhost -p 2222'
               echo 'password: nixos-wiki00'
-              ${vmConfig.config.system.build.vm}/bin/run-nixos-vm
+              ${vmConfig.config.system.build.vm}/bin/run-nixos-vm &>/dev/null
               # TODO maybe clean up the qcow image?
             '';
         };
