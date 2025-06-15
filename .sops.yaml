@@ -6,11 +6,11 @@ creation_rules:
   - path_regex: targets/nixos-wiki\.nixos\.org/secrets/*
     key_groups:
       - age:
-          - *joerg
-          - *lassulus
-          - *nixos-wiki2
+          - *joerg 
+          - *lassulus 
+          - *nixos-wiki2 
   - path_regex: targets/admins/secrets/*
     key_groups:
       - age:
-          - *joerg
-          - *lassulus
+          - *joerg 
+          - *lassulus 
