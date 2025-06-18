@@ -1,8 +1,8 @@
 { fetchzip }:
 {
   "MobileFrontend" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/MobileFrontend-REL1_43-b2c9055.tar.gz/MobileFrontend-REL1_43-b2c9055.tar.gz";
-    hash = "sha256-xiMg4T1hZLOLh3gxEhilw2XOVYer8RGGUyYZlvwYTt0=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/MobileFrontend-REL1_43-4ead8e9.tar.gz/MobileFrontend-REL1_43-4ead8e9.tar.gz";
+    hash = "sha256-UdBssPfSRB87AGGJ6HakMq7nAPP0aoVsUpsz2x1I0uU=";
   };
   "DarkMode" = fetchzip {
     url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/DarkMode-REL1_43-e04ad8e.tar.gz/DarkMode-REL1_43-e04ad8e.tar.gz";
@@ -13,12 +13,12 @@
     hash = "sha256-RX5VoB69n1EAy7xxgDlnfBybZrm4w3ygI+sktIUb4OY=";
   };
   "Translate" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Translate-REL1_43-86613f8.tar.gz/Translate-REL1_43-86613f8.tar.gz";
-    hash = "sha256-S7p6Lr4cmDpsmFTNsqxJL1Te5Jhv5byrpaVlDPZEZG8=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Translate-REL1_43-ef20cb3.tar.gz/Translate-REL1_43-ef20cb3.tar.gz";
+    hash = "sha256-V6wTC2wOQs9fVqJBiKTjq2kgpyMxXl/lLJNUqdDraRU=";
   };
   "UniversalLanguageSelector" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/UniversalLanguageSelector-REL1_43-4ad159f.tar.gz/UniversalLanguageSelector-REL1_43-4ad159f.tar.gz";
-    hash = "sha256-COB+N6q7lIYM7Vc334W3N8knrnhSlEpLIA/QM6Y6a6o=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/UniversalLanguageSelector-REL1_43-5eb5ecd.tar.gz/UniversalLanguageSelector-REL1_43-5eb5ecd.tar.gz";
+    hash = "sha256-zlTPHiSI71cb/WjcjjEtXfkvuDWw+NWm4oQBkWToX90=";
   };
   "Description2" = fetchzip {
     url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Description2-REL1_43-0eb3253.tar.gz/Description2-REL1_43-0eb3253.tar.gz";
@@ -29,7 +29,7 @@
     hash = "sha256-tLOdAsXsaP/URvKcl5QWQiyhMy70qn8Fi8g3+ecNOWQ=";
   };
   "AuthManagerOAuth" = fetchzip {
-    url = "https://github.com/mohe2015/AuthManagerOAuth/releases/download/v0.3.2/AuthManagerOAuth.zip";
-    hash = "sha256-hr/DLyL6IzQs67eA46RdmuVlfCiAbq+eZCRLfjLxUpc=";
+    url = "https://github.com/mohe2015/AuthManagerOAuth/archive/refs/tags/v0.3.2.zip";
+    hash = "sha256-0jMxLX7r4w44WMvtDt421vX+s622+j7WjbK6ClS/FKk=";
   };
 }
