@@ -74,6 +74,15 @@ def get_latest_github_release_url(repo: str, extension_type: str) -> str:
         response = requests.get(api_url, headers=headers)
         response.raise_for_status()
         data = response.json()
+
+        # Look for release assets first
+        assets = data.get("assets", [])
+        # Try to find a .zip asset (prefer release assets over source archives)
+        for asset in assets:
+            if asset["name"].endswith(".zip"):
+                return asset["browser_download_url"]
+
+        # Fallback to source archive if no release assets found
         tag_name = data["tag_name"]
         return f"https://github.com/{repo}/archive/refs/tags/{tag_name}.zip"
     elif extension_type == "tag":
