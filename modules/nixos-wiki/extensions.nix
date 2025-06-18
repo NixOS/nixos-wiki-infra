@@ -29,7 +29,7 @@
     hash = "sha256-tLOdAsXsaP/URvKcl5QWQiyhMy70qn8Fi8g3+ecNOWQ=";
   };
   "AuthManagerOAuth" = fetchzip {
-    url = "https://github.com/mohe2015/AuthManagerOAuth/archive/refs/tags/v0.3.2.zip";
-    hash = "sha256-0jMxLX7r4w44WMvtDt421vX+s622+j7WjbK6ClS/FKk=";
+    url = "https://github.com/mohe2015/AuthManagerOAuth/releases/download/v0.3.2/AuthManagerOAuth.zip";
+    hash = "sha256-hr/DLyL6IzQs67eA46RdmuVlfCiAbq+eZCRLfjLxUpc=";
   };
 }
