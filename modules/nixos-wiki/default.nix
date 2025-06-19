@@ -50,6 +50,10 @@ in
   };
 
   config = {
+    environment.systemPackages = [
+      (pkgs.python3.pkgs.callPackage ../../pkgs/wiki-user-search { })
+    ];
+
     services.mediawiki = {
       name = "NixOS Wiki";
       enable = true;
