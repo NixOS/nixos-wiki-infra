@@ -46,6 +46,7 @@
             ...
           }:
           {
+            packages = import ./pkgs { inherit pkgs; };
 
             checks =
               let

@@ -36,6 +36,30 @@ $ ls -la /tmp/restore/var/lib/mediawiki-uploads/
 $ umount /tmp/restore/
 ```
 
+## Searching for wiki users (wiki admins only)
+
+The `wiki-user-search` tool allows administrators to search for MediaWiki users
+by username, email, or real name. Since it connects to PostgreSQL, it must be
+run as the `postgres` user:
+
+```bash
+# Search by username
+$ sudo -u postgres wiki-user-search "admin"
+
+# Search by email domain
+$ sudo -u postgres wiki-user-search "@example.com"
+
+# Search by real name
+$ sudo -u postgres wiki-user-search "John Smith"
+
+# Limit results (default is 10)
+$ sudo -u postgres wiki-user-search "test" -l 20
+```
+
+The tool displays results in a table format showing Username, Email, and Real
+Name. It uses fuzzy matching with case-insensitive search and prioritizes exact
+matches over partial matches.
+
 ## Applying terraform
 
 Updating hetzner ssh keys:
