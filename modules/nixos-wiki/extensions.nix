@@ -25,8 +25,8 @@
     hash = "sha256-zhbHSSmGZt9jvGuB0mk49tiotmJulOUp+mt5drnu40w=";
   };
   "Mermaid" = fetchzip {
-    url = "https://github.com/SemanticMediaWiki/Mermaid/archive/refs/tags/3.1.0.zip";
-    hash = "sha256-tLOdAsXsaP/URvKcl5QWQiyhMy70qn8Fi8g3+ecNOWQ=";
+    url = "https://github.com/SemanticMediaWiki/Mermaid/archive/refs/tags/5.0.2.zip";
+    hash = "sha256-takDzg3IoNCvLegQPHbIJbvR1dVMW5wO3yM8qC1jtcY=";
   };
   "AuthManagerOAuth" = fetchzip {
     url = "https://github.com/mohe2015/AuthManagerOAuth/releases/download/v0.3.3/AuthManagerOAuth.zip";
