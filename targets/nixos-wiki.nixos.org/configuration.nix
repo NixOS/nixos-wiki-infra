@@ -34,9 +34,11 @@ in
     passwordSender = "wiki@wiki.nixos.org";
     noReplyAddress = "wiki-no-reply@wiki.nixos.org";
     pages = {
-      "common.css.wiki" = {
-        title = "Common.css";
-        namespace = "MediaWiki";
+      pageConfig = {
+        "common.css.wiki" = {
+          title = "Common.css";
+          namespace = "MediaWiki";
+        };
       };
     };
   };
