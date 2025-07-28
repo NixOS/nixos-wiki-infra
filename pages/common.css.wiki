@@ -1,0 +1,221 @@
+:root {
+  --home-panel-heading-background: var(--background-color-neutral);
+  --home-panel-border-color: var(--border-color-subtle);
+  --table-border-color: var(--border-color-subtle);
+  --table-header-background: var(--background-color-neutral-subtle);
+  --table-even-background: var(--background-color-disabled-subtle);
+}
+
+/* Internal "external" links */
+.mw-parser-output a.external[href^="https://wiki.nixos.org/"] {
+  background-image: none !important;
+  padding-right: initial !important;
+}
+
+/* Long quotes */
+blockquote,
+blockquote + cite,
+blockquote + p cite {
+  padding: 1ex 1em;
+  font-size: inherit;
+  margin: 0;
+  margin-bottom: 1em;
+  border-left: 1ex solid var(--border-color-muted);
+}
+
+blockquote + cite,
+blockquote + p cite {
+  display: block;
+  margin: 0;
+  margin-top: -1em;
+  font-size: inherit;
+  padding-top: 1em;
+}
+
+blockquote + cite::before,
+blockquote + p cite::before {
+  content: "— ";
+  display: inline;
+}
+
+#catlinks {
+  display: block;
+}
+
+#catlinks.catlinks-allhidden {
+  display: none;
+}
+
+/* Fixes issue with headings in mediawiki "system" pages. */
+.mw-headline {
+  pointer-events: none;
+}
+
+/* Paragraph / text styles */
+p {
+  text-align: initial;
+}
+
+/* Infobox */
+
+.infobox {
+  margin: auto;
+  max-width: 272px;
+}
+
+@media (min-width: 768px) {
+  .infobox {
+    float: right;
+    min-width: 272px;
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.infobox > table {
+  border: 1px solid var(--border-color-base);
+  border-right-width: 5px;
+  border-collapse: collapse;
+}
+
+.infobox > table tr:first-child th {
+  text-align: center;
+  background: var(--background-color-neutral);
+}
+
+.infobox > table th[colspan="2"] {
+  text-align: center;
+  background: var(--background-color-neutral);
+}
+
+.infobox .table > tbody > tr > td,
+.infobox .table > tbody > tr > th,
+.infobox .table > tfoot > tr > td,
+.infobox .table > tfoot > tr > th,
+.infobox .table > thead > tr > td,
+.infobox .table > thead > tr > th {
+  border-bottom: 1px solid var(--table-border-color);
+  border-top: 1px solid var(--table-border-color);
+  padding: 0.1rem 0.4rem;
+  vertical-align: top;
+}
+
+/* Ensures code-like stuff doesn't get hyphenated. */
+code,
+pre {
+  hyphens: none;
+}
+
+.mw-body img {
+  max-width: 100%;
+  height: auto;
+}
+
+.mw-highlight.mw-highlight {
+  background-color: transparent;
+}
+
+/**/
+
+/* After the move, without tweeki */
+
+@media (min-width: 768px) {
+  .row.home-panes {
+    margin-left: -0.6rem;
+    margin-right: -0.6rem;
+  }
+
+  .row.home-panes::after {
+    clear: both;
+    display: block;
+    content: "";
+  }
+
+  .row.home-panes > * {
+    float: left;
+    max-width: 50%;
+  }
+
+  .row.home-panes {
+    clear: both;
+  }
+
+  .row.home-panes .col-md-7 {
+    max-width: 58%;
+  }
+
+  .row.home-panes .col-md-5 {
+    max-width: 42%;
+  }
+
+  .row.home-panes > * > * {
+    margin-left: 0.6rem;
+    margin-right: 0.6rem;
+  }
+}
+
+/* Hides the redirected from notice on the main page. */
+.page-NixOS_Wiki .mw-redirectedfrom {
+  display: none;
+}
+
+/* Override Vector's "transparent" image background on the main page */
+body.page-NixOS_Wiki p > span.mw-default-size img {
+  background-color: transparent;
+}
+
+/* Increase brightness for main page icons on dark mode */
+@media (prefers-color-scheme: dark) {
+  html.skin-theme-clientpref-os body.page-NixOS_Wiki p > span.mw-default-size img {
+    filter: brightness(2.75);
+  }
+}
+html.skin-theme-clientpref-night body.page-NixOS_Wiki p > span.mw-default-size img {
+  filter: brightness(2.75);
+}
+
+.home-box {
+  border: 1px solid var(--home-panel-border-color);
+  margin-bottom: 1.6rem;
+  border-radius: 0.16rem;
+}
+
+.home-box .panel-heading {
+  margin: 0;
+  background: var(--home-panel-heading-background);
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+  border-bottom: 1px solid var(--home-panel-border-color);
+}
+
+.home-box .panel-body {
+  padding: 0.6rem;
+}
+
+.table .table {
+  border: 1px solid var(--table-border-color);
+}
+
+.table .table th,
+.table .table td {
+  text-align: left;
+  border-bottom: 1px solid var(--table-border-color);
+  border-top: 1px solid var(--table-border-color);
+  vertical-align: top;
+  padding: 0.2rem 0.4rem;
+}
+
+.table .table th {
+  background-color: var(--table-header-background);
+}
+
+.table .table td {
+}
+
+.table .table {
+  border-collapse: collapse;
+}
+
+.table .table tr:nth-child(odd) {
+  background: var(--table-even-background);
+}
