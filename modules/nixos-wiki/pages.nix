@@ -94,14 +94,27 @@ in
 
                     # Read page content and add management comment
                     content=$(cat "$wiki_file")
-                    content_with_comment="<!--
-        This page is automatically managed through git repository synchronization.
+
+                    # Define the comment content
+                    comment_text="This page is automatically managed through git repository synchronization.
         Do not edit this page directly on the wiki - changes will be overwritten.
         To edit this page, modify the file: $filename
-        Source: https://github.com/NixOS/nixos-wiki-infra/blob/main/pages/$filename
+        Source: https://github.com/NixOS/nixos-wiki-infra/blob/main/pages/$filename"
+
+                    # Use appropriate comment syntax based on page type
+                    if [[ "$filename" == *.css.wiki ]]; then
+                        content_with_comment="/*
+        $comment_text
+        */
+
+        $content"
+                    else
+                        content_with_comment="<!--
+        $comment_text
         -->
 
         $content"
+                    fi
 
                     # Edit the page using maintenance script (no --user means system maintenance user)
                     echo "$content_with_comment" | ${config.services.phpfpm.pools.mediawiki.phpPackage}/bin/php \
