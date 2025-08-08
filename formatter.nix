@@ -66,7 +66,8 @@
               ))
             ];
         };
-      } // (import ./checks/linkcheck/pkgs { inherit pkgs; });
+      }
+      // (import ./checks/linkcheck/pkgs { inherit pkgs; });
       devShells.linkcheck = pkgs.mkShell {
         packages = [
           pkgs.lychee
