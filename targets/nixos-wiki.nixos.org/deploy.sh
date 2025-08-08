@@ -55,7 +55,7 @@ pre_deployment_checks() {
 
   # Check SSH connectivity
   log "Checking SSH connectivity to ${WIKI_HOST}..."
-  if ! ssh -o ConnectTimeout=10 -o BatchMode=yes "${SSH_TARGET}" "echo 'SSH connection successful'"; then
+  if ! ssh -o ConnectTimeout=10 "${SSH_TARGET}" "echo 'SSH connection successful'"; then
     error "Cannot establish SSH connection to ${WIKI_HOST}"
     return 1
   fi
