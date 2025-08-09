@@ -5,7 +5,8 @@
   ...
 }:
 let
-  mediawiki-maintenance = pkgs.callPackage ./mediawiki-maintenance.nix {};
+  mediawiki-maintenance = pkgs.callPackage ./mediawiki-maintenance.nix { inherit config; };
+  sitemap_dir = "/var/lib/mediawiki-sitemap/";
   cfg = config.services.nixos-wiki;
 in
 {
@@ -269,21 +270,21 @@ in
       locations."=/nixos.png".alias = ./nixos.png;
       locations."=/favicon.ico".alias = ./favicon.ico;
       locations."=/robots.txt".alias = ./robots.txt;
-      locations."/sitemap/".alias = "/var/lib/mediawiki-sitemap/";
+      locations."/sitemap/".alias = sitemap_dir;
+      locations."= /sitemap.xml".alias = "${sitemap_dir}sitemap-index-mediawiki.xml";
     };
 
     systemd.tmpfiles.rules = [
-      "d 'var/lib/mediawiki-sitemap' 0750 mediawiki ${config.services.nginx.group} - -"
+      "d '${sitemap_dir}' 0750 mediawiki ${config.services.nginx.group} - -"
     ];
 
     systemd.services.wiki-sitemap = {
       startAt = "daily";
       serviceConfig = {
-        ExecStart = "${mediawiki-maintenance}/bin/mediawiki-maintenance generateSitemap.php --fspath /var/lib/mediawiki-sitemap/ --server http://${config.services.nixos-wiki.hostname} --urlpath sitemap/";
+        ExecStart = "${mediawiki-maintenance}/bin/mediawiki-maintenance generateSitemap.php --fspath ${sitemap_dir} --server http://${config.services.nixos-wiki.hostname} --urlpath sitemap/";
         User = "mediawiki";
         Type = "oneshot";
       };
     };
   };
-
 }

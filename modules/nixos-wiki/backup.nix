@@ -2,7 +2,7 @@
 let
   wikiDump = "/var/lib/mediawiki/backup/wikidump.xml.zst";
 
-  mediawiki-maintenance = pkgs.callPackage ./mediawiki-maintenance.nix {};
+  mediawiki-maintenance = pkgs.callPackage ./mediawiki-maintenance.nix { inherit config; };
 
   wiki-backup = pkgs.writeShellApplication {
     name = "wiki-backup";
