@@ -272,6 +272,7 @@ in
       locations."=/robots.txt".alias = ./robots.txt;
       locations."/sitemap/".alias = sitemap_dir;
       locations."= /sitemap.xml".alias = "${sitemap_dir}sitemap-index-mediawiki.xml";
+      locations."= /google2855366826b5ab3a.html".alias = ./google2855366826b5ab3a.html;
     };
 
     systemd.tmpfiles.rules = [
