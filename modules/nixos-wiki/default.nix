@@ -282,7 +282,7 @@ in
     systemd.services.wiki-sitemap = {
       startAt = "daily";
       serviceConfig = {
-        ExecStart = "${mediawiki-maintenance}/bin/mediawiki-maintenance generateSitemap.php --fspath ${sitemap_dir} --server http://${config.services.nixos-wiki.hostname} --urlpath sitemap/";
+        ExecStart = "${mediawiki-maintenance}/bin/mediawiki-maintenance generateSitemap.php --fspath ${sitemap_dir} --server https://${config.services.nixos-wiki.hostname} --urlpath sitemap/";
         User = "mediawiki";
         Type = "oneshot";
       };
