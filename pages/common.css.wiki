@@ -1,3 +1,6 @@
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Emoji:wght@300..700&family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
+
 :root {
   --home-panel-heading-background: var(--background-color-neutral);
   --home-panel-border-color: var(--border-color-subtle);
@@ -51,10 +54,17 @@ blockquote + p cite::before {
   pointer-events: none;
 }
 
-/* Paragraph / text styles */
+/* Paragraph and Text */
+
 p {
   text-align: initial;
 }
+
+.font-overpass {
+  font-family: "Overpass", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+};
 
 /* Infobox */
 
