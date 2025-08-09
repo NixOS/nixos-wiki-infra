@@ -85,7 +85,8 @@ in
           url = "https://github.com/SemanticMediaWiki/Mermaid/archive/refs/tags/3.1.0.zip";
           hash = "sha256-tLOdAsXsaP/URvKcl5QWQiyhMy70qn8Fi8g3+ecNOWQ=";
         }; # Adds diagram generation
-      } // pkgs.callPackages ./extensions.nix { };
+      }
+      // pkgs.callPackages ./extensions.nix { };
       extraConfig = ''
         # docs https://www.mediawiki.org/wiki/Extension:QuestyCaptcha
         $wgCaptchaQuestions = [
