@@ -272,6 +272,7 @@ in
       locations."=/robots.txt".alias = ./robots.txt;
       locations."/sitemap/".alias = sitemap_dir;
       locations."= /sitemap.xml".alias = "${sitemap_dir}sitemap-index-mediawiki.xml";
+      locations."= /google2855366826b5ab3a.html".alias = ./google2855366826b5ab3a.html;
     };
 
     systemd.tmpfiles.rules = [
@@ -281,7 +282,7 @@ in
     systemd.services.wiki-sitemap = {
       startAt = "daily";
       serviceConfig = {
-        ExecStart = "${mediawiki-maintenance}/bin/mediawiki-maintenance generateSitemap.php --fspath ${sitemap_dir} --server http://${config.services.nixos-wiki.hostname} --urlpath sitemap/";
+        ExecStart = "${mediawiki-maintenance}/bin/mediawiki-maintenance generateSitemap.php --fspath ${sitemap_dir} --server https://${config.services.nixos-wiki.hostname} --urlpath sitemap/";
         User = "mediawiki";
         Type = "oneshot";
       };
