@@ -5,6 +5,7 @@
   ...
 }:
 let
+  mediawiki-maintenance = pkgs.callPackage ./mediawiki-maintenance.nix {};
   cfg = config.services.nixos-wiki;
 in
 {
@@ -268,6 +269,21 @@ in
       locations."=/nixos.png".alias = ./nixos.png;
       locations."=/favicon.ico".alias = ./favicon.ico;
       locations."=/robots.txt".alias = ./robots.txt;
+      locations."/sitemap/".alias = "/var/lib/mediawiki-sitemap/";
+    };
+
+    systemd.tmpfiles.rules = [
+      "d 'var/lib/mediawiki-sitemap' 0750 mediawiki ${config.services.nginx.group} - -"
+    ];
+
+    systemd.services.wiki-sitemap = {
+      startAt = "daily";
+      serviceConfig = {
+        ExecStart = "${mediawiki-maintenance}/bin/mediawiki-maintenance generateSitemap.php --fspath /var/lib/mediawiki-sitemap/ --server http://${config.services.nixos-wiki.hostname} --urlpath sitemap/";
+        User = "mediawiki";
+        Type = "oneshot";
+      };
     };
   };
+
 }
