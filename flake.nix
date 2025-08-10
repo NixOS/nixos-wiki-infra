@@ -2,7 +2,9 @@
   description = "Dependencies to deploy a nixos-wiki";
 
   inputs = {
-    nixpkgs.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&ref=nixos-unstable-small";
+    # https://github.com/NixOS/nixpkgs/pull/427623
+    nixpkgs.url = "git+https://github.com/Mic92/nixpkgs?shallow=1&ref=nixos-wiki-fix";
+    # nixpkgs.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&ref=nixos-unstable-small";
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
     treefmt-nix.url = "github:numtide/treefmt-nix";
