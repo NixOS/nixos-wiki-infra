@@ -42,19 +42,19 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1754584630,
-        "narHash": "sha256-BwYTQOo9lIFiSkzoPJ+xsJzaylfRNhcDm7IZ8hYepbU=",
-        "ref": "nixos-unstable-small",
-        "rev": "428307d5155931523bf26e9784ad20606659674d",
+        "lastModified": 1754818235,
+        "narHash": "sha256-Vh8i0yl5ovBHtJOQt5/T1VR2gxicX1Tk4I52gUYyKo8=",
+        "ref": "nixos-wiki-fix",
+        "rev": "7689cb80eb74a165dd89669b70dd9b7c79e50704",
         "shallow": true,
         "type": "git",
-        "url": "https://github.com/NixOS/nixpkgs"
+        "url": "https://github.com/Mic92/nixpkgs"
       },
       "original": {
-        "ref": "nixos-unstable-small",
+        "ref": "nixos-wiki-fix",
         "shallow": true,
         "type": "git",
-        "url": "https://github.com/NixOS/nixpkgs"
+        "url": "https://github.com/Mic92/nixpkgs"
       }
     },
     "root": {
