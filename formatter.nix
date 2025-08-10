@@ -32,6 +32,7 @@
           "*.envrc.private-template"
         ];
         programs.shellcheck.enable = true;
+        settings.formatter.shellcheck.options = [ "-x" ];
         programs.deno.enable = !pkgs.deno.meta.broken;
       };
       packages = {

@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
+# shellcheck source-path=SCRIPTDIR
 
 set -euo pipefail
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source logging functions
+source "${SCRIPT_DIR}/logging.sh"
 
 WIKI_HOST="wiki.nixos.org"
 SSH_TARGET="root@${WIKI_HOST}"
@@ -23,23 +30,8 @@ ssh() {
   command ssh ${SSH_OPTS} "$@"
 }
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-log() {
-  echo -e "${GREEN}[$(date '+%Y-%m-%d %H:%M:%S')]${NC} $*"
-}
-
-error() {
-  echo -e "${RED}[ERROR $(date '+%Y-%m-%d %H:%M:%S')]${NC} $*" >&2
-}
-
-warning() {
-  echo -e "${YELLOW}[WARNING $(date '+%Y-%m-%d %H:%M:%S')]${NC} $*"
-}
+# Source health checks
+source "${SCRIPT_DIR}/health_checks.sh"
 
 nixBuild() {
   if command -v nom -v &>/dev/null; then
@@ -77,7 +69,7 @@ pre_deployment_checks() {
 # Build the system
 build_system() {
   log "Building NixOS configuration..."
-  nixBuild .#checks.x86_64-linux.test .#nixosConfigurations.nixos-wiki-nixos-org.config.system.build.toplevel -L --log-format bar-with-logs
+  nixBuild .#checks.x86_64-linux.test .#nixosConfigurations.nixos-wiki-nixos-org.config.system.build.toplevel -L
 }
 
 # Deploy with retries
@@ -100,155 +92,6 @@ deploy_system() {
 
   error "Deployment failed after $MAX_RETRIES attempts"
   return 1
-}
-
-# Health check functions
-check_nginx() {
-  log "Checking nginx service..."
-  if ! ssh "${SSH_TARGET}" "systemctl is-active --quiet nginx"; then
-    error "Nginx service is not active"
-    ssh "${SSH_TARGET}" "systemctl status nginx --no-pager | head -20" || true
-    return 1
-  fi
-
-  # Check if main page loads with wiki content
-  local response_code
-  local response_body
-  response_code=$(curl -sL -o /dev/null -w "%{http_code}" -m 10 "https://${WIKI_HOST}/wiki/Main_Page" || echo "000")
-
-  if [[ $response_code != "200" ]]; then
-    error "Main page returned HTTP status code: $response_code"
-    if [[ $response_code == "000" ]]; then
-      error "Failed to connect to https://${WIKI_HOST}/wiki/Main_Page"
-    fi
-    return 1
-  fi
-
-  # Check page content (follow redirects)
-  response_body=$(curl -sfL -m 10 "https://${WIKI_HOST}/wiki/Main_Page" 2>&1) || {
-    error "Failed to fetch main page content: $?"
-    return 1
-  }
-
-  if ! echo "$response_body" | grep -q "<title>.*NixOS Wiki.*</title>"; then
-    error "Main page does not contain expected title"
-    error "Page title: $(echo "$response_body" | grep -o '<title>[^<]*</title>' | head -1 || echo "Could not extract title")"
-    error "First 500 chars of response:"
-    echo "$response_body" | head -c 500
-    return 1
-  fi
-
-  return 0
-}
-
-check_postgresql() {
-  log "Checking PostgreSQL service..."
-  ssh "${SSH_TARGET}" "systemctl is-active --quiet postgresql" || return 1
-
-  # Check if database is accessible
-  if ! ssh "${SSH_TARGET}" "sudo -u postgres psql -d mediawiki -c 'SELECT 1;' >/dev/null 2>&1"; then
-    error "PostgreSQL database 'mediawiki' is not accessible"
-    return 1
-  fi
-  return 0
-}
-
-check_postfix() {
-  log "Checking Postfix service..."
-  if ! ssh "${SSH_TARGET}" "systemctl is-active --quiet postfix"; then
-    error "Postfix service is not active"
-    return 1
-  fi
-
-  # Check if postfix queue is processing (not stuck)
-  local queue_status
-  queue_status=$(ssh "${SSH_TARGET}" "postqueue -p | tail -1" 2>&1)
-  if echo "$queue_status" | grep -q "Mail queue is empty"; then
-    log "  Postfix queue is empty (good)"
-  elif echo "$queue_status" | grep -q "in .*[0-9]* Request"; then
-    local queue_count
-    queue_count=$(echo "$queue_status" | grep -o '[0-9]*' | head -1)
-    if [ "${queue_count:-0}" -gt 50 ]; then
-      warning "  Postfix has many queued emails: $queue_status"
-    else
-      log "  Postfix has $queue_count queued email(s) (acceptable)"
-    fi
-  else
-    warning "  Could not determine postfix queue status"
-  fi
-
-  return 0
-}
-
-check_backup_services() {
-  log "Checking backup services..."
-
-  # Check if backup timers are active
-  local backup_services=("wiki-dump.timer" "borgbackup-job-wiki.timer")
-  for service in "${backup_services[@]}"; do
-    # shellcheck disable=SC2029
-    if ssh "${SSH_TARGET}" "systemctl is-active --quiet '$service'"; then
-      log "  ✓ $service is active"
-    else
-      warning "  ✗ $service is not active"
-    fi
-  done
-  return 0
-}
-
-# Main health check
-run_health_checks() {
-  log "Running post-deployment health checks..."
-
-  local failed_checks=0
-  local start_time
-  start_time=$(date +%s)
-
-  # Wait for system to stabilize
-  log "Waiting for system to stabilize..."
-  sleep 10
-
-  # Run individual health checks
-  local checks=(
-    "check_nginx"
-    "check_postgresql"
-    "check_postfix"
-    "check_backup_services"
-  )
-
-  for check in "${checks[@]}"; do
-    if $check; then
-      log "  ✓ $check passed"
-    else
-      error "  ✗ $check failed"
-      failed_checks=$((failed_checks + 1))
-    fi
-  done
-
-  # Check overall system status
-  log "Checking overall system status..."
-  local system_status
-  system_status=$(ssh "${SSH_TARGET}" "systemctl is-system-running || echo 'degraded'")
-
-  if [[ $system_status == "running" ]]; then
-    log "System status: running"
-  else
-    warning "System status: $system_status"
-    if [[ $system_status == "degraded" ]]; then
-      log "Failed units:"
-      ssh "${SSH_TARGET}" "systemctl --failed --no-pager"
-    fi
-  fi
-
-  local elapsed=$(($(date +%s) - start_time))
-  log "Health checks completed in ${elapsed}s"
-
-  if [ $failed_checks -gt 0 ]; then
-    error "$failed_checks health checks failed"
-    return 1
-  fi
-
-  return 0
 }
 
 # Rollback function
@@ -293,6 +136,8 @@ main() {
   fi
 
   # Always run health checks to see current system state
+  log "Running post-deployment health checks..."
+  export WAIT_FOR_STABILIZATION=true
   if ! run_health_checks; then
     error "Post-deployment health checks failed"
 
