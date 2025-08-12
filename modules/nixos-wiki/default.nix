@@ -266,6 +266,17 @@ in
       forceSSL = lib.mkDefault (!cfg.testMode);
       extraConfig = ''
         limit_req zone=ip burst=20 nodelay;
+
+        # Add resource hints for critical assets to reduce CLS
+        add_header Link "</load.php?modules=site.styles&only=styles&skin=vector-2022>; rel=preload; as=style" always;
+        add_header Link "</w/skins/Vector/resources/common/fonts/Nunito-Regular.woff2>; rel=preload; as=font; type=font/woff2; crossorigin" always;
+        add_header Link "</w/skins/Vector/resources/common/fonts/Nunito-Bold.woff2>; rel=preload; as=font; type=font/woff2; crossorigin" always;
+
+        # Enable browser caching for static assets to improve performance
+        location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
+          expires 30d;
+          add_header Cache-Control "public, immutable";
+        }
       '';
       locations."=/nixos.png".alias = ./nixos.png;
       locations."=/favicon.ico".alias = ./favicon.ico;
