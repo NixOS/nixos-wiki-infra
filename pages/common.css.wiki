@@ -1,3 +1,21 @@
+/* Font preloading and optimization for CLS */
+@font-face {
+  font-family: system-ui;
+  font-display: swap; /* Prevents invisible text during font load */
+}
+
+/* Reserve space for common UI elements */
+* {
+  /* Prevent margin collapse that can cause layout shifts */
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+/* Add explicit margins back where needed */
+p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote {
+  margin-block-end: 1em;
+}
+
 :root {
   --home-panel-heading-background: var(--background-color-neutral);
   --home-panel-border-color: var(--border-color-subtle);
@@ -61,6 +79,9 @@ p {
 .infobox {
   margin: auto;
   max-width: 272px;
+  /* Reserve space to prevent layout shift */
+  min-height: 100px;
+  contain: layout style;
 }
 
 @media (min-width: 768px) {
@@ -69,6 +90,9 @@ p {
     min-width: 272px;
     margin-left: 1rem;
     margin-bottom: 1rem;
+    /* Ensure infobox doesn't cause reflow */
+    position: relative;
+    z-index: 1;
   }
 }
 
@@ -104,11 +128,21 @@ p {
 code,
 pre {
   hyphens: none;
+  /* Prevent layout shift from code blocks */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Reserve space for syntax highlighting to prevent shift */
+.mw-highlight {
+  min-height: 1.5em;
 }
 
 .mw-body img {
   max-width: 100%;
   height: auto;
+  /* Prevent layout shift by using aspect-ratio where possible */
+  aspect-ratio: attr(width) / attr(height);
 }
 
 .mw-highlight.mw-highlight {
@@ -178,6 +212,9 @@ html.skin-theme-clientpref-night body.page-NixOS_Wiki p > span.mw-default-size i
   border: 1px solid var(--home-panel-border-color);
   margin-bottom: 1.6rem;
   border-radius: 0.16rem;
+  /* Reserve minimum height to prevent layout shift */
+  min-height: 150px;
+  contain: layout style;
 }
 
 .home-box .panel-heading {
@@ -194,6 +231,9 @@ html.skin-theme-clientpref-night body.page-NixOS_Wiki p > span.mw-default-size i
 
 .table .table {
   border: 1px solid var(--table-border-color);
+  /* Prevent table layout shifts */
+  table-layout: fixed;
+  width: 100%;
 }
 
 .table .table th,
