@@ -254,7 +254,7 @@ in
         $wgCachePages = true;
 
         # Send cache headers for anonymous users
-        $wgCdnMaxAge = 3600; # 1 hour cache for anonymous users
+        $wgCdnMaxAge = 18000; # 5 hours cache for anonymous users (MediaWiki default)
       '';
     };
 
@@ -415,7 +415,7 @@ in
           fastcgi_cache mediawiki;
 
           # Respect MediaWiki's cache headers
-          fastcgi_cache_valid 200 301 302 60m;
+          fastcgi_cache_valid 200 301 302 5h;
           fastcgi_cache_valid 404 10m;
 
           # Use stale cache when updating or on errors
@@ -434,7 +434,7 @@ in
           fastcgi_cache mediawiki;
 
           # Respect MediaWiki's cache headers
-          fastcgi_cache_valid 200 301 302 60m;
+          fastcgi_cache_valid 200 301 302 5h;
           fastcgi_cache_valid 404 10m;
 
           # Use stale cache when updating or on errors
