@@ -25,10 +25,10 @@ in
   # postfix configuration for sending emails only
   services.postfix = {
     enable = true;
-    hostname = domain;
-    inherit domain;
+    settings.main = {
+      myhostname = domain;
+      mydomain = domain;
 
-    config = {
       smtp_tls_note_starttls_offer = "yes";
 
       smtp_tls_security_level = "dane";

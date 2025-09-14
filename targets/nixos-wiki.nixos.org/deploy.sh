@@ -53,7 +53,7 @@ pre_deployment_checks() {
   fi
 
   # Get current system generation for potential rollback
-  CURRENT_GENERATION=$(ssh "${SSH_TARGET}" "readlink /run/current-system | sed 's/.*-\([0-9]*\)-link/\1/'")
+  CURRENT_GENERATION=$(ssh "${SSH_TARGET}" "nix-env --list-generations -p /nix/var/nix/profiles/system | tail -1 | awk '{print \$1}'")
   log "Current system generation: ${CURRENT_GENERATION}"
 
   # Check disk space
