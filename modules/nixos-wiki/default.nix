@@ -237,6 +237,24 @@ in
 
         # Enable String Parser functions
         $wgEnableStringFunctions = true;
+
+        # Enable CDN/reverse proxy support for cache invalidation
+        $wgUseCdn = true;
+
+        # Configure CDN servers (nginx on localhost)
+        $wgCdnServers = [ '127.0.0.1' ];
+
+        # Use PURGE method for cache invalidation
+        $wgCdnReboundPurgeDelay = 0;
+
+        # Set cache control headers
+        $wgUseCacheControl = true;
+
+        # Cache anonymous page views
+        $wgCachePages = true;
+
+        # Send cache headers for anonymous users
+        $wgCdnMaxAge = 3600; # 1 hour cache for anonymous users
       '';
     };
 
@@ -278,35 +296,38 @@ in
     ];
     security.acme.acceptTerms = true;
 
-    # Enable Nginx VTS module for monitoring
+    # Enable Nginx VTS module for monitoring and cache-purge module
     services.nginx = {
-      additionalModules = [ pkgs.nginxModules.vts ];
+      additionalModules = [
+        pkgs.nginxModules.vts
+        pkgs.nginxModules.cache-purge
+      ];
 
       appendHttpConfig = ''
-        # Per-IP rate limiting - both per second and per minute
-        limit_req_zone $binary_remote_addr zone=ip_second:20m rate=5r/s;
-        limit_req_zone $binary_remote_addr zone=ip_minute:20m rate=60r/m;
+        # FastCGI cache configuration
+        fastcgi_cache_path /var/cache/nginx/mediawiki
+          levels=1:2
+          keys_zone=mediawiki:100m
+          inactive=60m
+          max_size=10g
+          use_temp_path=off;
 
-        # Subnet-based rate limiting for IPv4 /24 blocks
-        map $remote_addr $addr_subnet24 {
-          "~^(\d+\.\d+\.\d+)\." $1;
-          default "";
-        }
-        limit_req_zone $addr_subnet24 zone=subnet24_second:10m rate=30r/s;
-        limit_req_zone $addr_subnet24 zone=subnet24_minute:10m rate=600r/m;
+        # Cache key to use - includes host, request URI, and query string
+        fastcgi_cache_key "$scheme$request_method$host$request_uri";
 
-        # Subnet-based rate limiting for IPv6 /48 blocks  
-        map $remote_addr $addr_subnet48 {
-          "~^([0-9a-fA-F:]+:[0-9a-fA-F:]+:[0-9a-fA-F:]+):" $1;
-          default "";
+        # Define cache purge method
+        map $request_method $purge_method {
+          PURGE 1;
+          default 0;
         }
-        limit_req_zone $addr_subnet48 zone=subnet48_second:10m rate=30r/s;
-        limit_req_zone $addr_subnet48 zone=subnet48_minute:10m rate=600r/m;
+
+        # Per-IP rate limiting
+        limit_req_zone $binary_remote_addr zone=ip_second:20m rate=10r/s;
 
         # Aggressive rate limiting for Chinese cloud providers
         geo $is_chinese_network {
           default 0;
-          
+
           # Alibaba Cloud (comprehensive list)
           8.128.0.0/10 1;      # 8.128.0.0 - 8.191.255.255 (main bot source)
           8.212.128.0/18 1;    # 8.212.128.0 - 8.212.191.255
@@ -324,7 +345,7 @@ in
           147.139.0.0/16 1;    # 147.139.0.0 - 147.139.255.255
           155.102.0.0/16 1;    # 155.102.0.0 - 155.102.255.255
           163.181.0.0/16 1;    # 163.181.0.0 - 163.181.255.255
-          
+
           # Tencent Cloud (comprehensive list)
           1.12.0.0/14 1;       # 1.12.0.0 - 1.15.255.255
           1.116.0.0/15 1;      # 1.116.0.0 - 1.117.255.255
@@ -343,18 +364,26 @@ in
           129.204.0.0/14 1;    # 129.204.0.0 - 129.207.255.255
         }
 
-        # Very aggressive rate limiting for Chinese networks
-        # Per IP: 1 req/s, 20 req/m (allows bursts but limits sustained traffic)
-        limit_req_zone "$is_chinese_network:$binary_remote_addr" zone=chinese_ip_second:10m rate=1r/s;
-        limit_req_zone "$is_chinese_network:$binary_remote_addr" zone=chinese_ip_minute:10m rate=20r/m;
-
-        # Per /24 subnet: 3 req/s, 60 req/m
-        map "$is_chinese_network:$addr_subnet24" $chinese_subnet {
-          "~^1:(.+)" $1;
+        # Extract /24 subnet for Chinese networks
+        map $remote_addr $addr_subnet24 {
+          "~^(\d+\.\d+\.\d+)\." $1;
           default "";
         }
+
+        # Very aggressive rate limiting for Chinese networks
+        # Per IP: 1 req/s
+        map "$is_chinese_network:$binary_remote_addr" $chinese_limit_key {
+          "~^0:" "";  # Not a Chinese network
+          default $binary_remote_addr;
+        }
+        limit_req_zone $chinese_limit_key zone=chinese_ip_second:10m rate=1r/s;
+
+        # Per /24 subnet: 3 req/s
+        map "$is_chinese_network:$addr_subnet24" $chinese_subnet {
+          "~^0:" "";  # Not a Chinese network
+          default $addr_subnet24;
+        }
         limit_req_zone $chinese_subnet zone=chinese_subnet_second:10m rate=3r/s;
-        limit_req_zone $chinese_subnet zone=chinese_subnet_minute:10m rate=60r/m;
 
         limit_req_status 429;
 
@@ -368,43 +397,79 @@ in
       enableACME = lib.mkDefault (!cfg.testMode);
       forceSSL = lib.mkDefault (!cfg.testMode);
       extraConfig = ''
-        # Apply rate limits - per second and per minute for all IPs
+        # Apply rate limits to all requests
         limit_req zone=ip_second burst=20 nodelay;
-        limit_req zone=ip_minute burst=5 nodelay;
-
-        # Apply subnet-based rate limits
-        limit_req zone=subnet24_second burst=50 nodelay;
-        limit_req zone=subnet24_minute burst=10 nodelay;
-        limit_req zone=subnet48_second burst=50 nodelay;
-        limit_req zone=subnet48_minute burst=10 nodelay;
 
         # Apply aggressive limits for Chinese cloud providers
         limit_req zone=chinese_ip_second burst=2 nodelay;
-        limit_req zone=chinese_ip_minute burst=5 nodelay;
         limit_req zone=chinese_subnet_second burst=5 nodelay;
-        limit_req zone=chinese_subnet_minute burst=10 nodelay;
-      '';
-      locations."=/nixos.png".alias = ./nixos.png;
-      locations."=/favicon.ico".alias = ./favicon.ico;
-      locations."=/robots.txt".alias = ./robots.txt;
-      locations."/sitemap/".alias = sitemap_dir;
-      locations."= /sitemap.xml".alias = "${sitemap_dir}sitemap-index-mediawiki.xml";
-      locations."= /google2855366826b5ab3a.html".alias = ./google2855366826b5ab3a.html;
 
-      # VTS status endpoint - restricted to localhost only
-      locations."/nginx_status" = {
-        extraConfig = ''
-          vhost_traffic_status_display;
-          vhost_traffic_status_display_format html;
-          allow 127.0.0.1;
-          allow ::1;
-          deny all;
+        # Add cache status header for debugging
+        add_header X-Cache-Status $upstream_cache_status always;
+      '';
+
+      locations = {
+        # Extend the PHP endpoints with caching
+        "~ ^/w/(index|load|api|thumb|opensearch_desc|rest|img_auth)\\.php$".extraConfig = lib.mkAfter ''
+          # Cache configuration
+          fastcgi_cache mediawiki;
+
+          # Respect MediaWiki's cache headers
+          fastcgi_cache_valid 200 301 302 60m;
+          fastcgi_cache_valid 404 10m;
+
+          # Use stale cache when updating or on errors
+          fastcgi_cache_use_stale error timeout updating invalid_header http_500 http_503;
+          fastcgi_cache_background_update on;
+          fastcgi_cache_lock on;
+          fastcgi_cache_lock_timeout 5s;
+
+          # Handle cache purging - MediaWiki sends PURGE requests directly to URLs
+          fastcgi_cache_purge $purge_method;
         '';
+
+        # Extend wiki pages with caching
+        "/wiki/".extraConfig = lib.mkAfter ''
+          # Cache configuration for wiki pages
+          fastcgi_cache mediawiki;
+
+          # Respect MediaWiki's cache headers
+          fastcgi_cache_valid 200 301 302 60m;
+          fastcgi_cache_valid 404 10m;
+
+          # Use stale cache when updating or on errors
+          fastcgi_cache_use_stale error timeout updating invalid_header http_500 http_503;
+          fastcgi_cache_background_update on;
+          fastcgi_cache_lock on;
+
+          # Handle cache purging - MediaWiki sends PURGE requests directly to URLs
+          fastcgi_cache_purge $purge_method;
+        '';
+
+        # Static files
+        "=/nixos.png".alias = ./nixos.png;
+        "=/favicon.ico".alias = ./favicon.ico;
+        "=/robots.txt".alias = ./robots.txt;
+        "/sitemap/".alias = sitemap_dir;
+        "= /sitemap.xml".alias = "${sitemap_dir}sitemap-index-mediawiki.xml";
+        "= /google2855366826b5ab3a.html".alias = ./google2855366826b5ab3a.html;
+
+        # VTS status endpoint - restricted to localhost only
+        "/nginx_status" = {
+          extraConfig = ''
+            vhost_traffic_status_display;
+            vhost_traffic_status_display_format html;
+            allow 127.0.0.1;
+            allow ::1;
+            deny all;
+          '';
+        };
       };
     };
 
     systemd.tmpfiles.rules = [
       "d '${sitemap_dir}' 0750 mediawiki ${config.services.nginx.group} - -"
+      "d '/var/cache/nginx/mediawiki' 0750 ${config.services.nginx.user} ${config.services.nginx.group} - -"
     ];
 
     systemd.services.wiki-sitemap = {
