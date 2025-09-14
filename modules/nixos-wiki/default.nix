@@ -308,8 +308,8 @@ in
         fastcgi_cache_path /var/cache/nginx/mediawiki
           levels=1:2
           keys_zone=mediawiki:100m
-          inactive=60m
-          max_size=10g
+          inactive=5h
+          max_size=20g
           use_temp_path=off;
 
         # Cache key to use - includes host, request URI, and query string
