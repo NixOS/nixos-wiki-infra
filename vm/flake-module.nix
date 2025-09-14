@@ -11,7 +11,7 @@
           text =
             let
               debugVm =
-                { modulesPath, ... }:
+                { modulesPath, config, ... }:
                 {
                   imports = [
                     # The qemu-vm NixOS module gives us the `vm` attribute that we will later
@@ -36,9 +36,10 @@
                   virtualisation.memorySize = 2048;
 
                   # Root user without password and enabled SSH for playing around
+                  system.stateVersion = config.system.nixos.release;
                   networking.firewall.enable = false;
                   services.openssh.enable = true;
-                  services.openssh.permitRootLogin = "yes";
+                  services.openssh.settings.PermitRootLogin = "yes";
                   users.extraUsers.root.password = "nixos-wiki00"; # same as the admin user on the test wiki
                   environment.systemPackages = with pkgs; [
                     iptables

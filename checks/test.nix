@@ -13,6 +13,7 @@
         imports = [
           self.nixosModules.nixos-wiki
         ];
+        system.stateVersion = config.system.nixos.release;
         networking.extraHosts = ''
           127.0.0.1 nixos-wiki.example.com
         '';
