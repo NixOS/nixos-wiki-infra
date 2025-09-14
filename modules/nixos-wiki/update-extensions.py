@@ -19,12 +19,34 @@ from bs4 import BeautifulSoup
 def get_latest_url(
     extension_name: str, mediawiki_version: str
 ) -> urllib.parse.ParseResult:
-    # <dl><dd><a rel="nofollow" class="external free" href="https://extdist.wmflabs.org/dist/extensions/QuickInstantCommons-REL1_41-2a29b3e.tar.gz">https://extdist.wmflabs.org/dist/extensions/QuickInstantCommons-REL1_41-2a29b3e.tar.gz</a></dd></dl>
+    # <dl><dd><a rel="nofollow" class="external free" href="https://extdist.wmflabs.org/dist/extensions/QuickInstantCommons-REL1_44-6ee3f47.tar.gz">https://extdist.wmflabs.org/dist/extensions/QuickInstantCommons-REL1_44-6ee3f47.tar.gz</a></dd></dl>
     extension_url = f"https://www.mediawiki.org/wiki/Special:ExtensionDistributor?extdistname={extension_name}&extdistversion=REL{mediawiki_version}"
-    body = requests.get(extension_url)
+    headers = {
+        "User-Agent": "NixOS-Wiki-Extension-Updater/1.0 (https://github.com/NixOS/nixos-wiki-infra)"
+    }
+    body = requests.get(extension_url, headers=headers)
+    body.raise_for_status()
     soup = BeautifulSoup(body.text, "html.parser")
-    url = soup.find_all("a", class_="external free")[0].get("href")
-    return urllib.parse.urlparse(url)
+
+    # Check if the extension exists for this version
+    content = soup.find(id="mw-content-text")
+    if content and "does not exist" in content.get_text():
+        raise Exception(
+            f"Extension '{extension_name}' does not exist for MediaWiki version REL{mediawiki_version}"
+        )
+
+    # Look for download links - the class is now a list ['external', 'free']
+    links = soup.find_all("a", class_="external")
+    for link in links:
+        classes = link.get("class", [])
+        if "free" in classes:
+            href = link.get("href")
+            if href and ("extdist.wmflabs.org" in href or ".tar.gz" in href):
+                return urllib.parse.urlparse(href)
+
+    raise Exception(
+        f"Could not find download URL for extension '{extension_name}' version REL{mediawiki_version}"
+    )
 
 
 def run(
