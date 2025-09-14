@@ -56,6 +56,14 @@ in
       (pkgs.python3.pkgs.callPackage ../../pkgs/wiki-user-search { })
     ];
 
+    services.memcached = {
+      enable = true;
+      listen = "127.0.0.1";
+      port = 11211;
+      maxMemory = 512;
+      maxConnections = 2048; # 256 connections per core for 8 cores
+    };
+
     services.mediawiki = {
       name = "NixOS Wiki";
       enable = true;
@@ -64,6 +72,16 @@ in
       nginx.hostName = config.services.nixos-wiki.hostname;
       uploadsDir = "/var/lib/mediawiki-uploads/";
       passwordFile = if cfg.testMode then pkgs.writeText "pass" "nixos-wiki00" else cfg.adminPasswordFile;
+
+      # PHP-FPM pool configuration optimized for 8-core machine
+      poolConfig = {
+        "pm" = "dynamic";
+        "pm.max_children" = 64; # 8 workers per core
+        "pm.start_servers" = 16; # 2 per core
+        "pm.min_spare_servers" = 8; # 1 per core
+        "pm.max_spare_servers" = 32; # 4 per core
+        "pm.max_requests" = 1000; # Increased for better performance
+      };
 
       extensions = {
         SyntaxHighlight_GeSHi = null; # provides <SyntaxHighlight> tags
@@ -130,8 +148,9 @@ in
         # Pretty URLs
         $wgUsePathInfo = true;
 
-        # cache pages with db
-        $wgMainCacheType = CACHE_DB;
+        # Configure Memcached for caching
+        $wgMainCacheType = CACHE_MEMCACHED;
+        $wgMemCachedServers = [ '127.0.0.1:11211' ];
 
         wfLoadSkin( 'MinervaNeue' );
         $wgDefaultMobileSkin = 'minerva';
@@ -258,15 +277,112 @@ in
       80
     ];
     security.acme.acceptTerms = true;
-    services.nginx.appendHttpConfig = ''
-      limit_req_zone $binary_remote_addr zone=ip:20m rate=5r/s;
-      limit_req_status 429;
-    '';
+
+    # Enable Nginx VTS module for monitoring
+    services.nginx = {
+      additionalModules = [ pkgs.nginxModules.vts ];
+
+      appendHttpConfig = ''
+        # Per-IP rate limiting - both per second and per minute
+        limit_req_zone $binary_remote_addr zone=ip_second:20m rate=5r/s;
+        limit_req_zone $binary_remote_addr zone=ip_minute:20m rate=60r/m;
+
+        # Subnet-based rate limiting for IPv4 /24 blocks
+        map $remote_addr $addr_subnet24 {
+          "~^(\d+\.\d+\.\d+)\." $1;
+          default "";
+        }
+        limit_req_zone $addr_subnet24 zone=subnet24_second:10m rate=30r/s;
+        limit_req_zone $addr_subnet24 zone=subnet24_minute:10m rate=600r/m;
+
+        # Subnet-based rate limiting for IPv6 /48 blocks  
+        map $remote_addr $addr_subnet48 {
+          "~^([0-9a-fA-F:]+:[0-9a-fA-F:]+:[0-9a-fA-F:]+):" $1;
+          default "";
+        }
+        limit_req_zone $addr_subnet48 zone=subnet48_second:10m rate=30r/s;
+        limit_req_zone $addr_subnet48 zone=subnet48_minute:10m rate=600r/m;
+
+        # Aggressive rate limiting for Chinese cloud providers
+        geo $is_chinese_network {
+          default 0;
+          
+          # Alibaba Cloud (comprehensive list)
+          8.128.0.0/10 1;      # 8.128.0.0 - 8.191.255.255 (main bot source)
+          8.212.128.0/18 1;    # 8.212.128.0 - 8.212.191.255
+          47.52.0.0/16 1;      # 47.52.0.0 - 47.52.255.255
+          47.56.0.0/15 1;      # 47.56.0.0 - 47.57.255.255
+          47.86.0.0/16 1;      # 47.86.0.0 - 47.86.255.255
+          47.88.0.0/14 1;      # 47.88.0.0 - 47.91.255.255
+          47.238.0.0/15 1;     # 47.238.0.0 - 47.239.255.255
+          47.242.0.0/16 1;     # 47.242.0.0 - 47.242.255.255
+          47.243.0.0/16 1;     # 47.243.0.0 - 47.243.255.255
+          47.250.0.0/17 1;     # 47.250.0.0 - 47.250.127.255
+          47.254.192.0/18 1;   # 47.254.192.0 - 47.254.255.255
+          72.254.0.0/16 1;     # 72.254.0.0 - 72.254.255.255
+          139.95.0.0/16 1;     # 139.95.0.0 - 139.95.255.255
+          147.139.0.0/16 1;    # 147.139.0.0 - 147.139.255.255
+          155.102.0.0/16 1;    # 155.102.0.0 - 155.102.255.255
+          163.181.0.0/16 1;    # 163.181.0.0 - 163.181.255.255
+          
+          # Tencent Cloud (comprehensive list)
+          1.12.0.0/14 1;       # 1.12.0.0 - 1.15.255.255
+          1.116.0.0/15 1;      # 1.116.0.0 - 1.117.255.255
+          42.192.0.0/15 1;     # 42.192.0.0 - 42.193.255.255
+          43.138.0.0/15 1;     # 43.138.0.0 - 43.139.255.255
+          43.140.0.0/15 1;     # 43.140.0.0 - 43.141.255.255
+          43.144.0.0/13 1;     # 43.144.0.0 - 43.151.255.255
+          43.176.0.0/12 1;     # 43.176.0.0 - 43.191.255.255
+          49.232.0.0/14 1;     # 49.232.0.0 - 49.235.255.255
+          81.68.0.0/14 1;      # 81.68.0.0 - 81.71.255.255
+          82.156.0.0/15 1;     # 82.156.0.0 - 82.157.255.255
+          101.34.0.0/15 1;     # 101.34.0.0 - 101.35.255.255
+          106.52.0.0/14 1;     # 106.52.0.0 - 106.55.255.255
+          119.28.0.0/14 1;     # 119.28.0.0 - 119.31.255.255
+          124.220.0.0/14 1;    # 124.220.0.0 - 124.223.255.255
+          129.204.0.0/14 1;    # 129.204.0.0 - 129.207.255.255
+        }
+
+        # Very aggressive rate limiting for Chinese networks
+        # Per IP: 1 req/s, 20 req/m (allows bursts but limits sustained traffic)
+        limit_req_zone "$is_chinese_network:$binary_remote_addr" zone=chinese_ip_second:10m rate=1r/s;
+        limit_req_zone "$is_chinese_network:$binary_remote_addr" zone=chinese_ip_minute:10m rate=20r/m;
+
+        # Per /24 subnet: 3 req/s, 60 req/m
+        map "$is_chinese_network:$addr_subnet24" $chinese_subnet {
+          "~^1:(.+)" $1;
+          default "";
+        }
+        limit_req_zone $chinese_subnet zone=chinese_subnet_second:10m rate=3r/s;
+        limit_req_zone $chinese_subnet zone=chinese_subnet_minute:10m rate=60r/m;
+
+        limit_req_status 429;
+
+        # Enable VTS module
+        vhost_traffic_status_zone;
+        vhost_traffic_status_filter_by_host on;
+      '';
+    };
+
     services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
       enableACME = lib.mkDefault (!cfg.testMode);
       forceSSL = lib.mkDefault (!cfg.testMode);
       extraConfig = ''
-        limit_req zone=ip burst=20 nodelay;
+        # Apply rate limits - per second and per minute for all IPs
+        limit_req zone=ip_second burst=20 nodelay;
+        limit_req zone=ip_minute burst=5 nodelay;
+
+        # Apply subnet-based rate limits
+        limit_req zone=subnet24_second burst=50 nodelay;
+        limit_req zone=subnet24_minute burst=10 nodelay;
+        limit_req zone=subnet48_second burst=50 nodelay;
+        limit_req zone=subnet48_minute burst=10 nodelay;
+
+        # Apply aggressive limits for Chinese cloud providers
+        limit_req zone=chinese_ip_second burst=2 nodelay;
+        limit_req zone=chinese_ip_minute burst=5 nodelay;
+        limit_req zone=chinese_subnet_second burst=5 nodelay;
+        limit_req zone=chinese_subnet_minute burst=10 nodelay;
       '';
       locations."=/nixos.png".alias = ./nixos.png;
       locations."=/favicon.ico".alias = ./favicon.ico;
@@ -274,6 +390,17 @@ in
       locations."/sitemap/".alias = sitemap_dir;
       locations."= /sitemap.xml".alias = "${sitemap_dir}sitemap-index-mediawiki.xml";
       locations."= /google2855366826b5ab3a.html".alias = ./google2855366826b5ab3a.html;
+
+      # VTS status endpoint - restricted to localhost only
+      locations."/nginx_status" = {
+        extraConfig = ''
+          vhost_traffic_status_display;
+          vhost_traffic_status_display_format html;
+          allow 127.0.0.1;
+          allow ::1;
+          deny all;
+        '';
+      };
     };
 
     systemd.tmpfiles.rules = [
