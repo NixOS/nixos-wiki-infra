@@ -309,7 +309,7 @@ in
           levels=1:2
           keys_zone=mediawiki:100m
           inactive=5h
-          max_size=20g
+          max_size=15g
           use_temp_path=off;
 
         # Cache key to use - includes host, request URI, and query string
@@ -329,7 +329,9 @@ in
           default 0;
 
           # Alibaba Cloud (comprehensive list)
-          8.128.0.0/10 1;      # 8.128.0.0 - 8.191.255.255 (main bot source)
+          8.128.0.0/10 1;      # observed bot traffic
+          8.160.0.0/11 1;      # 8.160.0.0 - 8.191.255.255 (expanded range due to heavy scraping)
+
           8.212.128.0/18 1;    # 8.212.128.0 - 8.212.191.255
           47.52.0.0/16 1;      # 47.52.0.0 - 47.52.255.255
           47.56.0.0/15 1;      # 47.56.0.0 - 47.57.255.255
