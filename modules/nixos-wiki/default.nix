@@ -309,7 +309,7 @@ in
           levels=1:2
           keys_zone=mediawiki:100m
           inactive=5h
-          max_size=20g
+          max_size=15g
           use_temp_path=off;
 
         # Cache key to use - includes host, request URI, and query string
