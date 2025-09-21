@@ -8,3 +8,7 @@ nixos.qcow2
 
 terraform.tfstate.backup
 .terraform.tfstate.lock.info
+
+# PHP/Composer
+vendor/
+*.cache

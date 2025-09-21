@@ -35,6 +35,7 @@
           ./checks/flake-module.nix
           ./vm/flake-module.nix
           ./formatter.nix
+          ./pkgs/mediawiki-fastly-purge/flake-module.nix
         ];
         perSystem =
           {
