@@ -1,0 +1,30 @@
+{
+  "name": "mediawiki/fastly-purge",
+  "description": "MediaWiki extension for Fastly CDN cache purging",
+  "type": "mediawiki-extension",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.2"
+  },
+  "require-dev": {
+    "mediawiki/mediawiki-codesniffer": "48.0.0",
+    "mediawiki/mediawiki-phan-config": "0.17.0",
+    "php-parallel-lint/php-console-highlighter": "1.0.0",
+    "php-parallel-lint/php-parallel-lint": "1.4.0"
+  },
+  "scripts": {
+    "lint": [
+      "phan -d . --long-progress-bar",
+      "parallel-lint . --exclude vendor --exclude node_modules",
+      "phpcs -p -s"
+    ],
+    "fix": [
+      "phpcbf"
+    ]
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  }
+}
