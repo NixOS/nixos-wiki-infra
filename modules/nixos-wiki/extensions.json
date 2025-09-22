@@ -5,11 +5,6 @@
   "Translate": {},
   "UniversalLanguageSelector": {},
   "Description2": {},
-  "Mermaid": {
-    "type": "github",
-    "github_repo": "SemanticMediaWiki/Mermaid",
-    "github_type": "tag"
-  },
   "AuthManagerOAuth": {
     "type": "github",
     "github_repo": "mohe2015/AuthManagerOAuth",

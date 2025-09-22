@@ -24,10 +24,6 @@
     url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Description2-REL1_44-defa8c4.tar.gz/Description2-REL1_44-defa8c4.tar.gz";
     hash = "sha256-PYLQyH1+vZVR0brbBgHhYkAVR2H3jK1R4CuEAL3cJdI=";
   };
-  "Mermaid" = fetchzip {
-    url = "https://github.com/SemanticMediaWiki/Mermaid/archive/refs/tags/6.0.1.zip";
-    hash = "sha256-ioeoVh0jDrhrxBfWrY2PfLIBxjgb/5/UlNx3RnHv/5Q=";
-  };
   "AuthManagerOAuth" = fetchzip {
     url = "https://github.com/mohe2015/AuthManagerOAuth/releases/download/v0.3.3/AuthManagerOAuth.zip";
     hash = "sha256-xReQzh/ZcQsOD/qb3iqbgSeNOh+7pE6d7h6Sc/aHyTw=";
