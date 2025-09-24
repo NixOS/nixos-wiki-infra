@@ -5,8 +5,8 @@
     hash = "sha256-SFeEYqBPGOZ+I1h3qGdMQWkntI2TX1DJATsvJXJ63yE=";
   };
   "DarkMode" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/DarkMode-REL1_44-4b937c9.tar.gz/DarkMode-REL1_44-4b937c9.tar.gz";
-    hash = "sha256-y6cpbJDfBKLMWnT/n2bCdJMch+qaGIqc30ZgI/j69Do=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/DarkMode-REL1_44-1561924.tar.gz/DarkMode-REL1_44-1561924.tar.gz";
+    hash = "sha256-/x+H3SlomcIGjlZ7QiuVaCHxOaeHc+mNpWm9iJfyaFw=";
   };
   "QuickInstantCommons" = fetchzip {
     url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/QuickInstantCommons-REL1_44-6ee3f47.tar.gz/QuickInstantCommons-REL1_44-6ee3f47.tar.gz";
