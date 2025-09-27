@@ -219,3 +219,11 @@ html.skin-theme-clientpref-night body.page-NixOS_Wiki p > span.mw-default-size i
 .table .table tr:nth-child(odd) {
   background: var(--table-even-background);
 }
+
+/* Fix CLS issue */
+.vector-toc-list-item .vector-toc-toggle .mw-ui-icon-wikimedia-expand {
+  height: 0.75rem;
+  min-height: 0.75rem;
+  min-width: 0.75rem;
+  width: 0.75rem;
+}
