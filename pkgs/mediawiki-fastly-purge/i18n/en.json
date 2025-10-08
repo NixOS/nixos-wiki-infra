@@ -1,0 +1,8 @@
+{
+  "@metadata": {
+    "authors": [
+      "NixOS Wiki Contributors"
+    ]
+  },
+  "fastlypurge-desc": "Automatically purges Fastly CDN cache when pages are modified using the EventRelayer system for comprehensive cache invalidation"
+}
