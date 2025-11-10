@@ -65,7 +65,7 @@ in
     };
 
     services.mediawiki = {
-      name = "NixOS Wiki";
+      name = "Official NixOS Wiki";
       enable = true;
       webserver = "nginx";
       database.type = "postgres";
