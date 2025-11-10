@@ -78,7 +78,7 @@ deploy_system() {
 
   local retry_count=0
   while [ $retry_count -lt $MAX_RETRIES ]; do
-    if nixos-rebuild-ng switch --flake "${FLAKE_TARGET}" --target-host "${SSH_TARGET}"; then
+    if nixos-rebuild-ng switch ----use-substitutes --flake "${FLAKE_TARGET}" --target-host "${SSH_TARGET}"; then
       log "Deployment successful"
       return 0
     else
