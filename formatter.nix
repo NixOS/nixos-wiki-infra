@@ -58,10 +58,10 @@
               (pkgs.opentofu.withPlugins (
                 p:
                 builtins.map convert2Tofu [
-                  p.hcloud
-                  p.null
-                  p.external
-                  p.local
+                  p.hetznercloud_hcloud
+                  p.hashicorp_null
+                  p.hashicorp_external
+                  p.hashicorp_local
                 ]
               ))
             ];
