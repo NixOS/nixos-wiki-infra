@@ -106,7 +106,7 @@ in
         wfLoadExtensions([ 'ConfirmEdit/QuestyCaptcha' ]);
 
         $wgCaptchaQuestions = [
-          "What is the output of this command: nix-instantiate --eval --expr 'builtins.hashString \"sha256\" \"NixOS wiki\"' ?" => "62e65110a5a6fa4f08256f7d9ee3461412babb37dc0955531b79dcf9732c9c91"
+          "What is the output of this command: nix-instantiate --eval --expr 'builtins.hashString \"sha256\" \"NixOS wiki\"' ?" => ['62e65110a5a6fa4f08256f7d9ee3461412babb37dc0955531b79dcf9732c9c91', '"62e65110a5a6fa4f08256f7d9ee3461412babb37dc0955531b79dcf9732c9c91"']
         ];
 
         # Configure captcha to trigger only on account creation
