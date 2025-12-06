@@ -1,8 +1,8 @@
 { fetchzip }:
 {
   "MobileFrontend" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/MobileFrontend-REL1_44-bc93b54.tar.gz/MobileFrontend-REL1_44-bc93b54.tar.gz";
-    hash = "sha256-AlitMcu/f8Q9/lqdfzdT8r+i4lPaU4Nzyaj573hscSE=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/MobileFrontend-REL1_44-33afaab.tar.gz/MobileFrontend-REL1_44-33afaab.tar.gz";
+    hash = "sha256-SHH9Z0753oytU6exBwW/P0U67YDTYH4fqz9pf4ak5Ow=";
   };
   "DarkMode" = fetchzip {
     url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/DarkMode-REL1_44-48cda65.tar.gz/DarkMode-REL1_44-48cda65.tar.gz";
@@ -13,12 +13,12 @@
     hash = "sha256-KZlHoOnr8TWZ1yIujq+DT2qiajB5JCseS9mBY2jDSvM=";
   };
   "Translate" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Translate-REL1_44-34fe680.tar.gz/Translate-REL1_44-34fe680.tar.gz";
-    hash = "sha256-BZOzoiy1tNYW7exCF0/7x6hvXuLc9KfaXyEQkRDyBk4=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Translate-REL1_44-58c3e58.tar.gz/Translate-REL1_44-58c3e58.tar.gz";
+    hash = "sha256-0pL6vyjv6bAzoU1NhSZDS/c6vRs9SzSe4rJBn8vHO/A=";
   };
   "UniversalLanguageSelector" = fetchzip {
-    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/UniversalLanguageSelector-REL1_44-b6b3e9f.tar.gz/UniversalLanguageSelector-REL1_44-b6b3e9f.tar.gz";
-    hash = "sha256-qFC7aTc9pywqQTb3ynM6DqnrCImMTbs1h20vE/7oXGw=";
+    url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/UniversalLanguageSelector-REL1_44-fc09a60.tar.gz/UniversalLanguageSelector-REL1_44-fc09a60.tar.gz";
+    hash = "sha256-eWtLoA6S/u3Ouw6QANjz3kqbR3R2Dwhs6nS70jaD/eA=";
   };
   "Description2" = fetchzip {
     url = "https://github.com/NixOS/nixos-wiki-infra/releases/download/Description2-REL1_44-c01810f.tar.gz/Description2-REL1_44-c01810f.tar.gz";
