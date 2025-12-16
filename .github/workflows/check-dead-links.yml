@@ -16,13 +16,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: upload lychee report as artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: lychee-report
           if-no-files-found: error
           path: ./checks/linkcheck/lychee*-report
       - name: upload filtered xmldump artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: wikidump-filtered.xml
           if-no-files-found: error
