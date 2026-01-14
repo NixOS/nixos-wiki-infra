@@ -54,7 +54,7 @@ def process_dump(args: argparse.Namespace) -> None:
 
         if len(revisions) > 1:
             latest_revision = max(
-                revisions, key=lambda revison: get_revision_timestamp(revison, ns)
+                revisions, key=lambda revision: get_revision_timestamp(revision, ns)
             )
 
             # Remove all revisions except the latest one
