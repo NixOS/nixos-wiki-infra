@@ -12,9 +12,13 @@ let
   # Patch mediawiki to fix PostgreSQL installer null password issue
   # https://phabricator.wikimedia.org/T414884
   # https://github.com/NixOS/nixpkgs/issues/480903
+  #
+  # Also patch categorylinks migration which fails because 'ns' is a literal
+  # integer (14 = NS_CATEGORY) instead of a column name, causing SQL syntax errors
   patchedMediawiki = pkgs.mediawiki.overrideAttrs (oldAttrs: {
     patches = (oldAttrs.patches or [ ]) ++ [
-      ../../pkgs/mediawiki-postgres-null-password.patch
+      ../../pkgs/0001-PostgresInstaller-Handle-null-password-in-openConnec.patch
+      ../../pkgs/0001-migrateLinksTable-Fix-categorylinks-migration-with-l.patch
     ];
   });
 in
