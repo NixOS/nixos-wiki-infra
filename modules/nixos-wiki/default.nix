@@ -8,6 +8,15 @@ let
   mediawiki-maintenance = pkgs.callPackage ./mediawiki-maintenance.nix { inherit config; };
   sitemap_dir = "/var/lib/mediawiki-sitemap/";
   cfg = config.services.nixos-wiki;
+
+  # Patch mediawiki to fix PostgreSQL installer null password issue
+  # https://phabricator.wikimedia.org/T414884
+  # https://github.com/NixOS/nixpkgs/issues/480903
+  patchedMediawiki = pkgs.mediawiki.overrideAttrs (oldAttrs: {
+    patches = (oldAttrs.patches or [ ]) ++ [
+      ../../pkgs/mediawiki-postgres-null-password.patch
+    ];
+  });
 in
 {
   imports = [
@@ -67,6 +76,7 @@ in
     services.mediawiki = {
       name = "Official NixOS Wiki";
       enable = true;
+      package = patchedMediawiki;
       webserver = "nginx";
       database.type = "postgres";
       nginx.hostName = config.services.nixos-wiki.hostname;
