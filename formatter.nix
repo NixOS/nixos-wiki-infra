@@ -21,7 +21,6 @@
         ];
         programs.terraform.enable = true;
         programs.nixfmt.enable = true;
-        programs.nixfmt.package = pkgs.nixfmt-rfc-style;
         programs.deadnix.enable = true;
         programs.ruff.format = true;
         programs.ruff.check = true;
