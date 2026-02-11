@@ -1,0 +1,39 @@
+{
+  "name": "FastlyPurge",
+  "version": "1.0.0",
+  "author": [
+    "NixOS Wiki Contributors"
+  ],
+  "url": "https://github.com/NixOS/nixos-wiki-infra",
+  "descriptionmsg": "fastlypurge-desc",
+  "license-name": "MIT",
+  "type": "other",
+  "requires": {
+    "MediaWiki": ">= 1.39.0"
+  },
+  "config": {
+    "FastlyApiKey": {
+      "value": "",
+      "description": "Fastly API key for authentication"
+    },
+    "FastlyServiceId": {
+      "value": "",
+      "description": "Fastly service ID"
+    }
+  },
+  "MessagesDirs": {
+    "FastlyPurge": [
+      "i18n"
+    ]
+  },
+  "AutoloadNamespaces": {
+    "MediaWiki\\Extension\\FastlyPurge\\": "includes/"
+  },
+  "ServiceWiringFiles": [
+    "includes/ServiceWiring.php"
+  ],
+  "Hooks": {
+    "SetupAfterCache": "MediaWiki\\Extension\\FastlyPurge\\Hooks::onSetupAfterCache"
+  },
+  "manifest_version": 2
+}
