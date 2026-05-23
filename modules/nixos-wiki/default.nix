@@ -212,6 +212,10 @@ in
 
         $wgPygmentizePath = "${pkgs.python3Packages.pygments}/bin/pygmentize";
 
+        # Map virtual-translate domain to the wiki's own database
+        # Required for Translate extension tables (e.g. translate_message_group_subscriptions)
+        $wgVirtualDomainsMapping['virtual-translate'] = [ 'db' => false ];
+
         # Enable Translate extension for all users
         $wgGroupPermissions['user']["translate"] = true;
         $wgGroupPermissions['user']["pagetranslation"] = true;
