@@ -1,5 +1,6 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -i python3 -p nixfmt-rfc-style python3 python3Packages.requests python3Packages.beautifulsoup4 gh
+# ruff: noqa: EXE005 -- nix-shell requires the second #! line above
 import json
 import os
 import shlex
@@ -10,10 +11,14 @@ import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Dict, Any, List, Optional
+from typing import Any
 
 import requests
 from bs4 import BeautifulSoup
+
+
+class ExtensionError(Exception):
+    pass
 
 
 def get_latest_url(
@@ -31,7 +36,7 @@ def get_latest_url(
     # Check if the extension exists for this version
     content = soup.find(id="mw-content-text")
     if content and "does not exist" in content.get_text():
-        raise Exception(
+        raise ExtensionError(
             f"Extension '{extension_name}' does not exist for MediaWiki version REL{mediawiki_version}"
         )
 
@@ -44,7 +49,7 @@ def get_latest_url(
             if href and ("extdist.wmflabs.org" in href or ".tar.gz" in href):
                 return urllib.parse.urlparse(href)
 
-    raise Exception(
+    raise ExtensionError(
         f"Could not find download URL for extension '{extension_name}' version REL{mediawiki_version}"
     )
 
@@ -70,15 +75,11 @@ def download_file(url: str, local_filename: str) -> str:
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
         with open(local_filename, "wb") as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                # If you have chunk encoded response uncomment if
-                # and set chunk_size parameter to None.
-                # if chunk:
-                f.write(chunk)
+            f.writelines(r.iter_content(chunk_size=8192))
     return local_filename
 
 
-def get_github_headers() -> Dict[str, str]:
+def get_github_headers() -> dict[str, str]:
     """Get headers for GitHub API requests, including auth if GITHUB_TOKEN is set"""
     headers = {"Accept": "application/vnd.github.v3+json"}
     github_token = os.environ.get("GITHUB_TOKEN")
@@ -113,11 +114,11 @@ def get_latest_github_release_url(repo: str, extension_type: str) -> str:
         response.raise_for_status()
         data = response.json()
         if not data:
-            raise Exception(f"No tags found for {repo}")
+            raise ExtensionError(f"No tags found for {repo}")
         latest_tag = data[0]["name"]
         return f"https://github.com/{repo}/archive/refs/tags/{latest_tag}.zip"
     else:
-        raise Exception(f"Unknown extension type: {extension_type}")
+        raise ExtensionError(f"Unknown extension type: {extension_type}")
 
 
 def mirror_custom_extension(
@@ -141,7 +142,7 @@ def mirror_custom_extension(
             continue
         else:
             return Extension(name=extension_name, hash=hash, url=download_url)
-    raise Exception("Failed to fetch extension, see above")
+    raise ExtensionError("Failed to fetch extension, see above")
 
 
 def mirror_extension(extension_name: str, mediawiki_version: str) -> Extension:
@@ -170,10 +171,10 @@ def mirror_extension(extension_name: str, mediawiki_version: str) -> Extension:
             continue
         else:
             return Extension(name=extension_name, hash=hash, url=mirror_url)
-    raise Exception("Failed to fetch extension, see above")
+    raise ExtensionError("Failed to fetch extension, see above")
 
 
-def extension_nix_expression(mirrored_extensions: List[Extension]) -> str:
+def extension_nix_expression(mirrored_extensions: list[Extension]) -> str:
     expression = "{ fetchzip }: {\n"
     for extension in mirrored_extensions:
         expression += f'  "{extension.name}" = fetchzip {{ url = "{extension.url}"; hash = "{extension.hash}"; }};\n'
@@ -181,7 +182,7 @@ def extension_nix_expression(mirrored_extensions: List[Extension]) -> str:
     return expression
 
 
-def get_mediawiki_version(mediawiki_version: Optional[str] = None) -> str:
+def get_mediawiki_version(mediawiki_version: str | None = None) -> str:
     if mediawiki_version is None:
         mediawiki_version = run(
             [
@@ -204,7 +205,7 @@ def main() -> None:
         print("Usage: update-extensions.py extensions.json [mediawiki_version]")
         sys.exit(1)
 
-    extensions: Dict[str, Any] = json.loads(Path(sys.argv[1]).read_text())
+    extensions: dict[str, Any] = json.loads(Path(sys.argv[1]).read_text())
     mediawiki_version = get_mediawiki_version(
         sys.argv[2] if len(sys.argv) > 2 else None
     )
@@ -212,7 +213,7 @@ def main() -> None:
     # so that gh picks up the correct repository
     os.chdir(Path(__file__).parent)
 
-    mirrored_extensions: List[Extension] = []
+    mirrored_extensions: list[Extension] = []
     for name, config in extensions.items():
         if config.get("type") == "github":
             # Handle GitHub extensions

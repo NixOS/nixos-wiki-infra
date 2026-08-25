@@ -5,12 +5,12 @@ Fuzzy search for users by username, real name, or email
 """
 
 import argparse
-import psycopg2
 import sys
-from typing import List, Tuple
+
+import psycopg2
 
 
-def search_users(search_term: str, limit: int = 10) -> List[Tuple[str, str, str]]:
+def search_users(search_term: str, limit: int = 10) -> list[tuple[str, str, str]]:
     """
     Search for users using fuzzy matching on username, real name, or email.
     Returns list of (username, email, real_name) tuples.
@@ -80,7 +80,7 @@ def search_users(search_term: str, limit: int = 10) -> List[Tuple[str, str, str]
     return results
 
 
-def print_table(results: List[Tuple[str, str, str]]) -> None:
+def print_table(results: list[tuple[str, str, str]]) -> None:
     """Print search results as a formatted table."""
     if not results:
         print("No users found matching the search term.")

@@ -1,9 +1,9 @@
-import json
-import csv
-import re
-import sys
 import argparse
 import bisect
+import csv
+import json
+import re
+import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -46,7 +46,7 @@ def process_dump(args: argparse.Namespace) -> None:
             )
             continue
 
-        if title.startswith("User:") or title.startswith("Talk:"):
+        if title.startswith(("User:", "Talk:")):
             root.remove(page)
             continue
 
