@@ -1,0 +1,8 @@
+{
+  "@metadata": {
+    "authors": [
+      "NixOS Wiki Contributors"
+    ]
+  },
+  "fastlypurge-desc": "Purges the Fastly CDN cache when pages change"
+}

@@ -257,6 +257,10 @@ in
 
         # Send cache headers for anonymous users
         $wgCdnMaxAge = 18000; # 5 hours cache for anonymous users (MediaWiki default)
+
+        # nginx decides mobile vs. desktop (see $mf_is_mobile) and passes it as
+        # AMF_DEVICE_IS_MOBILE so MobileFrontend and the cache key never disagree.
+        $wgMFAutodetectMobileView = true;
       '';
     };
 
@@ -314,12 +318,22 @@ in
           max_size=15g
           use_temp_path=off;
 
-        # Cache key to use - includes host, request URI, and query string
-        fastcgi_cache_key "$scheme$request_method$host$request_uri";
+        # Must not contain $request_method: ngx_cache_purge looks up the key
+        # built from the PURGE request itself.
+        fastcgi_cache_key "$scheme$host$request_uri";
 
-        # Define cache purge method
-        map $request_method $purge_method {
-          PURGE 1;
+        # MobileFrontend serves different HTML on the same URL depending on the
+        # User-Agent, but MediaWiki only PURGEs the canonical URL. Detect mobile
+        # here (regex from Wikimedia's production varnish `sub mobile_redirect`,
+        # operations-puppet text-frontend.inc.vcl.erb), hand the result to PHP
+        # and keep the mobile variant out of the fastcgi cache so a purge always
+        # hits the only cached variant.
+        map $http_user_agent $mf_is_mobile {
+          default false;
+          "~*(mobi|240x240|240x320|320x320|alcatel|android|audiovox|bada|benq|blackberry|cdm-|compal-|docomo|ericsson|hiptop|htc[-_]|huawei|ipod|kddi-|kindle|meego|midp|mitsu|mmp/|mot-|motor|ngm_|nintendo|opera.m|palm|panasonic|philips|phone|playstation|portalmmm|sagem-|samsung-|sanyo|sec-|semc-browser|sendo|sharp|silk|softbank|symbian|teleca|up.browser|vodafone|webos)" true;
+        }
+        map $mf_is_mobile $mf_skip_cache {
+          true 1;
           default 0;
         }
 
@@ -412,63 +426,47 @@ in
         add_header X-Cache-Status $upstream_cache_status always;
       '';
 
-      locations = {
-        # Extend the PHP endpoints with caching
-        "~ ^/w/(index|load|api|thumb|opensearch_desc|rest|img_auth)\\.php$".extraConfig = lib.mkAfter ''
-          # Cache configuration
-          fastcgi_cache mediawiki;
+      locations =
+        let
+          fastcgiCache = ''
+            fastcgi_cache mediawiki;
+            fastcgi_cache_valid 200 301 302 5h;
+            fastcgi_cache_valid 404 10m;
+            fastcgi_cache_use_stale error timeout updating invalid_header http_500 http_503;
+            fastcgi_cache_background_update on;
+            fastcgi_cache_lock on;
+            fastcgi_cache_lock_timeout 5s;
+            fastcgi_cache_purge PURGE from 127.0.0.1 ::1;
 
-          # Respect MediaWiki's cache headers
-          fastcgi_cache_valid 200 301 302 5h;
-          fastcgi_cache_valid 404 10m;
-
-          # Use stale cache when updating or on errors
-          fastcgi_cache_use_stale error timeout updating invalid_header http_500 http_503;
-          fastcgi_cache_background_update on;
-          fastcgi_cache_lock on;
-          fastcgi_cache_lock_timeout 5s;
-
-          # Handle cache purging - MediaWiki sends PURGE requests directly to URLs
-          fastcgi_cache_purge $purge_method;
-        '';
-
-        # Extend wiki pages with caching
-        "/wiki/".extraConfig = lib.mkAfter ''
-          # Cache configuration for wiki pages
-          fastcgi_cache mediawiki;
-
-          # Respect MediaWiki's cache headers
-          fastcgi_cache_valid 200 301 302 5h;
-          fastcgi_cache_valid 404 10m;
-
-          # Use stale cache when updating or on errors
-          fastcgi_cache_use_stale error timeout updating invalid_header http_500 http_503;
-          fastcgi_cache_background_update on;
-          fastcgi_cache_lock on;
-
-          # Handle cache purging - MediaWiki sends PURGE requests directly to URLs
-          fastcgi_cache_purge $purge_method;
-        '';
-
-        # Static files
-        "=/nixos.png".alias = ./nixos.png;
-        "=/favicon.ico".alias = ./favicon.ico;
-        "=/robots.txt".alias = ./robots.txt;
-        "/sitemap/".alias = sitemap_dir;
-        "= /sitemap.xml".alias = "${sitemap_dir}sitemap-index-mediawiki.xml";
-        "= /google2855366826b5ab3a.html".alias = ./google2855366826b5ab3a.html;
-
-        # VTS status endpoint - restricted to localhost only
-        "/nginx_status" = {
-          extraConfig = ''
-            vhost_traffic_status_display;
-            vhost_traffic_status_display_format html;
-            allow 127.0.0.1;
-            allow ::1;
-            deny all;
+            fastcgi_param AMF_DEVICE_IS_MOBILE $mf_is_mobile;
+            fastcgi_cache_bypass $mf_skip_cache;
+            fastcgi_no_cache $mf_skip_cache;
           '';
+        in
+        {
+          "~ ^/w/(index|load|api|thumb|opensearch_desc|rest|img_auth)\\.php$".extraConfig =
+            lib.mkAfter fastcgiCache;
+          "/wiki/".extraConfig = lib.mkAfter fastcgiCache;
+
+          # Static files
+          "=/nixos.png".alias = ./nixos.png;
+          "=/favicon.ico".alias = ./favicon.ico;
+          "=/robots.txt".alias = ./robots.txt;
+          "/sitemap/".alias = sitemap_dir;
+          "= /sitemap.xml".alias = "${sitemap_dir}sitemap-index-mediawiki.xml";
+          "= /google2855366826b5ab3a.html".alias = ./google2855366826b5ab3a.html;
+
+          # VTS status endpoint - restricted to localhost only
+          "/nginx_status" = {
+            extraConfig = ''
+              vhost_traffic_status_display;
+              vhost_traffic_status_display_format html;
+              allow 127.0.0.1;
+              allow ::1;
+              deny all;
+            '';
+          };
         };
-      };
     };
 
     systemd.tmpfiles.rules = [

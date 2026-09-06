@@ -62,5 +62,31 @@
 
     # Check for title in HTML
     assert "Automatic synchronization from git repository" in test_page, f"Expected title not found in test page: {test_page}"
+
+    url = "http://nixos-wiki.example.com/wiki/Wiki_Sync_Test_Page"
+    mobile_ua = "Mozilla/5.0 (Linux; Android 14) Mobile Safari/537.36"
+
+    def cache_status(extra: str = "") -> str:
+        out = wiki.succeed(f"curl -s -o /dev/null -D - {extra} {url}")
+        for line in out.splitlines():
+            if line.lower().startswith("x-cache-status:"):
+                return line.split(":", 1)[1].strip()
+        raise AssertionError(f"no X-Cache-Status in {out}")
+
+    with subtest("mobile UA gets Minerva and never poisons or reads the desktop cache"):
+        assert cache_status(f"-A '{mobile_ua}'") == "BYPASS"
+        mobile = wiki.succeed(f"curl -s -A '{mobile_ua}' {url}")
+        assert "skin-minerva" in mobile, mobile[:2000]
+        desktop = wiki.succeed(f"curl -s {url}")
+        assert "skin-vector" in desktop, desktop[:2000]
+        assert cache_status() == "HIT"
+        assert cache_status(f"-A '{mobile_ua}'") == "BYPASS"
+
+    with subtest("PURGE from MediaWiki invalidates the cached page"):
+        assert cache_status() == "HIT"
+        # same shape as CdnCacheUpdate::naivePurge()
+        wiki.succeed(f"curl -sf -o /dev/null -X PURGE -x 127.0.0.1:80 {url}")
+        status = cache_status()
+        assert status == "MISS", status
   '';
 }
