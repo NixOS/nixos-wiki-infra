@@ -282,6 +282,15 @@ in
       in
       ''
         extension=${extensions.yaml}/lib/php/extensions/yaml.so
+        ; The default 128M holds ~60% of MediaWiki + extensions, the rest was
+        ; recompiled on every request. Code lives in the nix store, so mtime
+        ; checks are pointless.
+        opcache.memory_consumption = 512
+        opcache.interned_strings_buffer = 32
+        opcache.max_accelerated_files = 32531
+        opcache.validate_timestamps = 0
+        opcache.jit_buffer_size = 64M
+        apc.shm_size = 128M
       '';
 
     services.postgresql.package = pkgs.postgresql_16;
