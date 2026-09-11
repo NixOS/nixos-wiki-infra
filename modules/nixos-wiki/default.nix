@@ -13,6 +13,7 @@ in
   imports = [
     ./pages.nix
     ./fastly.nix
+    ./pygments-server.nix
   ];
   options = {
     services.nixos-wiki = {
@@ -202,7 +203,6 @@ in
         # To purge all page cache increase this using: date +%Y%m%d%H%M%S
         $wgCacheEpoch = 20231115172319;
 
-        $wgPygmentizePath = "${pkgs.python3Packages.pygments}/bin/pygmentize";
 
         # Enable Translate extension for all users
         $wgGroupPermissions['user']["translate"] = true;
