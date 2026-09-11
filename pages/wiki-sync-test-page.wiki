@@ -13,4 +13,8 @@ This page is managed through the git repository and automatically deployed to th
 
 Changes made to this file in the repository will be reflected on the wiki after deployment.
 
+<syntaxhighlight lang="nix">
+{ highlighted = true; }
+</syntaxhighlight>
+
 [[Category:Test]]

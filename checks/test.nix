@@ -106,6 +106,11 @@
         assert code == "421", code
         wiki.succeed(f"curl -sf -o /dev/null -H 'Host: nixos-wiki.example.com' http://{ip}/wiki/Wiki_Sync_Test_Page")
 
+    with subtest("syntax highlighting goes through pygments-server"):
+        assert 'class="mw-highlight' in test_page and '<span class="ss">highlighted</span>' in test_page, test_page
+        wiki.succeed("systemctl is-active pygments-server.service")
+        wiki.fail("journalctl -u pygments-server --no-pager | grep Traceback")
+
     with subtest("PURGE from MediaWiki invalidates the cached page"):
         assert cache_status() == "HIT"
         # same shape as CdnCacheUpdate::naivePurge()
