@@ -432,8 +432,8 @@ in
         }
         map "$has_session$request_uri" $expensive_anon {
           default "";
-          "~^0/w/index\.php\?.*title=Special(:|%3A)(RecentChanges|RecentChangesLinked|UserLogin|CreateAccount|Log|Contributions|WhatLinksHere|MobileDiff)" 1;
-          "~^0/w/index\.php\?.*(mobileaction=toggle_view|action=history|diff=|oldid=)" 1;
+          "~^0/w/index\.php\?.*title=Special(:|%3A)(RecentChanges|RecentChangesLinked|UserLogin|CreateAccount|Log|Contributions|WhatLinksHere|MobileDiff|Translate)" 1;
+          "~^0/w/index\.php\?.*(mobileaction=toggle_view|action=history|action=edit|action=submit|diff=|oldid=)" 1;
           "~^0/wiki/Special:(RecentChanges|RecentChangesLinked|Log|Contributions|WhatLinksHere)" 1;
           "~^0/w/api\.php\?.*(action=feedrecentchanges|action=feedcontributions|list=recentchanges|rcprop=)" 1;
         }
