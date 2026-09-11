@@ -7,7 +7,7 @@
   "Description2": {},
   "AuthManagerOAuth": {
     "type": "github",
-    "github_repo": "mohe2015/AuthManagerOAuth",
+    "github_repo": "Mic92/AuthManagerOAuth",
     "github_type": "release"
   }
 }

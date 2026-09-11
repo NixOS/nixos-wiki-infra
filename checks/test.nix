@@ -67,6 +67,9 @@
     # Check for title in HTML
     assert "Automatic synchronization from git repository" in test_page, f"Expected title not found in test page: {test_page}"
 
+    with subtest("rest.php works with AuthManagerOAuth's bundled vendor dir"):
+        wiki.succeed("curl -sf 'http://nixos-wiki.example.com/w/rest.php/v1/search/title?q=wiki&limit=1'")
+
     with subtest("FastlyPurge extension is registered"):
         exts = wiki.succeed("curl -sf 'http://nixos-wiki.example.com/w/api.php?action=query&meta=siteinfo&siprop=extensions&format=json'")
         assert '"FastlyPurge"' in exts, exts
