@@ -303,8 +303,19 @@ in
     ];
     security.acme.acceptTerms = true;
 
+    # nginx defaults (1 worker, 512 connections, backlog 511) reset
+    # connections under scraper load long before PHP-FPM is the limit.
+    boot.kernel.sysctl."net.core.somaxconn" = 4096;
+
     # Enable Nginx VTS module for monitoring and cache-purge module
     services.nginx = {
+      eventsConfig = ''
+        worker_connections 8192;
+      '';
+      appendConfig = ''
+        worker_processes auto;
+        worker_rlimit_nofile 32768;
+      '';
       additionalModules = [
         pkgs.nginxModules.vts
         pkgs.nginxModules.cache-purge
@@ -415,6 +426,32 @@ in
     services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
       enableACME = lib.mkDefault (!cfg.testMode);
       forceSSL = lib.mkDefault (!cfg.testMode);
+      # backlog may only be given once per address:port, so only on this vhost
+      listen =
+        let
+          vhost = config.services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName};
+        in
+        lib.concatMap
+          (
+            addr:
+            [
+              {
+                inherit addr;
+                port = 80;
+                extraParameters = [ "backlog=4096" ];
+              }
+            ]
+            ++ lib.optional (vhost.forceSSL || vhost.addSSL || vhost.onlySSL) {
+              inherit addr;
+              port = 443;
+              ssl = true;
+              extraParameters = [ "backlog=4096" ];
+            }
+          )
+          [
+            "0.0.0.0"
+            "[::0]"
+          ];
       extraConfig = ''
         # Apply rate limits to all requests
         limit_req zone=ip_second burst=20 nodelay;
