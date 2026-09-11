@@ -48,12 +48,30 @@ in
       ${lib.concatMapStrings (r: "set_real_ip_from ${r};\n") fastlyRanges}
       # Set by Fastly on the edge; the VCL must overwrite any client supplied value.
       real_ip_header Fastly-Client-IP;
+
+      # $realip_remote_addr is the connecting peer, $remote_addr the client
+      geo $realip_remote_addr $via {
+        default direct;
+        127.0.0.0/8 local;
+        ::1 local;
+        ${lib.concatMapStrings (r: "${r} fastly;\n") fastlyRanges}
+      }
+      log_format wiki '$remote_addr $via $upstream_cache_status [$time_local] '
+        '"$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_time';
     '';
 
     # Fastly needs an origin name that does not point back at itself and a
     # certificate matching it (ssl_cert_hostname in nixos-infra terraform).
-    services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName}.serverAliases = [
-      cfg.originHostname
-    ];
+    services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
+      serverAliases = [ cfg.originHostname ];
+      extraConfig = ''
+        access_log syslog:server=unix:/dev/log,nohostname wiki;
+        # ${cfg.originHostname} and loopback (MediaWiki PURGE) stay reachable
+        set $via_host "$via:$host";
+        if ($via_host = "direct:${config.services.mediawiki.nginx.hostName}") {
+          return 444;
+        }
+      '';
+    };
   };
 }
