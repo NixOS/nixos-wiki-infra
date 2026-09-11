@@ -4,7 +4,7 @@ let
 in
 {
   # SyntaxHighlight forks pygmentize per <syntaxhighlight> block on every
-  # parse; ~180ms each, almost all of it interpreter start-up.
+  # parse. That is ~180ms each, almost all of it interpreter start-up.
   services.mediawiki.extraConfig = ''
     $wgPygmentizePath = "${package}/bin/pygmentize";
   '';
