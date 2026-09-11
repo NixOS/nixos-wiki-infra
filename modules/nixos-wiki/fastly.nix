@@ -66,8 +66,9 @@ in
       serverAliases = [ cfg.originHostname ];
       extraConfig = ''
         access_log syslog:server=unix:/dev/log,nohostname wiki;
-        set $direct_expensive "$via:$expensive_anon";
-        if ($direct_expensive ~ ^direct:.) {
+        # ${cfg.originHostname} and loopback (MediaWiki PURGE) stay reachable
+        set $via_host "$via:$host";
+        if ($via_host = "direct:${config.services.mediawiki.nginx.hostName}") {
           return 421;
         }
       '';
