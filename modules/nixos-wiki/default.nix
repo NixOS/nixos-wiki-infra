@@ -12,6 +12,7 @@ in
 {
   imports = [
     ./pages.nix
+    ./fastly.nix
   ];
   options = {
     services.nixos-wiki = {

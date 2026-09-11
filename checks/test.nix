@@ -26,6 +26,10 @@
           emergencyContact = "nixos-wiki@thalheim.io";
           passwordSender = "nixos-wiki@thalheim.io";
           noReplyAddress = "nixos-wiki-no-reply@thalheim.io";
+          fastly = {
+            enable = true;
+            originHostname = "origin.nixos-wiki.example.com";
+          };
           pages = {
             pageConfig = {
               "wiki-sync-test-page.wiki" = {
