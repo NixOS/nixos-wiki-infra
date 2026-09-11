@@ -100,6 +100,11 @@
         codes = wiki.succeed(f"for i in $(seq 40); do curl -s -o /dev/null -w '%{{http_code}} ' -H 'Cookie: mediawiki_session=x' '{rc}'; done")
         assert "429" not in codes, codes
 
+    with subtest("the public hostname is only served to Fastly and loopback"):
+        ip = wiki.succeed("ip -4 -o addr show dev eth1 | grep -oP '(?<=inet )[0-9.]+'").strip()
+        wiki.fail(f"curl -sf -H 'Host: nixos-wiki.example.com' http://{ip}/wiki/Wiki_Sync_Test_Page")
+        wiki.succeed(f"curl -sf -H 'Host: origin.nixos-wiki.example.com' http://{ip}/wiki/Wiki_Sync_Test_Page")
+
     with subtest("PURGE from MediaWiki invalidates the cached page"):
         assert cache_status() == "HIT"
         # same shape as CdnCacheUpdate::naivePurge()

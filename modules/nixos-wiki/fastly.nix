@@ -52,6 +52,8 @@ in
       # $realip_remote_addr is the connecting peer, $remote_addr the client
       geo $realip_remote_addr $via {
         default direct;
+        127.0.0.0/8 local;
+        ::1 local;
         ${lib.concatMapStrings (r: "${r} fastly;\n") fastlyRanges}
       }
       log_format wiki '$remote_addr $via $upstream_cache_status [$time_local] '
@@ -64,6 +66,11 @@ in
       serverAliases = [ cfg.originHostname ];
       extraConfig = ''
         access_log syslog:server=unix:/dev/log,nohostname wiki;
+        # ${cfg.originHostname} and loopback (MediaWiki PURGE) stay reachable
+        set $via_host "$via:$host";
+        if ($via_host = "direct:${config.services.mediawiki.nginx.hostName}") {
+          return 421;
+        }
       '';
     };
   };
