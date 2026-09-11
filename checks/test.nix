@@ -90,6 +90,13 @@
         assert cache_status() == "HIT"
         assert cache_status(f"-A '{mobile_ua}'") == "BYPASS"
 
+    with subtest("anonymous floods of expensive special pages are throttled, sessions are not"):
+        rc = "http://nixos-wiki.example.com/w/index.php?title=Special:RecentChanges&from=1"
+        codes = wiki.succeed(f"for i in $(seq 40); do curl -s -o /dev/null -w '%{{http_code}} ' '{rc}'; done")
+        assert "429" in codes, codes
+        codes = wiki.succeed(f"for i in $(seq 40); do curl -s -o /dev/null -w '%{{http_code}} ' -H 'Cookie: mediawiki_session=x' '{rc}'; done")
+        assert "429" not in codes, codes
+
     with subtest("PURGE from MediaWiki invalidates the cached page"):
         assert cache_status() == "HIT"
         # same shape as CdnCacheUpdate::naivePurge()

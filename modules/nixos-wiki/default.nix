@@ -415,6 +415,23 @@ in
         }
         limit_req_zone $chinese_subnet zone=chinese_subnet_second:10m rate=3r/s;
 
+        # Distributed scrapers hammer uncacheable special pages and old
+        # revisions from thousands of residential IPs, so per-IP limits do not
+        # help. Put all anonymous requests for such URLs into one shared bucket;
+        # anyone with a session cookie is exempt.
+        map $http_cookie $has_session {
+          default 0;
+          "~([sS]ession|Token|UserID|UserName)=" 1;
+        }
+        map "$has_session$request_uri" $expensive_anon {
+          default "";
+          "~^0/w/index\.php\?.*title=Special(:|%3A)(RecentChanges|RecentChangesLinked|UserLogin|CreateAccount|Log|Contributions|WhatLinksHere|MobileDiff)" 1;
+          "~^0/w/index\.php\?.*(mobileaction=toggle_view|action=history|diff=|oldid=)" 1;
+          "~^0/wiki/Special:(RecentChanges|RecentChangesLinked|Log|Contributions|WhatLinksHere)" 1;
+          "~^0/w/api\.php\?.*(action=feedrecentchanges|action=feedcontributions|list=recentchanges|rcprop=)" 1;
+        }
+        limit_req_zone $expensive_anon zone=expensive_anon:1m rate=5r/s;
+
         limit_req_status 429;
 
         # Enable VTS module
@@ -459,6 +476,8 @@ in
         # Apply aggressive limits for Chinese cloud providers
         limit_req zone=chinese_ip_second burst=2 nodelay;
         limit_req zone=chinese_subnet_second burst=5 nodelay;
+
+        limit_req zone=expensive_anon burst=20 nodelay;
 
         # Add cache status header for debugging
         add_header X-Cache-Status $upstream_cache_status always;
