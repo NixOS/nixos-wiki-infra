@@ -26,6 +26,10 @@
           emergencyContact = "nixos-wiki@thalheim.io";
           passwordSender = "nixos-wiki@thalheim.io";
           noReplyAddress = "nixos-wiki-no-reply@thalheim.io";
+          fastly = {
+            enable = true;
+            originHostname = "origin.nixos-wiki.example.com";
+          };
           pages = {
             pageConfig = {
               "wiki-sync-test-page.wiki" = {
@@ -63,6 +67,10 @@
     # Check for title in HTML
     assert "Automatic synchronization from git repository" in test_page, f"Expected title not found in test page: {test_page}"
 
+    with subtest("FastlyPurge extension is registered"):
+        exts = wiki.succeed("curl -sf 'http://nixos-wiki.example.com/w/api.php?action=query&meta=siteinfo&siprop=extensions&format=json'")
+        assert '"FastlyPurge"' in exts, exts
+
     url = "http://nixos-wiki.example.com/wiki/Wiki_Sync_Test_Page"
     mobile_ua = "Mozilla/5.0 (Linux; Android 14) Mobile Safari/537.36"
 
@@ -81,6 +89,13 @@
         assert "skin-vector" in desktop, desktop[:2000]
         assert cache_status() == "HIT"
         assert cache_status(f"-A '{mobile_ua}'") == "BYPASS"
+
+    with subtest("anonymous floods of expensive special pages are throttled, sessions are not"):
+        rc = "http://nixos-wiki.example.com/w/index.php?title=Special:RecentChanges&from=1"
+        codes = wiki.succeed(f"for i in $(seq 40); do curl -s -o /dev/null -w '%{{http_code}} ' '{rc}'; done")
+        assert "429" in codes, codes
+        codes = wiki.succeed(f"for i in $(seq 40); do curl -s -o /dev/null -w '%{{http_code}} ' -H 'Cookie: mediawiki_session=x' '{rc}'; done")
+        assert "429" not in codes, codes
 
     with subtest("PURGE from MediaWiki invalidates the cached page"):
         assert cache_status() == "HIT"

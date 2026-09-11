@@ -12,6 +12,7 @@ in
 {
   imports = [
     ./pages.nix
+    ./fastly.nix
   ];
   options = {
     services.nixos-wiki = {
@@ -74,14 +75,18 @@ in
       uploadsDir = "/var/lib/mediawiki-uploads/";
       passwordFile = if cfg.testMode then pkgs.writeText "pass" "nixos-wiki00" else cfg.adminPasswordFile;
 
-      # PHP-FPM pool configuration optimized for 8-core machine
+      # Page rendering is CPU bound; more workers than ~2/core only thrash
+      # and keep Postgres transactions open under scraper load.
       poolConfig = {
         "pm" = "dynamic";
-        "pm.max_children" = 64; # 8 workers per core
-        "pm.start_servers" = 16; # 2 per core
-        "pm.min_spare_servers" = 8; # 1 per core
-        "pm.max_spare_servers" = 32; # 4 per core
-        "pm.max_requests" = 1000; # Increased for better performance
+        "pm.max_children" = 16;
+        "pm.start_servers" = 8;
+        "pm.min_spare_servers" = 4;
+        "pm.max_spare_servers" = 8;
+        "pm.max_requests" = 1000;
+        # nginx gives up after 60s anyway, stop working for clients that left
+        "request_terminate_timeout" = "20s";
+        "pm.status_path" = "/fpm-status";
       };
 
       extensions = {
@@ -240,6 +245,9 @@ in
         # Enable String Parser functions
         $wgEnableStringFunctions = true;
 
+        # Disable the most expensive special page queries for everyone
+        $wgMiserMode = true;
+
         # Enable CDN/reverse proxy support for cache invalidation
         $wgUseCdn = true;
 
@@ -302,8 +310,19 @@ in
     ];
     security.acme.acceptTerms = true;
 
+    # nginx defaults (1 worker, 512 connections, backlog 511) reset
+    # connections under scraper load long before PHP-FPM is the limit.
+    boot.kernel.sysctl."net.core.somaxconn" = 4096;
+
     # Enable Nginx VTS module for monitoring and cache-purge module
     services.nginx = {
+      eventsConfig = ''
+        worker_connections 8192;
+      '';
+      appendConfig = ''
+        worker_processes auto;
+        worker_rlimit_nofile 32768;
+      '';
       additionalModules = [
         pkgs.nginxModules.vts
         pkgs.nginxModules.cache-purge
@@ -403,6 +422,23 @@ in
         }
         limit_req_zone $chinese_subnet zone=chinese_subnet_second:10m rate=3r/s;
 
+        # Distributed scrapers hammer uncacheable special pages and old
+        # revisions from thousands of residential IPs, so per-IP limits do not
+        # help. Put all anonymous requests for such URLs into one shared bucket;
+        # anyone with a session cookie is exempt.
+        map $http_cookie $has_session {
+          default 0;
+          "~([sS]ession|Token|UserID|UserName)=" 1;
+        }
+        map "$has_session$request_uri" $expensive_anon {
+          default "";
+          "~^0/w/index\.php\?.*title=Special(:|%3A)(RecentChanges|RecentChangesLinked|UserLogin|CreateAccount|Log|Contributions|WhatLinksHere|MobileDiff)" 1;
+          "~^0/w/index\.php\?.*(mobileaction=toggle_view|action=history|diff=|oldid=)" 1;
+          "~^0/wiki/Special:(RecentChanges|RecentChangesLinked|Log|Contributions|WhatLinksHere)" 1;
+          "~^0/w/api\.php\?.*(action=feedrecentchanges|action=feedcontributions|list=recentchanges|rcprop=)" 1;
+        }
+        limit_req_zone $expensive_anon zone=expensive_anon:1m rate=5r/s;
+
         limit_req_status 429;
 
         # Enable VTS module
@@ -414,6 +450,32 @@ in
     services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
       enableACME = lib.mkDefault (!cfg.testMode);
       forceSSL = lib.mkDefault (!cfg.testMode);
+      # backlog may only be given once per address:port, so only on this vhost
+      listen =
+        let
+          vhost = config.services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName};
+        in
+        lib.concatMap
+          (
+            addr:
+            [
+              {
+                inherit addr;
+                port = 80;
+                extraParameters = [ "backlog=4096" ];
+              }
+            ]
+            ++ lib.optional (vhost.forceSSL || vhost.addSSL || vhost.onlySSL) {
+              inherit addr;
+              port = 443;
+              ssl = true;
+              extraParameters = [ "backlog=4096" ];
+            }
+          )
+          [
+            "0.0.0.0"
+            "[::0]"
+          ];
       extraConfig = ''
         # Apply rate limits to all requests
         limit_req zone=ip_second burst=20 nodelay;
@@ -421,6 +483,8 @@ in
         # Apply aggressive limits for Chinese cloud providers
         limit_req zone=chinese_ip_second burst=2 nodelay;
         limit_req zone=chinese_subnet_second burst=5 nodelay;
+
+        limit_req zone=expensive_anon burst=20 nodelay;
 
         # Add cache status header for debugging
         add_header X-Cache-Status $upstream_cache_status always;
@@ -455,6 +519,15 @@ in
           "/sitemap/".alias = sitemap_dir;
           "= /sitemap.xml".alias = "${sitemap_dir}sitemap-index-mediawiki.xml";
           "= /google2855366826b5ab3a.html".alias = ./google2855366826b5ab3a.html;
+
+          "= /fpm-status".extraConfig = ''
+            allow 127.0.0.1;
+            allow ::1;
+            deny all;
+            include ${config.services.nginx.package}/conf/fastcgi_params;
+            fastcgi_param SCRIPT_NAME /fpm-status;
+            fastcgi_pass unix:${config.services.phpfpm.pools.mediawiki.socket};
+          '';
 
           # VTS status endpoint - restricted to localhost only
           "/nginx_status" = {

@@ -14,7 +14,7 @@ source "${SCRIPT_DIR}/logging.sh"
 
 # Required variables that should be set by the calling script
 : "${WIKI_HOST:=wiki.nixos.org}"
-: "${SSH_TARGET:=root@${WIKI_HOST}}"
+: "${SSH_TARGET:=root@he1.${WIKI_HOST}}"
 
 # Health check functions
 check_nginx() {
@@ -28,7 +28,7 @@ check_nginx() {
   # Check if main page loads with wiki content
   local response_code
   local response_body
-  response_code=$(curl -sL -o /dev/null -w "%{http_code}" -m 10 "https://${WIKI_HOST}/wiki/Main_Page" || echo "000")
+  response_code=$(curl -sL -o /dev/null -w "%{http_code}" -m 30 --retry 3 --retry-all-errors "https://${WIKI_HOST}/wiki/Main_Page" || echo "000")
 
   if [[ $response_code != "200" ]]; then
     error "Main page returned HTTP status code: $response_code"
@@ -39,7 +39,7 @@ check_nginx() {
   fi
 
   # Check page content (follow redirects)
-  response_body=$(curl -sfL -m 10 "https://${WIKI_HOST}/wiki/Main_Page" 2>&1) || {
+  response_body=$(curl -sfL -m 30 --retry 3 --retry-all-errors "https://${WIKI_HOST}/wiki/Main_Page" 2>&1) || {
     error "Failed to fetch main page content: $?"
     return 1
   }
