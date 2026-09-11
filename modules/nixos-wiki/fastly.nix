@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -19,10 +20,25 @@ in
         against. Must resolve directly to this machine, not to Fastly.
       '';
     };
+    apiTokenFile = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = null;
+      description = ''
+        File containing a Fastly API token with purge permission on the wiki
+        service. Without it the FastlyPurge extension is loaded but inert.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    services.mediawiki.extensions.FastlyPurge =
+      pkgs.callPackage ../../pkgs/mediawiki-fastly-purge/package.nix
+        { };
+
     services.mediawiki.extraConfig = ''
+      ${lib.optionalString (cfg.apiTokenFile != null) ''
+        $wgFastlyApiToken = trim( file_get_contents( '${cfg.apiTokenFile}' ) );
+      ''}
       # nginx already rewrites REMOTE_ADDR from Fastly-Client-IP, this only
       # covers X-Forwarded-For handling inside MediaWiki (blocks, rate limits).
       $wgCdnServersNoPurge = [ ${lib.concatMapStringsSep ", " (r: "'${r}'") fastlyRanges} ];

@@ -67,6 +67,10 @@
     # Check for title in HTML
     assert "Automatic synchronization from git repository" in test_page, f"Expected title not found in test page: {test_page}"
 
+    with subtest("FastlyPurge extension is registered"):
+        exts = wiki.succeed("curl -sf 'http://nixos-wiki.example.com/w/api.php?action=query&meta=siteinfo&siprop=extensions&format=json'")
+        assert '"FastlyPurge"' in exts, exts
+
     url = "http://nixos-wiki.example.com/wiki/Wiki_Sync_Test_Page"
     mobile_ua = "Mozilla/5.0 (Linux; Android 14) Mobile Safari/537.36"
 

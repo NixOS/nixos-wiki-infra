@@ -19,6 +19,7 @@ in
 
   sops.secrets.nixos-wiki.owner = config.services.phpfpm.pools.mediawiki.user;
   sops.secrets.nixos-wiki-github-client-secret.owner = config.services.phpfpm.pools.mediawiki.user;
+  sops.secrets.fastly-api-token.owner = config.services.phpfpm.pools.mediawiki.user;
 
   networking = {
     hostName = "wiki";
@@ -34,6 +35,7 @@ in
     fastly = {
       enable = true;
       originHostname = "he1.wiki.nixos.org";
+      apiTokenFile = config.sops.secrets.fastly-api-token.path;
     };
     passwordSender = "wiki@wiki.nixos.org";
     noReplyAddress = "wiki-no-reply@wiki.nixos.org";
