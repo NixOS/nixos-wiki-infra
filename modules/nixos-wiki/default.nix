@@ -76,14 +76,14 @@ in
       uploadsDir = "/var/lib/mediawiki-uploads/";
       passwordFile = if cfg.testMode then pkgs.writeText "pass" "nixos-wiki00" else cfg.adminPasswordFile;
 
-      # Page rendering is CPU bound; more workers than ~2/core only thrash
-      # and keep Postgres transactions open under scraper load.
+      # ~45MB private per worker with a warm opcache; 4/core leaves room for
+      # requests that wait on Postgres or memcached without thrashing.
       poolConfig = {
         "pm" = "dynamic";
-        "pm.max_children" = 16;
+        "pm.max_children" = 32;
         "pm.start_servers" = 8;
         "pm.min_spare_servers" = 4;
-        "pm.max_spare_servers" = 8;
+        "pm.max_spare_servers" = 12;
         "pm.max_requests" = 1000;
         # nginx gives up after 60s anyway, stop working for clients that left
         "request_terminate_timeout" = "20s";

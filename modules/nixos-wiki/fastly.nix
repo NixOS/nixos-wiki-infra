@@ -46,7 +46,7 @@ in
 
     services.nginx.commonHttpConfig = ''
       ${lib.concatMapStrings (r: "set_real_ip_from ${r};\n") fastlyRanges}
-      # Set by Fastly on the edge; the VCL must overwrite any client supplied value.
+      # Set by Fastly on the edge. The VCL must overwrite any client supplied value.
       real_ip_header Fastly-Client-IP;
 
       # $realip_remote_addr is the connecting peer, $remote_addr the client
