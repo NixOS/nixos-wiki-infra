@@ -75,14 +75,18 @@ in
       uploadsDir = "/var/lib/mediawiki-uploads/";
       passwordFile = if cfg.testMode then pkgs.writeText "pass" "nixos-wiki00" else cfg.adminPasswordFile;
 
-      # PHP-FPM pool configuration optimized for 8-core machine
+      # Page rendering is CPU bound; more workers than ~2/core only thrash
+      # and keep Postgres transactions open under scraper load.
       poolConfig = {
         "pm" = "dynamic";
-        "pm.max_children" = 64; # 8 workers per core
-        "pm.start_servers" = 16; # 2 per core
-        "pm.min_spare_servers" = 8; # 1 per core
-        "pm.max_spare_servers" = 32; # 4 per core
-        "pm.max_requests" = 1000; # Increased for better performance
+        "pm.max_children" = 16;
+        "pm.start_servers" = 8;
+        "pm.min_spare_servers" = 4;
+        "pm.max_spare_servers" = 8;
+        "pm.max_requests" = 1000;
+        # nginx gives up after 60s anyway, stop working for clients that left
+        "request_terminate_timeout" = "20s";
+        "pm.status_path" = "/fpm-status";
       };
 
       extensions = {
@@ -240,6 +244,9 @@ in
 
         # Enable String Parser functions
         $wgEnableStringFunctions = true;
+
+        # Disable the most expensive special page queries for everyone
+        $wgMiserMode = true;
 
         # Enable CDN/reverse proxy support for cache invalidation
         $wgUseCdn = true;
@@ -512,6 +519,15 @@ in
           "/sitemap/".alias = sitemap_dir;
           "= /sitemap.xml".alias = "${sitemap_dir}sitemap-index-mediawiki.xml";
           "= /google2855366826b5ab3a.html".alias = ./google2855366826b5ab3a.html;
+
+          "= /fpm-status".extraConfig = ''
+            allow 127.0.0.1;
+            allow ::1;
+            deny all;
+            include ${config.services.nginx.package}/conf/fastcgi_params;
+            fastcgi_param SCRIPT_NAME /fpm-status;
+            fastcgi_pass unix:${config.services.phpfpm.pools.mediawiki.socket};
+          '';
 
           # VTS status endpoint - restricted to localhost only
           "/nginx_status" = {
