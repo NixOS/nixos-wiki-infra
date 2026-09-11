@@ -100,11 +100,11 @@
         codes = wiki.succeed(f"for i in $(seq 40); do curl -s -o /dev/null -w '%{{http_code}} ' -H 'Cookie: mediawiki_session=x' '{rc}'; done")
         assert "429" not in codes, codes
 
-    with subtest("scraper URL classes that bypass Fastly are refused"):
+    with subtest("the public hostname is only served to Fastly and loopback"):
         ip = wiki.succeed("ip -4 -o addr show dev eth1 | grep -oP '(?<=inet )[0-9.]+'").strip()
-        code = wiki.succeed(f"curl -s -o /dev/null -w '%{{http_code}}' -H 'Host: nixos-wiki.example.com' 'http://{ip}/w/index.php?title=Special:RecentChanges&from=1'")
+        code = wiki.succeed(f"curl -s -o /dev/null -w '%{{http_code}}' -H 'Host: nixos-wiki.example.com' http://{ip}/wiki/Wiki_Sync_Test_Page")
         assert code == "421", code
-        wiki.succeed(f"curl -sf -o /dev/null -H 'Host: nixos-wiki.example.com' http://{ip}/wiki/Wiki_Sync_Test_Page")
+        wiki.succeed(f"curl -sf -o /dev/null -H 'Host: origin.nixos-wiki.example.com' http://{ip}/wiki/Wiki_Sync_Test_Page")
 
     with subtest("syntax highlighting goes through pygments-server"):
         assert 'class="mw-highlight' in test_page and '<span class="ss">highlighted</span>' in test_page, test_page
