@@ -10,25 +10,24 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/logging.sh"
 
 WIKI_HOST="wiki.nixos.org"
-SSH_TARGET="root@${WIKI_HOST}"
+# Origin address, WIKI_HOST itself may point at Fastly
+SSH_TARGET="root@he1.${WIKI_HOST}"
 FLAKE_TARGET=".#nixos-wiki-nixos-org"
 MAX_RETRIES=3
 ROLLBACK_ON_FAILURE=true
 
-# nixos-rebuild-ng handles its own SSH ControlMaster, so we just set up
-# a wrapper for our own SSH calls to reduce authentication prompts
-SSH_TMPDIR=$(mktemp -d /tmp/wiki-deploy.XXXXXX)
-trap 'rm -rf "$SSH_TMPDIR"' EXIT
+# One authenticated connection for the whole run (hardware keys need a touch
+# per handshake). nixos-rebuild picks it up via NIX_SSHOPTS.
+SSH_CONTROL_PATH="${XDG_RUNTIME_DIR:-/tmp}/wiki-deploy-%C"
+SSH_OPTS="-o ControlMaster=auto -o ControlPath=${SSH_CONTROL_PATH} -o ControlPersist=10m"
+export NIX_SSHOPTS="${NIX_SSHOPTS:-} ${SSH_OPTS}"
 
-# SSH options for our direct SSH calls (not nixos-rebuild-ng)
-SSH_CONTROL_PATH="${SSH_TMPDIR}/ssh-%h"
-SSH_OPTS="-o ControlMaster=auto -o ControlPath=${SSH_CONTROL_PATH} -o ControlPersist=30s"
-
-# Function to use SSH with our options
 ssh() {
   # shellcheck disable=SC2086
   command ssh ${SSH_OPTS} "$@"
 }
+# shellcheck disable=SC2086
+command ssh ${SSH_OPTS} -o ControlMaster=yes -fN "${SSH_TARGET}" 2>/dev/null || true
 
 # Source health checks
 source "${SCRIPT_DIR}/health_checks.sh"
