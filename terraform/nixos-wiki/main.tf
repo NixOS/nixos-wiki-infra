@@ -12,6 +12,9 @@ resource "hcloud_server" "nixos_wiki" {
   backups     = false
   labels      = var.tags
 
+  delete_protection  = true
+  rebuild_protection = true
+
   location = var.server_location
 
   lifecycle {
