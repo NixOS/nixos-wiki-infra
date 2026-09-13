@@ -146,6 +146,24 @@ in
         $wgGroupPermissions['*']['createaccount'] = true;
         $wgGroupPermissions['*']['autocreateaccount'] = true;
 
+        # Fastly answers 429 to logged-out clients for
+        # /w/index.php?title=Special:UserLogin&returnto=... (NixOS/infra#1209),
+        # which is exactly the "Log in" link every page carries. Emit the
+        # article-path form for these links instead; the origin serves
+        # /wiki/Special:UserLogin?returnto=... identically and the edge rule
+        # only matches the /w/index.php path.
+        $wgHooks['GetLocalURL::Internal'][] = static function ( $title, &$url, $query ) {
+          if ( $query !== "" && $title->getNamespace() === NS_SPECIAL
+            && in_array( strtolower( $title->getDBkey() ), [ 'userlogin', 'createaccount' ], true )
+          ) {
+            $url = wfAppendQuery(
+              str_replace( '$1', wfUrlencode( $title->getPrefixedDBkey() ), $GLOBALS['wgArticlePath'] ),
+              $query
+            );
+          }
+          return true;
+        };
+
         # Disable anonymous editing
         $wgGroupPermissions['*']['edit'] = false;
 
