@@ -18,8 +18,10 @@ terraform {
 }
 
 module "wiki" {
-  source           = "../../terraform/nixos-wiki"
-  domain           = "wiki.nixos.org"
+  source = "../../terraform/nixos-wiki"
+  domain = "wiki.nixos.org"
+  # wiki.nixos.org points at Fastly; mail HELO/PTR use the origin name.
+  ptr_hostname     = "he1.wiki.nixos.org"
   nixos_flake_attr = "nixos-wiki-nixos-org"
   nixos_vars_file  = "${path.module}/nixos-vars.json"
   sops_file        = abspath("${path.module}/secrets/secrets.yaml")

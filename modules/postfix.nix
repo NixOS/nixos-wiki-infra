@@ -1,7 +1,15 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  ...
+}:
 
 let
   domain = "wiki.nixos.org";
+  fastly = config.services.nixos-wiki.fastly;
+  # With Fastly in front, ${domain} resolves to the CDN. HELO and PTR must
+  # name a host that resolves back to this machine or DNSBLs flag us.
+  mailHostname = if fastly.enable then fastly.originHostname else domain;
 in
 {
   services.opendkim.enable = true;
@@ -26,7 +34,7 @@ in
   services.postfix = {
     enable = true;
     settings.main = {
-      myhostname = domain;
+      myhostname = mailHostname;
       mydomain = domain;
 
       smtp_tls_note_starttls_offer = "yes";

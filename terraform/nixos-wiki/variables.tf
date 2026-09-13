@@ -35,3 +35,9 @@ variable "tags" {
   default     = {}
   description = "Tags to add to the server"
 }
+
+variable "ptr_hostname" {
+  type        = string
+  default     = null
+  description = "Reverse DNS name for the server addresses. Must resolve back to the server (FCrDNS) for mail delivery; defaults to domain."
+}
