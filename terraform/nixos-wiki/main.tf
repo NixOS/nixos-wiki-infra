@@ -21,6 +21,18 @@ resource "hcloud_server" "nixos_wiki" {
   }
 }
 
+resource "hcloud_rdns" "nixos_wiki_v4" {
+  server_id  = hcloud_server.nixos_wiki.id
+  ip_address = hcloud_server.nixos_wiki.ipv4_address
+  dns_ptr    = coalesce(var.ptr_hostname, var.domain)
+}
+
+resource "hcloud_rdns" "nixos_wiki_v6" {
+  server_id  = hcloud_server.nixos_wiki.id
+  ip_address = hcloud_server.nixos_wiki.ipv6_address
+  dns_ptr    = coalesce(var.ptr_hostname, var.domain)
+}
+
 module "deploy" {
   depends_on             = [local_file.nixos_vars]
   source                 = "github.com/numtide/nixos-anywhere//terraform/all-in-one"
