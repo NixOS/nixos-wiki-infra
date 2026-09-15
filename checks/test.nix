@@ -111,6 +111,12 @@
         wiki.succeed("systemctl is-active pygments-server.service")
         wiki.fail("journalctl -u pygments-server --no-pager | grep Traceback")
 
+    with subtest("anonymous login page floods are throttled separately"):
+        login = "http://nixos-wiki.example.com/w/index.php?title=Special:UserLogin&returnto=Flakes"
+        wiki.succeed("sleep 3")
+        codes = wiki.succeed(f"for i in $(seq 60); do curl -s -o /dev/null -w '%{{http_code}} ' '{login}'; done")
+        assert "429" in codes and "200" in codes, codes
+
     with subtest("PURGE from MediaWiki invalidates the cached page"):
         assert cache_status() == "HIT"
         # same shape as CdnCacheUpdate::naivePurge()
