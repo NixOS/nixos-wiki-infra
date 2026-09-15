@@ -66,9 +66,8 @@ in
       serverAliases = [ cfg.originHostname ];
       extraConfig = ''
         access_log syslog:server=unix:/dev/log,nohostname wiki;
-        # scraper URL classes must come through Fastly (see $expensive_anon)
-        set $direct_expensive "$via$expensive_anon";
-        if ($direct_expensive = direct1) {
+        set $direct_expensive "$via:$expensive_anon";
+        if ($direct_expensive ~ ^direct:.) {
           return 421;
         }
       '';

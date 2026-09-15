@@ -76,8 +76,7 @@ in
       uploadsDir = "/var/lib/mediawiki-uploads/";
       passwordFile = if cfg.testMode then pkgs.writeText "pass" "nixos-wiki00" else cfg.adminPasswordFile;
 
-      # ~45MB private per worker with a warm opcache; 4/core leaves room for
-      # requests that wait on Postgres or memcached without thrashing.
+      # ~45MB private per worker, 4 per core.
       poolConfig = {
         "pm" = "dynamic";
         "pm.max_children" = 32;
@@ -431,23 +430,20 @@ in
         }
         limit_req_zone $chinese_subnet zone=chinese_subnet_second:10m rate=3r/s;
 
-        # Distributed scrapers hammer uncacheable special pages and old
-        # revisions from thousands of residential IPs, so per-IP limits do not
-        # help. Put all anonymous requests for such URLs into one shared bucket;
-        # anyone with a session cookie is exempt.
-        # Special:UserLogin/Special:CreateAccount must stay out of this bucket:
-        # a user's first hit there has no session cookie yet, so scrapers
-        # saturating the shared bucket would lock everyone out of logging in.
+        # Scrapers use thousands of residential IPs, so anonymous requests for
+        # uncacheable URLs share one bucket per class. Login is a separate
+        # class because nobody has a session cookie there yet.
         map $http_cookie $has_session {
           default 0;
           "~([sS]ession|Token|UserID|UserName)=" 1;
         }
         map "$has_session$request_uri" $expensive_anon {
           default "";
-          "~^0/w/index\.php\?.*title=Special(:|%3A)(RecentChanges|RecentChangesLinked|Log|Contributions|WhatLinksHere|MobileDiff|Translate)" 1;
-          "~^0/w/index\.php\?.*(mobileaction=toggle_view|action=history|action=edit|action=submit|diff=|oldid=)" 1;
-          "~^0/wiki/Special:(RecentChanges|RecentChangesLinked|Log|Contributions|WhatLinksHere)" 1;
-          "~^0/w/api\.php\?.*(action=feedrecentchanges|action=feedcontributions|list=recentchanges|rcprop=)" 1;
+          "~^0(/wiki/|/w/index\.php\?(.*&)?title=)Special(:|%3A)(UserLogin|CreateAccount|PasswordReset)" login;
+          "~^0/w/index\.php\?.*title=Special(:|%3A)(RecentChanges|RecentChangesLinked|Log|Contributions|WhatLinksHere|MobileDiff|Translate)" rc;
+          "~^0/w/index\.php\?.*(mobileaction=toggle_view|action=history|action=edit|action=submit|diff=|oldid=)" rc;
+          "~^0/wiki/Special:(RecentChanges|RecentChangesLinked|Log|Contributions|WhatLinksHere)" rc;
+          "~^0/w/api\.php\?.*(action=feedrecentchanges|action=feedcontributions|list=recentchanges|rcprop=)" rc;
         }
         limit_req_zone $expensive_anon zone=expensive_anon:1m rate=5r/s;
 
