@@ -62,13 +62,16 @@ in
 
     # Fastly needs an origin name that does not point back at itself and a
     # certificate matching it (ssl_cert_hostname in nixos-infra terraform).
+    # Only Fastly, loopback (MediaWiki PURGE) and ACME validation may use it.
     services.nginx.virtualHosts.${config.services.mediawiki.nginx.hostName} = {
       serverAliases = [ cfg.originHostname ];
       extraConfig = ''
         access_log syslog:server=unix:/dev/log,nohostname wiki;
-        # ${cfg.originHostname} and loopback (MediaWiki PURGE) stay reachable
-        set $via_host "$via:$host";
-        if ($via_host = "direct:${config.services.mediawiki.nginx.hostName}") {
+        set $refuse_direct $via;
+        if ($uri ~ ^/\.well-known/acme-challenge/) {
+          set $refuse_direct "";
+        }
+        if ($refuse_direct = direct) {
           return 421;
         }
       '';
