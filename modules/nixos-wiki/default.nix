@@ -273,25 +273,27 @@ in
     };
 
     # https://www.mediawiki.org/wiki/Help:Extension:Translate/Installation
-    services.phpfpm.pools.mediawiki.phpOptions =
-      let
-        phpVersion = builtins.replaceStrings [ "." ] [ "" ] (
-          lib.versions.majorMinor config.services.phpfpm.pools.mediawiki.phpPackage.version
-        );
-        extensions = pkgs."php${phpVersion}Extensions";
-      in
-      ''
-        extension=${extensions.yaml}/lib/php/extensions/yaml.so
-        ; The default 128M holds ~60% of MediaWiki + extensions, the rest was
-        ; recompiled on every request. Code lives in the nix store, so mtime
-        ; checks are pointless.
-        opcache.memory_consumption = 512
-        opcache.interned_strings_buffer = 32
-        opcache.max_accelerated_files = 32531
-        opcache.validate_timestamps = 0
-        opcache.jit_buffer_size = 64M
-        apc.shm_size = 128M
-      '';
+    services.mediawiki.phpPackage = pkgs.php83.buildEnv {
+      extensions =
+        { all, enabled }:
+        enabled
+        ++ [
+          all.apcu
+          all.yaml
+        ];
+    };
+
+    services.phpfpm.pools.mediawiki.phpOptions = {
+      # The default 128M holds ~60% of MediaWiki + extensions, the rest was
+      # recompiled on every request. Code lives in the nix store, so mtime
+      # checks are pointless.
+      "opcache.memory_consumption" = 512;
+      "opcache.interned_strings_buffer" = 32;
+      "opcache.max_accelerated_files" = 32531;
+      "opcache.validate_timestamps" = false;
+      "opcache.jit_buffer_size" = "64M";
+      "apc.shm_size" = "128M";
+    };
 
     services.postgresql.package = pkgs.postgresql_16;
 
@@ -328,8 +330,8 @@ in
       eventsConfig = ''
         worker_connections 8192;
       '';
+      workerProcesses = "auto";
       appendConfig = ''
-        worker_processes auto;
         worker_rlimit_nofile 32768;
       '';
       additionalModules = [

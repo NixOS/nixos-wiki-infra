@@ -3,7 +3,7 @@
   perSystem =
     { pkgs, ... }:
     {
-      packages = lib.optionalAttrs pkgs.stdenv.isLinux {
+      packages = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
         interactive-vm = pkgs.writeShellApplication {
           name = "interactive-vm";
           runtimeInputs = [

@@ -53,7 +53,10 @@
             [
               pkgs.bashInteractive
               pkgs.sops
-              pkgs.nixos-rebuild-ng
+              # test_make_tmpdir fails in the darwin sandbox (no write access to /tmp)
+              (pkgs.nixos-rebuild-ng.overridePythonAttrs (old: {
+                disabledTests = (old.disabledTests or [ ]) ++ [ "test_make_tmpdir" ];
+              }))
               (pkgs.opentofu.withPlugins (
                 p:
                 builtins.map convert2Tofu [
