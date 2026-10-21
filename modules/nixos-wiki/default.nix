@@ -262,8 +262,9 @@ in
         # Cache anonymous page views
         $wgCachePages = true;
 
-        # Send cache headers for anonymous users
-        $wgCdnMaxAge = 18000; # 5 hours cache for anonymous users (MediaWiki default)
+        # Edits purge nginx and Fastly, so anonymous HTML can live long.
+        $wgCdnMaxAge = 7 * 86400;
+        $wgParserCacheExpireTime = 30 * 86400;
 
         # nginx decides mobile vs. desktop (see $mf_is_mobile) and passes it as
         # AMF_DEVICE_IS_MOBILE so MobileFrontend and the cache key never disagree.
@@ -502,7 +503,7 @@ in
         let
           fastcgiCache = ''
             fastcgi_cache mediawiki;
-            fastcgi_cache_valid 200 301 302 5h;
+            fastcgi_cache_valid 200 301 302 7d;
             fastcgi_cache_valid 404 10m;
             fastcgi_cache_use_stale error timeout updating invalid_header http_500 http_503;
             fastcgi_cache_background_update on;
