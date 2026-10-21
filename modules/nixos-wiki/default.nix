@@ -328,8 +328,8 @@ in
       eventsConfig = ''
         worker_connections 8192;
       '';
+      workerProcesses = "auto";
       appendConfig = ''
-        worker_processes auto;
         worker_rlimit_nofile 32768;
       '';
       additionalModules = [
