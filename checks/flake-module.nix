@@ -7,7 +7,7 @@
       ...
     }:
     {
-      checks = lib.optionalAttrs pkgs.stdenv.isLinux {
+      checks = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
         test = import ./test.nix { inherit self pkgs; };
       };
     };
