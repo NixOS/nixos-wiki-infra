@@ -114,7 +114,8 @@
     with subtest("anonymous login page floods are throttled separately"):
         login = "http://nixos-wiki.example.com/w/index.php?title=Special:UserLogin&returnto=Flakes"
         wiki.succeed("sleep 3")
-        codes = wiki.succeed(f"for i in $(seq 60); do curl -s -o /dev/null -w '%{{http_code}} ' '{login}'; done")
+        # Concurrent so the result doesn't depend on how fast the page renders.
+        codes = wiki.succeed(f"seq 60 | xargs -P 30 -I{{}} curl -s -o /dev/null -w '%{{http_code}} ' '{login}'")
         assert "429" in codes and "200" in codes, codes
 
     with subtest("PURGE from MediaWiki invalidates the cached page"):
