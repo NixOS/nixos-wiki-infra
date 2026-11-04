@@ -155,6 +155,9 @@ in
         # Pretty URLs
         $wgUsePathInfo = true;
 
+        # Sitemap: only articles and categories, not Translations:/Talk:/User: pages
+        $wgSitemapNamespaces = [ NS_MAIN, NS_CATEGORY ];
+
         # Configure Memcached for caching
         $wgMainCacheType = CACHE_MEMCACHED;
         $wgMemCachedServers = [ '127.0.0.1:11211' ];
@@ -527,7 +530,14 @@ in
           "=/nixos.png".alias = ./nixos.png;
           "=/favicon.ico".alias = ./favicon.ico;
           "=/robots.txt".alias = ./robots.txt;
-          "/sitemap/".alias = sitemap_dir;
+          "/sitemap/" = {
+            alias = sitemap_dir;
+            # serve foo.xml from foo.xml.gz (decompressed for clients without gzip)
+            extraConfig = ''
+              gzip_static always;
+              gunzip on;
+            '';
+          };
           "= /sitemap.xml".alias = "${sitemap_dir}sitemap-index-mediawiki.xml";
           "= /google2855366826b5ab3a.html".alias = ./google2855366826b5ab3a.html;
 
