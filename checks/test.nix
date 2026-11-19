@@ -44,6 +44,8 @@
           enableACME = false;
           forceSSL = false;
         };
+
+        environment.systemPackages = [ pkgs.python3 ];
       };
   };
   # This is the test code that will check if our service is running correctly:
@@ -66,6 +68,10 @@
 
     # Check for title in HTML
     assert "Automatic synchronization from git repository" in test_page, f"Expected title not found in test page: {test_page}"
+
+    with subtest("nginx cannot autoload the sctp module"):
+        wiki.fail("runuser -u nginx -- python3 -c 'import socket; socket.socket(socket.AF_INET, socket.SOCK_STREAM, 132)'")
+        wiki.fail("grep -q '^sctp ' /proc/modules")
 
     with subtest("rest.php works with AuthManagerOAuth's bundled vendor dir"):
         wiki.succeed("curl -sf 'http://nixos-wiki.example.com/w/rest.php/v1/search/title?q=wiki&limit=1'")
