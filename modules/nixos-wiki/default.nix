@@ -328,6 +328,10 @@ in
     # connections under scraper load long before PHP-FPM is the limit.
     boot.kernel.sysctl."net.core.somaxconn" = 4096;
 
+    # Unused here; any local user (e.g. a compromised nginx worker) can
+    # autoload it and reach its bugs, see https://nginx2root.com/
+    boot.blacklistedKernelModules = [ "sctp" ];
+
     # Enable Nginx VTS module for monitoring and cache-purge module
     services.nginx = {
       eventsConfig = ''
